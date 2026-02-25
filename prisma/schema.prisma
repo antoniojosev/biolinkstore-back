@@ -1,0 +1,446 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// USUARIOS Y AUTENTICACIÓN
+// ==========================================
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String?
+  name            String?
+  avatar          String?
+  emailVerified   DateTime?
+
+  accounts        Account[]
+  stores          Store[]
+  refreshTokens   RefreshToken[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refreshToken      String? @db.Text
+  accessToken       String? @db.Text
+  expiresAt         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String? @db.Text
+
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  userId      String
+  token       String    @unique
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ==========================================
+// TIENDAS
+// ==========================================
+
+model Store {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  description     String?   @db.Text
+
+  logo            String?
+  favicon         String?
+  banner          String?
+
+  primaryColor    String    @default("#3b82f6")
+  secondaryColor  String    @default("#64748b")
+  backgroundColor String    @default("#ffffff")
+  textColor       String    @default("#0f172a")
+  font            String    @default("Inter")
+  template        String    @default("minimal")
+
+  whatsappNumbers String[]
+  instagramHandle String?
+  facebookUrl     String?
+  tiktokUrl       String?
+  email           String?
+  address         String?
+  businessHours   Json?
+
+  checkoutConfig  Json?
+  currencyConfig  Json?
+  stockEnabled    Boolean   @default(false)
+  showBranding    Boolean   @default(true)
+
+  customDomain    String?   @unique
+  domainVerified  Boolean   @default(false)
+
+  ownerId         String
+  owner           User      @relation(fields: [ownerId], references: [id])
+
+  products        Product[]
+  categories      Category[]
+  orders          OrderIntent[]
+  visitors        Visitor[]
+  analytics       AnalyticsEvent[]
+  subscription    Subscription?
+  domainAddon     DomainAddon?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([ownerId])
+  @@index([slug])
+  @@index([customDomain])
+  @@map("stores")
+}
+
+// ==========================================
+// PRODUCTOS
+// ==========================================
+
+model Product {
+  id              String    @id @default(cuid())
+  storeId         String
+
+  name            String
+  slug            String
+  description     String?   @db.Text
+
+  basePrice       Decimal   @db.Decimal(10, 2)
+  compareAtPrice  Decimal?  @db.Decimal(10, 2)
+  prices          Json?
+
+  images          String[]
+  videos          String[]
+
+  stock           Int?
+  sku             String?
+
+  isVisible       Boolean   @default(true)
+  isFeatured      Boolean   @default(false)
+  isOnSale        Boolean   @default(false)
+
+  sortOrder       Int       @default(0)
+
+  store           Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  categories      CategoriesOnProducts[]
+  attributes      ProductAttribute[]
+  variants        ProductVariant[]
+
+  analyticsEvents AnalyticsEvent[]
+  orderItems      OrderItem[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([storeId, slug])
+  @@index([storeId])
+  @@index([storeId, isVisible])
+  @@map("products")
+}
+
+model ProductAttribute {
+  id          String    @id @default(cuid())
+  productId   String
+
+  name        String
+  options     String[]
+  sortOrder   Int       @default(0)
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_attributes")
+}
+
+model ProductVariant {
+  id              String    @id @default(cuid())
+  productId       String
+
+  combination     Json
+  sku             String?
+  priceAdjustment Decimal   @default(0) @db.Decimal(10, 2)
+  stock           Int?
+  image           String?
+  isAvailable     Boolean   @default(true)
+
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems      OrderItem[]
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+// ==========================================
+// CATEGORÍAS
+// ==========================================
+
+model Category {
+  id          String    @id @default(cuid())
+  storeId     String
+
+  name        String
+  slug        String
+  description String?
+  image       String?
+
+  isVisible   Boolean   @default(true)
+  sortOrder   Int       @default(0)
+
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products    CategoriesOnProducts[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([storeId, slug])
+  @@index([storeId])
+  @@map("categories")
+}
+
+model CategoriesOnProducts {
+  productId   String
+  categoryId  String
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@map("categories_on_products")
+}
+
+// ==========================================
+// ANALYTICS
+// ==========================================
+
+model Visitor {
+  id          String    @id @default(cuid())
+  storeId     String
+  visitorId   String
+
+  userAgent   String?
+  country     String?
+  city        String?
+
+  visitCount  Int       @default(1)
+
+  firstVisit  DateTime  @default(now())
+  lastVisit   DateTime  @default(now())
+
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  events      AnalyticsEvent[]
+  orders      OrderIntent[]
+
+  @@unique([storeId, visitorId])
+  @@index([storeId])
+  @@map("visitors")
+}
+
+model AnalyticsEvent {
+  id          String    @id @default(cuid())
+  storeId     String
+  visitorId   String?
+  productId   String?
+
+  type        EventType
+  metadata    Json?
+
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  visitor     Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  product     Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime  @default(now())
+
+  @@index([storeId])
+  @@index([storeId, type])
+  @@index([storeId, createdAt])
+  @@index([productId])
+  @@map("analytics_events")
+}
+
+enum EventType {
+  PAGE_VIEW
+  PRODUCT_VIEW
+  ADD_TO_CART
+  REMOVE_FROM_CART
+  CHECKOUT_START
+  CHECKOUT_COMPLETE
+  SEARCH
+  CATEGORY_VIEW
+}
+
+// ==========================================
+// PEDIDOS
+// ==========================================
+
+model OrderIntent {
+  id              String    @id @default(cuid())
+  storeId         String
+  visitorId       String?
+
+  items           OrderItem[]
+
+  subtotal        Decimal   @db.Decimal(10, 2)
+  total           Decimal   @db.Decimal(10, 2)
+  currency        String    @default("USD")
+
+  customerName    String?
+  customerPhone   String?
+  customerEmail   String?
+  customerAddress String?
+  customerNotes   String?   @db.Text
+
+  channel         OrderChannel
+  whatsappNumber  String?
+  messageGenerated String?  @db.Text
+
+  store           Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  visitor         Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime  @default(now())
+
+  @@index([storeId])
+  @@index([storeId, createdAt])
+  @@map("order_intents")
+}
+
+model OrderItem {
+  id          String    @id @default(cuid())
+  orderId     String
+  productId   String
+  variantId   String?
+
+  productName String
+  variantName String?
+  unitPrice   Decimal   @db.Decimal(10, 2)
+  quantity    Int
+
+  order       OrderIntent     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product         @relation(fields: [productId], references: [id])
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+enum OrderChannel {
+  WHATSAPP
+  INSTAGRAM
+}
+
+// ==========================================
+// SUSCRIPCIONES
+// ==========================================
+
+model Subscription {
+  id                    String    @id @default(cuid())
+  storeId               String    @unique
+
+  plan                  Plan      @default(FREE)
+  status                SubscriptionStatus @default(ACTIVE)
+
+  currentPeriodStart    DateTime?
+  currentPeriodEnd      DateTime?
+  cancelAtPeriodEnd     Boolean   @default(false)
+
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  stripePriceId         String?
+
+  trialStart            DateTime?
+  trialEnd              DateTime?
+
+  store                 Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("subscriptions")
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  UNPAID
+}
+
+model DomainAddon {
+  id              String    @id @default(cuid())
+  storeId         String    @unique
+
+  domain          String    @unique
+  status          DomainStatus @default(PENDING_VERIFICATION)
+  sslStatus       SSLStatus    @default(PENDING)
+
+  billingCycle    BillingCycle @default(MONTHLY)
+  priceMonthly    Decimal   @default(2) @db.Decimal(10, 2)
+  priceYearly     Decimal   @default(15) @db.Decimal(10, 2)
+
+  nextBillingDate DateTime?
+  stripeSubscriptionId String?
+
+  store           Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("domain_addons")
+}
+
+enum DomainStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  FAILED
+}
+
+enum SSLStatus {
+  PENDING
+  ACTIVE
+  FAILED
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}

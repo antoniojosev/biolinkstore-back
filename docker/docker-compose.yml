@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: catalogo-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://catalogo:catalogo123@postgres:5432/catalogo
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ..:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - catalogo-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: catalogo-postgres
+    environment:
+      POSTGRES_USER: catalogo
+      POSTGRES_PASSWORD: catalogo123
+      POSTGRES_DB: catalogo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - catalogo-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: catalogo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - catalogo-network
+
+  # MinIO para desarrollo local (alternativa a S3)
+  minio:
+    image: minio/minio
+    container_name: catalogo-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - catalogo-network
+
+networks:
+  catalogo-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
