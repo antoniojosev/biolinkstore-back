@@ -39,6 +39,7 @@ export class GetPublicStoreUseCase {
       address: store.address,
       businessHours: store.businessHours,
       showBranding: store.showBranding,
+      currencyConfig: store.currencyConfig,
     };
   }
 }

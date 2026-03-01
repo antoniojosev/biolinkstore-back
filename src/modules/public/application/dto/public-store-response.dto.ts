@@ -60,4 +60,7 @@ export class PublicStoreResponseDto {
 
   @ApiProperty()
   showBranding: boolean;
+
+  @ApiProperty({ required: false })
+  currencyConfig: any;
 }
