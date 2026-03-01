@@ -33,11 +33,14 @@ export class RegisterUseCase {
       email: dto.email,
       passwordHash,
       name: dto.name,
+      username: dto.username,
+      gender: dto.gender,
+      dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
     });
 
     // Generate tokens
     const accessToken = await this.tokenService.generateAccessToken(user.id, user.email);
-    const refreshToken = await this.tokenService.generateRefreshToken(user.id);
+    const refreshToken = await this.tokenService.generateRefreshToken(user.id, user.email);
 
     // Save refresh token
     await this.tokenService.saveRefreshToken(user.id, refreshToken);

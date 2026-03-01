@@ -1,20 +1,22 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-# Instalar pnpm
+# Instalar pnpm y dependencias del sistema
+RUN apt-get update -y && apt-get install -y openssl procps && rm -rf /var/lib/apt/lists/*
+
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copiar archivos de dependencias
 COPY package.json pnpm-lock.yaml ./
 
-# Instalar dependencias
-RUN pnpm install
+# Instalar dependencias (sin postinstall para evitar prisma generate sin schema)
+RUN pnpm install --ignore-scripts
 
-# Copiar el resto del código
+# Copiar el resto del código (incluye prisma/schema.prisma)
 COPY . .
 
-# Generar cliente Prisma
+# Generar cliente Prisma con el schema correcto
 RUN pnpm prisma generate
 
 EXPOSE 3001

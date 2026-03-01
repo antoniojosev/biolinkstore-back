@@ -5,7 +5,6 @@ import {
   IsBoolean,
   IsArray,
   Min,
-  IsUrl,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -35,13 +34,13 @@ export class UpdateProductDto {
   @ApiProperty({ required: false, type: [String] })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   images?: string[];
 
   @ApiProperty({ required: false, type: [String] })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   videos?: string[];
 
   @ApiProperty({ required: false })

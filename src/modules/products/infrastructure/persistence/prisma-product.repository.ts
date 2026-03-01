@@ -54,17 +54,14 @@ export class PrismaProductRepository implements IProductRepository {
     storeId: string,
     params: ProductFilterParams = {},
   ): Promise<PaginatedResult<Product>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'sortOrder',
-      sortOrder = 'asc',
-      categoryId,
-      isVisible,
-      isFeatured,
-      isOnSale,
-      search,
-    } = params;
+    const page = Number(params.page) || 1;
+    const limit = Number(params.limit) || 10;
+    const sortBy = params.sortBy || 'sortOrder';
+    const sortOrder = params.sortOrder || 'asc';
+    const { categoryId, search } = params;
+    const isVisible = params.isVisible !== undefined ? String(params.isVisible) === 'true' : undefined;
+    const isFeatured = params.isFeatured !== undefined ? String(params.isFeatured) === 'true' : undefined;
+    const isOnSale = params.isOnSale !== undefined ? String(params.isOnSale) === 'true' : undefined;
 
     // Build where clause
     const where: any = { storeId };

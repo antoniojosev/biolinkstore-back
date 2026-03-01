@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
+import { StoresModule } from '@/modules/stores/stores.module';
 
 // Domain Services
 import { VariantGeneratorService } from './domain/services/variant-generator.service';
@@ -25,7 +26,7 @@ import { ProductsController } from './presentation/controllers/products.controll
 import { VariantsController } from './presentation/controllers/variants.controller';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, StoresModule],
   controllers: [ProductsController, VariantsController],
   providers: [
     // Domain Services

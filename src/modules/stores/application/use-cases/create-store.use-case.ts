@@ -29,7 +29,7 @@ export class CreateStoreUseCase {
           slug,
           name: dto.name,
           description: dto.description,
-          whatsappNumbers: dto.whatsappNumbers,
+          whatsappNumbers: dto.whatsappNumbers ?? [],
           instagramHandle: dto.instagramHandle,
           ownerId: userId,
         },

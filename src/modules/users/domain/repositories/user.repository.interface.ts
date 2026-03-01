@@ -12,12 +12,18 @@ export interface CreateUserData {
   email: string;
   passwordHash?: string;
   name?: string;
+  username?: string;
+  gender?: string;
+  dateOfBirth?: Date;
   avatar?: string;
   emailVerified?: Date;
 }
 
 export interface UpdateUserData {
   name?: string;
+  username?: string;
+  gender?: string;
+  dateOfBirth?: Date;
   avatar?: string;
   emailVerified?: Date;
   passwordHash?: string;

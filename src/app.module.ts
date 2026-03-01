@@ -19,6 +19,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { PublicModule } from './modules/public/public.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -57,6 +58,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     CategoriesModule,
     PublicModule,
     OrdersModule,
+    UploadsModule,
   ],
   providers: [
     // Global JWT Auth Guard (can be overridden with @Public decorator)

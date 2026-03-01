@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
+import { StoresModule } from '@/modules/stores/stores.module';
 
 // Application - Use Cases
 import { CreateCategoryUseCase } from './application/use-cases/create-category.use-case';
@@ -16,7 +17,7 @@ import { PrismaCategoryRepository } from './infrastructure/persistence/prisma-ca
 import { CategoriesController } from './presentation/controllers/categories.controller';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, StoresModule],
   controllers: [CategoriesController],
   providers: [
     // Use Cases

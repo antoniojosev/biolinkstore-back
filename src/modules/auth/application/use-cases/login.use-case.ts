@@ -30,7 +30,7 @@ export class LoginUseCase {
 
     // Generate tokens
     const accessToken = await this.tokenService.generateAccessToken(user.id, user.email);
-    const refreshToken = await this.tokenService.generateRefreshToken(user.id);
+    const refreshToken = await this.tokenService.generateRefreshToken(user.id, user.email);
 
     // Save refresh token
     await this.tokenService.saveRefreshToken(user.id, refreshToken);

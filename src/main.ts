@@ -20,6 +20,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       configService.get<string>('app.frontendUrl') || 'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
       /\.tuapp\.com$/, // Allow all subdomains in production
     ],
     credentials: true,

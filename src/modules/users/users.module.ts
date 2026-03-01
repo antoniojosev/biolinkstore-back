@@ -13,6 +13,9 @@ import { PrismaUserRepository } from './infrastructure/persistence/prisma-user.r
 // Presentation
 import { UsersController } from './presentation/controllers/users.controller';
 
+// Domain services
+import { PasswordService } from '@/modules/auth/domain/services/password.service';
+
 @Module({
   imports: [DatabaseModule],
   controllers: [UsersController],
@@ -21,6 +24,9 @@ import { UsersController } from './presentation/controllers/users.controller';
     GetUserUseCase,
     CreateUserUseCase,
     UpdateUserUseCase,
+
+    // Domain services
+    PasswordService,
 
     // Repository binding
     {

@@ -14,11 +14,11 @@ export class CreateStoreDto {
   @MaxLength(500)
   description?: string;
 
-  @ApiProperty({ example: ['+1234567890'], type: [String] })
+  @ApiProperty({ example: ['+1234567890'], type: [String], required: false })
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  whatsappNumbers: string[];
+  whatsappNumbers?: string[];
 
   @ApiProperty({ example: '@mystore', required: false })
   @IsOptional()

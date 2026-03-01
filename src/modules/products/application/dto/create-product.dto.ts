@@ -7,7 +7,6 @@ import {
   ValidateNested,
   Min,
   ArrayMinSize,
-  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -53,13 +52,13 @@ export class CreateProductDto {
   @ApiProperty({ example: ['https://example.com/image1.jpg'], required: false, type: [String] })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   images?: string[];
 
   @ApiProperty({ example: ['https://example.com/video1.mp4'], required: false, type: [String] })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   videos?: string[];
 
   @ApiProperty({ example: 100, required: false })

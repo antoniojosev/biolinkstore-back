@@ -24,15 +24,15 @@ export class TokenService {
     });
   }
 
-  async generateRefreshToken(userId: string): Promise<string> {
-    const payload = { userId };
+  async generateRefreshToken(userId: string, email: string): Promise<string> {
+    const payload = { userId, email };
     return this.jwtService.sign(payload, {
       secret: this.configService.get<string>('jwt.refreshSecret'),
       expiresIn: this.configService.get<string>('jwt.refreshExpiresIn'),
     });
   }
 
-  async verifyRefreshToken(token: string): Promise<{ userId: string; email?: string } | null> {
+  async verifyRefreshToken(token: string): Promise<{ userId: string; email: string } | null> {
     try {
       const payload = this.jwtService.verify(token, {
         secret: this.configService.get<string>('jwt.refreshSecret'),

@@ -61,9 +61,9 @@ export class CreateOrderUseCase {
 
         return {
           productId: product.id,
-          variantId: item.variantId || null,
+          variantId: item.variantId ?? undefined,
           productName: product.name,
-          variantName,
+          variantName: variantName ?? undefined,
           unitPrice: price,
           quantity: item.quantity,
         };

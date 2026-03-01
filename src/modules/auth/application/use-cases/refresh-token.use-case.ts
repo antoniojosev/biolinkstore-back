@@ -27,7 +27,7 @@ export class RefreshTokenUseCase {
       payload.userId,
       payload.email,
     );
-    const refreshToken = await this.tokenService.generateRefreshToken(payload.userId);
+    const refreshToken = await this.tokenService.generateRefreshToken(payload.userId, payload.email);
 
     // Save new refresh token
     await this.tokenService.saveRefreshToken(payload.userId, refreshToken);
