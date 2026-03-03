@@ -13,7 +13,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   // Get configuration
-  const port = configService.get<number>('app.port') || process.env.PORT || 3001;
+  const port = parseInt(process.env.PORT || '3001', 10);
   const nodeEnv = configService.get<string>('app.nodeEnv') || 'development';
 
   // Enable CORS
