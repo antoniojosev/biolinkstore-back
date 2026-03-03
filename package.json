@@ -1,5 +1,6 @@
 {
   "name": "catalogo-backend",
+  "packageManager": "pnpm@9.12.1",
   "pnpm": {
     "onlyBuiltDependencies": [
       "sharp"
