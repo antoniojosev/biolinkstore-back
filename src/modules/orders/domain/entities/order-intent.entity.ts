@@ -1,4 +1,4 @@
-import { OrderChannel } from '@prisma/client';
+import { OrderChannel, OrderStatus } from '@prisma/client';
 
 export class OrderIntent {
   id: string;
@@ -13,6 +13,7 @@ export class OrderIntent {
   customerEmail: string | null;
   customerAddress: string | null;
   customerNotes: string | null;
+  status: OrderStatus;
   channel: OrderChannel;
   whatsappNumber: string | null;
   messageGenerated: string | null;

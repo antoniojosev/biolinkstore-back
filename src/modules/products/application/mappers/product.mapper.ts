@@ -37,6 +37,8 @@ export class ProductMapper {
         productId: attr.productId,
         name: attr.name,
         options: attr.options,
+        type: attr.type,
+        optionsMeta: attr.optionsMeta,
         sortOrder: attr.sortOrder,
       })),
       variants: prismaProduct.variants?.map((variant) => new ProductVariant({
@@ -77,6 +79,8 @@ export class ProductMapper {
         id: attr.id,
         name: attr.name,
         options: attr.options,
+        type: attr.type,
+        optionsMeta: attr.optionsMeta,
         sortOrder: attr.sortOrder,
       })),
       variants: product.variants?.map((variant) => ({

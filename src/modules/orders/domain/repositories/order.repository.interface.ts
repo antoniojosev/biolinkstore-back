@@ -1,10 +1,17 @@
+import { OrderStatus } from '@prisma/client';
 import { OrderIntent } from '../entities/order-intent.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
+export interface OrderFilterParams extends PaginationParams {
+  status?: OrderStatus;
+}
+
 export interface IOrderRepository {
   findById(id: string): Promise<OrderIntent | null>;
-  findByStoreId(storeId: string, params?: PaginationParams): Promise<PaginatedResult<OrderIntent>>;
+  findByStoreId(storeId: string, params?: OrderFilterParams): Promise<PaginatedResult<OrderIntent>>;
   create(data: CreateOrderData): Promise<OrderIntent>;
+  updateStatus(id: string, status: OrderStatus): Promise<OrderIntent>;
+  countByStoreId(storeId: string, since?: Date): Promise<number>;
 }
 
 export interface CreateOrderData {

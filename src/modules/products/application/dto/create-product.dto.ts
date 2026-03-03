@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsBoolean,
   IsArray,
+  IsObject,
   ValidateNested,
   Min,
   ArrayMinSize,
@@ -21,6 +22,16 @@ export class ProductAttributeDto {
   @IsString({ each: true })
   @ArrayMinSize(1)
   options: string[];
+
+  @ApiProperty({ example: 'text', required: false })
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @ApiProperty({ example: { Rojo: { hex: '#FF0000', images: [] } }, required: false })
+  @IsOptional()
+  @IsObject()
+  optionsMeta?: Record<string, any>;
 
   @ApiProperty({ example: 1, required: false })
   @IsOptional()

@@ -11,6 +11,12 @@ export class PublicProductAttributeDto {
   options: string[];
 
   @ApiProperty()
+  type: string;
+
+  @ApiProperty({ required: false })
+  optionsMeta: any;
+
+  @ApiProperty()
   sortOrder: number;
 }
 

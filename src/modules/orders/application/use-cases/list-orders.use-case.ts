@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
-import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
-import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
+import { IOrderRepository, OrderFilterParams } from '../../domain/repositories/order.repository.interface';
+import { PaginatedResult } from '@/common/interfaces/pagination.interface';
 import { OrderResponseDto } from '../dto/order-response.dto';
 import { MessageGeneratorService } from '../../domain/services/message-generator.service';
 
@@ -15,7 +15,7 @@ export class ListOrdersUseCase {
 
   async execute(
     storeId: string,
-    params: PaginationParams,
+    params: OrderFilterParams,
   ): Promise<PaginatedResult<OrderResponseDto>> {
     const result = await this.orderRepository.findByStoreId(storeId, params);
 
@@ -48,6 +48,7 @@ export class ListOrdersUseCase {
         customerEmail: order.customerEmail,
         customerAddress: order.customerAddress,
         customerNotes: order.customerNotes,
+        status: order.status,
         channel: order.channel,
         whatsappNumber: order.whatsappNumber,
         messageGenerated: order.messageGenerated,

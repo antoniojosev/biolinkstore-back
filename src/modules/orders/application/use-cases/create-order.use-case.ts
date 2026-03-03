@@ -130,6 +130,7 @@ export class CreateOrderUseCase {
       customerEmail: order.customerEmail,
       customerAddress: order.customerAddress,
       customerNotes: order.customerNotes,
+      status: order.status,
       channel: order.channel,
       whatsappNumber: order.whatsappNumber,
       messageGenerated: message,

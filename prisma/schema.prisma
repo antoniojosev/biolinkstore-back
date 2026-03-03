@@ -121,6 +121,7 @@ model Store {
   analytics       AnalyticsEvent[]
   subscription    Subscription?
   domainAddon     DomainAddon?
+  paymentReports  PaymentReport[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -182,6 +183,8 @@ model ProductAttribute {
 
   name        String
   options     String[]
+  type        String    @default("text")
+  optionsMeta Json?
   sortOrder   Int       @default(0)
 
   product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -327,6 +330,7 @@ model OrderIntent {
   customerAddress String?
   customerNotes   String?   @db.Text
 
+  status          OrderStatus @default(PENDING)
   channel         OrderChannel
   whatsappNumber  String?
   messageGenerated String?  @db.Text
@@ -358,6 +362,13 @@ model OrderItem {
 
   @@index([orderId])
   @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONTACTED
+  ACCEPTED
+  REJECTED
 }
 
 enum OrderChannel {
@@ -447,4 +458,44 @@ enum SSLStatus {
 enum BillingCycle {
   MONTHLY
   YEARLY
+}
+
+// ==========================================
+// REPORTES DE PAGO
+// ==========================================
+
+model PaymentReport {
+  id            String    @id @default(cuid())
+  storeId       String
+
+  type          PaymentReportType
+  targetPlan    String?
+  status        PaymentReportStatus @default(PENDING)
+
+  name          String
+  phone         String
+  bank          String
+  transferDate  DateTime
+  proofUrl      String
+  notes         String?   @db.Text
+
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([storeId])
+  @@map("payment_reports")
+}
+
+enum PaymentReportType {
+  PLAN_UPGRADE
+  DOMAIN
+  DESIGN
+}
+
+enum PaymentReportStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

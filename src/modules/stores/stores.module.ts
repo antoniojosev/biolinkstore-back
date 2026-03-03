@@ -11,6 +11,7 @@ import { UpdateStoreUseCase } from './application/use-cases/update-store.use-cas
 import { GetStoreUseCase } from './application/use-cases/get-store.use-case';
 import { ListUserStoresUseCase } from './application/use-cases/list-user-stores.use-case';
 import { DeleteStoreUseCase } from './application/use-cases/delete-store.use-case';
+import { GetStoreCountsUseCase } from './application/use-cases/get-store-counts.use-case';
 
 // Infrastructure
 import { PrismaStoreRepository } from './infrastructure/persistence/prisma-store.repository';
@@ -31,6 +32,7 @@ import { StoresController } from './presentation/controllers/stores.controller';
     GetStoreUseCase,
     ListUserStoresUseCase,
     DeleteStoreUseCase,
+    GetStoreCountsUseCase,
 
     // Repository binding
     {

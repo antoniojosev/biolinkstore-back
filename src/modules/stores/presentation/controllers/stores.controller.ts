@@ -20,9 +20,11 @@ import { UpdateStoreUseCase } from '../../application/use-cases/update-store.use
 import { GetStoreUseCase } from '../../application/use-cases/get-store.use-case';
 import { ListUserStoresUseCase } from '../../application/use-cases/list-user-stores.use-case';
 import { DeleteStoreUseCase } from '../../application/use-cases/delete-store.use-case';
+import { GetStoreCountsUseCase } from '../../application/use-cases/get-store-counts.use-case';
 import { CreateStoreDto } from '../../application/dto/create-store.dto';
 import { UpdateStoreDto } from '../../application/dto/update-store.dto';
 import { StoreResponseDto } from '../../application/dto/store-response.dto';
+import { StoreCountsResponseDto } from '../../application/dto/store-counts-response.dto';
 import { PaginationDto, PaginatedResult } from '@/common/interfaces/pagination.interface';
 
 @ApiTags('Stores')
@@ -36,6 +38,7 @@ export class StoresController {
     private readonly getStoreUseCase: GetStoreUseCase,
     private readonly listUserStoresUseCase: ListUserStoresUseCase,
     private readonly deleteStoreUseCase: DeleteStoreUseCase,
+    private readonly getStoreCountsUseCase: GetStoreCountsUseCase,
   ) {}
 
   @Post()
@@ -78,6 +81,15 @@ export class StoresController {
     @Body() dto: UpdateStoreDto,
   ): Promise<StoreResponseDto> {
     return this.updateStoreUseCase.execute(storeId, dto);
+  }
+
+  @Get(':storeId/counts')
+  @UseGuards(StoreOwnerGuard)
+  @ApiOperation({ summary: 'Get store product and category counts' })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Store counts', type: StoreCountsResponseDto })
+  async getStoreCounts(@Param('storeId') storeId: string): Promise<StoreCountsResponseDto> {
+    return this.getStoreCountsUseCase.execute(storeId);
   }
 
   @Delete(':storeId')

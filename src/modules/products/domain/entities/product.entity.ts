@@ -31,6 +31,8 @@ export class ProductAttribute {
   productId: string;
   name: string;
   options: string[];
+  type: string;
+  optionsMeta: any;
   sortOrder: number;
 
   constructor(partial: Partial<ProductAttribute>) {

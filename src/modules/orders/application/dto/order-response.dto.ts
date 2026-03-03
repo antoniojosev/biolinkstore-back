@@ -57,6 +57,9 @@ export class OrderResponseDto {
   @ApiProperty()
   customerNotes: string | null;
 
+  @ApiProperty({ enum: ['PENDING', 'CONTACTED', 'ACCEPTED', 'REJECTED'] })
+  status: 'PENDING' | 'CONTACTED' | 'ACCEPTED' | 'REJECTED';
+
   @ApiProperty({ enum: ['WHATSAPP', 'INSTAGRAM'] })
   channel: 'WHATSAPP' | 'INSTAGRAM';
 

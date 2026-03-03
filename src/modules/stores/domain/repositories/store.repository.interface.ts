@@ -23,6 +23,7 @@ export interface CreateStoreData {
 }
 
 export interface UpdateStoreData {
+  slug?: string;
   name?: string;
   description?: string;
   logo?: string;

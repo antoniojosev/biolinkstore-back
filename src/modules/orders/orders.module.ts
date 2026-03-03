@@ -10,6 +10,8 @@ import { MessageGeneratorService } from './domain/services/message-generator.ser
 // Application - Use Cases
 import { CreateOrderUseCase } from './application/use-cases/create-order.use-case';
 import { ListOrdersUseCase } from './application/use-cases/list-orders.use-case';
+import { UpdateOrderStatusUseCase } from './application/use-cases/update-order-status.use-case';
+import { ExportOrdersUseCase } from './application/use-cases/export-orders.use-case';
 
 // Infrastructure - Repositories
 import { PrismaOrderRepository } from './infrastructure/persistence/prisma-order.repository';
@@ -27,6 +29,8 @@ import { OrdersController } from './presentation/controllers/orders.controller';
     // Use Cases
     CreateOrderUseCase,
     ListOrdersUseCase,
+    UpdateOrderStatusUseCase,
+    ExportOrdersUseCase,
 
     // Repository Binding
     {

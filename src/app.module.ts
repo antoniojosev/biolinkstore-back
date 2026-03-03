@@ -10,6 +10,7 @@ import configuration from './config/configuration';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { StorageModule } from './infrastructure/storage/storage.module';
+import { ImageModule } from './infrastructure/image/image.module';
 
 // Modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -19,7 +20,9 @@ import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { PublicModule } from './modules/public/public.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { PaymentReportsModule } from './modules/payment-reports/payment-reports.module';
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -49,6 +52,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     DatabaseModule,
     CacheModule,
     StorageModule,
+    ImageModule,
 
     // Feature Modules
     AuthModule,
@@ -58,7 +62,9 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     CategoriesModule,
     PublicModule,
     OrdersModule,
+    AnalyticsModule,
     UploadsModule,
+    PaymentReportsModule,
   ],
   providers: [
     // Global JWT Auth Guard (can be overridden with @Public decorator)

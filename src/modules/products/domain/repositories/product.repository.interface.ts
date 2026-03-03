@@ -38,6 +38,8 @@ export interface CreateProductData {
   attributes?: Array<{
     name: string;
     options: string[];
+    type: string;
+    optionsMeta?: any;
     sortOrder: number;
   }>;
   categoryIds?: string[];

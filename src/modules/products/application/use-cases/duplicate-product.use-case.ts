@@ -46,6 +46,8 @@ export class DuplicateProductUseCase {
       attributes: originalProduct.attributes?.map((attr) => ({
         name: attr.name,
         options: attr.options,
+        type: attr.type ?? 'text',
+        optionsMeta: attr.optionsMeta ?? null,
         sortOrder: attr.sortOrder,
       })),
       categoryIds: originalProduct.categoryIds,

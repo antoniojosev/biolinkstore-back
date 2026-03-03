@@ -49,6 +49,8 @@ export class GetPublicProductsUseCase {
         id: attr.id,
         name: attr.name,
         options: attr.options,
+        type: attr.type ?? 'text',
+        optionsMeta: attr.optionsMeta ?? null,
         sortOrder: attr.sortOrder,
       })),
       variants: product.variants?.map((variant) => ({

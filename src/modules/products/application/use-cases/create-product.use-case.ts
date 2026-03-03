@@ -42,6 +42,8 @@ export class CreateProductUseCase {
       attributes: dto.attributes?.map((attr, index) => ({
         name: attr.name,
         options: attr.options,
+        type: attr.type ?? 'text',
+        optionsMeta: attr.optionsMeta ?? null,
         sortOrder: attr.sortOrder ?? index,
       })),
       categoryIds: dto.categoryIds,
