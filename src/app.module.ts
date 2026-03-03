@@ -50,7 +50,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
 
     // Infrastructure
     DatabaseModule,
-    CacheModule,
+    // CacheModule,
     StorageModule,
     ImageModule,
 
