@@ -11,6 +11,7 @@ import { DatabaseModule } from './infrastructure/database/database.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { StorageModule } from './infrastructure/storage/storage.module';
 import { ImageModule } from './infrastructure/image/image.module';
+import { EmailModule } from './modules/email/email.module';
 
 // Modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -23,6 +24,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { PaymentReportsModule } from './modules/payment-reports/payment-reports.module';
+import { ContactModule } from './modules/contact/contact.module';
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -53,6 +55,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     // CacheModule,
     StorageModule,
     ImageModule,
+    EmailModule,
 
     // Feature Modules
     AuthModule,
@@ -65,6 +68,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     AnalyticsModule,
     UploadsModule,
     PaymentReportsModule,
+    ContactModule,
   ],
   providers: [
     // Global JWT Auth Guard (can be overridden with @Public decorator)

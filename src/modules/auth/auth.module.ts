@@ -11,6 +11,8 @@ import { PasswordService } from './domain/services/password.service';
 import { RegisterUseCase } from './application/use-cases/register.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
 
 // Infrastructure
 import { TokenService } from './infrastructure/services/token.service';
@@ -22,12 +24,7 @@ import { LocalStrategy } from './infrastructure/strategies/local.strategy';
 import { AuthController } from './presentation/controllers/auth.controller';
 
 @Module({
-  imports: [
-    ConfigModule,
-    PassportModule,
-    JwtModule.register({}),
-    UsersModule,
-  ],
+  imports: [ConfigModule, PassportModule, JwtModule.register({}), UsersModule],
   controllers: [AuthController],
   providers: [
     // Domain
@@ -37,6 +34,8 @@ import { AuthController } from './presentation/controllers/auth.controller';
     RegisterUseCase,
     LoginUseCase,
     RefreshTokenUseCase,
+    ForgotPasswordUseCase,
+    ResetPasswordUseCase,
 
     // Infrastructure
     TokenService,

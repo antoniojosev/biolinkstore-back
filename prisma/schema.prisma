@@ -22,6 +22,8 @@ model User {
   dateOfBirth     DateTime?
   avatar          String?
   emailVerified   DateTime?
+  resetToken      String?
+  resetTokenExpires DateTime?
 
   accounts        Account[]
   stores          Store[]

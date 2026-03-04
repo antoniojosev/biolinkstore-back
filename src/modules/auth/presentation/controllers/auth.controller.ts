@@ -4,9 +4,13 @@ import { Public } from '@/common/decorators/public.decorator';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
+import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.use-case';
 import { RegisterDto } from '../../application/dto/register.dto';
 import { LoginDto } from '../../application/dto/login.dto';
 import { RefreshTokenDto } from '../../application/dto/refresh-token.dto';
+import { ForgotPasswordDto } from '../../application/dto/forgot-password.dto';
+import { ResetPasswordDto } from '../../application/dto/reset-password.dto';
 import { AuthResponseDto } from '../../application/dto/auth-response.dto';
 
 @ApiTags('Auth')
@@ -16,6 +20,8 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) {}
 
   @Public()
@@ -56,5 +62,24 @@ export class AuthController {
     @Body() dto: RefreshTokenDto,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return this.refreshTokenUseCase.execute(dto);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request password reset' })
+  @ApiResponse({ status: 200, description: 'Reset email sent if user exists' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ message: string }> {
+    return this.forgotPasswordUseCase.execute(dto);
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password with token' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    return this.resetPasswordUseCase.execute(dto);
   }
 }
