@@ -22,7 +22,8 @@ async function bootstrap() {
       configService.get<string>('app.frontendUrl') || 'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:3002',
-      /\.tuapp\.com$/, // Allow all subdomains in production
+      /\.vercel\.app$/,
+      /\.tuapp\.com$/,
     ],
     credentials: true,
   });
