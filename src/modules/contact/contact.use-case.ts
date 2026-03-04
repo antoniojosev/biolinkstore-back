@@ -5,12 +5,14 @@ import { DemoRequestDto } from './dto/demo-request.dto';
 
 @Injectable()
 export class ContactUseCase {
-  private readonly adminEmail = 'antoniovila.dev@gmail.com';
-
   constructor(
     private emailService: EmailService,
     private configService: ConfigService,
   ) {}
+
+  get adminEmail(): string {
+    return this.configService.get<string>('email.adminEmail') || 'antoniovila.dev@gmail.com';
+  }
 
   async sendDemoRequest(dto: DemoRequestDto): Promise<{ message: string }> {
     const html = this.getDemoRequestEmailHtml(dto);
