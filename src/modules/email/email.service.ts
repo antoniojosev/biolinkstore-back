@@ -10,13 +10,13 @@ export class EmailService {
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('email.resendApiKey');
-    this.fromEmail = this.configService.get<string>('email.from') || 'noreply@biolinkstore.com';
+    this.fromEmail = this.configService.get<string>('email.from') || 'onboarding@resend.dev';
 
     if (apiKey) {
       this.resend = new Resend(apiKey);
-      this.logger.log('Email service initialized with Resend');
+      this.logger.log(`Email service initialized with Resend. From: ${this.fromEmail}`);
     } else {
-      this.logger.warn('RESEND_API_KEY not configured - emails will be logged only');
+      this.logger.warn('⚠️ RESEND_API_KEY not configured - emails will be logged only, not sent!');
     }
   }
 
