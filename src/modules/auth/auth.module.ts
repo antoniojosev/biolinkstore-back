@@ -13,12 +13,14 @@ import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
 import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
+import { GoogleLoginUseCase } from './application/use-cases/google-login.use-case';
 
 // Infrastructure
 import { TokenService } from './infrastructure/services/token.service';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './infrastructure/strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './infrastructure/strategies/local.strategy';
+import { GoogleStrategy } from './infrastructure/strategies/google.strategy';
 
 // Presentation
 import { AuthController } from './presentation/controllers/auth.controller';
@@ -36,12 +38,14 @@ import { AuthController } from './presentation/controllers/auth.controller';
     RefreshTokenUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
+    GoogleLoginUseCase,
 
     // Infrastructure
     TokenService,
     JwtStrategy,
     JwtRefreshStrategy,
     LocalStrategy,
+    GoogleStrategy,
   ],
   exports: [PasswordService, TokenService],
 })

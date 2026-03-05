@@ -1,4 +1,17 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Get,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { User } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public } from '@/common/decorators/public.decorator';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
@@ -6,12 +19,14 @@ import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
 import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.use-case';
+import { GoogleLoginUseCase } from '../../application/use-cases/google-login.use-case';
 import { RegisterDto } from '../../application/dto/register.dto';
 import { LoginDto } from '../../application/dto/login.dto';
 import { RefreshTokenDto } from '../../application/dto/refresh-token.dto';
 import { ForgotPasswordDto } from '../../application/dto/forgot-password.dto';
 import { ResetPasswordDto } from '../../application/dto/reset-password.dto';
 import { AuthResponseDto } from '../../application/dto/auth-response.dto';
+import { GoogleOAuthGuard } from '../../infrastructure/guards/google-oauth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -22,6 +37,8 @@ export class AuthController {
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly googleLoginUseCase: GoogleLoginUseCase,
+    private readonly configService: ConfigService,
   ) {}
 
   @Public()
@@ -81,5 +98,26 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Invalid or expired token' })
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
     return this.resetPasswordUseCase.execute(dto);
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleOAuthGuard)
+  @ApiOperation({ summary: 'Initiate Google OAuth login' })
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async googleAuth(): Promise<void> {}
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleOAuthGuard)
+  @ApiOperation({ summary: 'Handle Google OAuth callback' })
+  @ApiResponse({ status: 302, description: 'Redirects to frontend with JWT tokens' })
+  @ApiResponse({ status: 401, description: 'Google login failed' })
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response): Promise<void> {
+    const result = await this.googleLoginUseCase.execute(req.user as User);
+    const frontendUrl = this.configService.get<string>('app.frontendUrl');
+    res.redirect(
+      `${frontendUrl}/auth/google/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`,
+    );
   }
 }
