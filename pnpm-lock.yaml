@@ -57,7 +57,7 @@ importers:
         specifier: ^20.10.6
         version: 20.19.34
       '@types/passport-google-oauth20':
-        specifier: ^2.0.14
+        specifier: ^2.0.17
         version: 2.0.17
       '@types/passport-jwt':
         specifier: ^4.0.0
