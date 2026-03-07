@@ -126,6 +126,7 @@ model Store {
   subscription    Subscription?
   domainAddon     DomainAddon?
   paymentReports  PaymentReport[]
+  inquiries       Inquiry[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -502,4 +503,30 @@ enum PaymentReportStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+// ==========================================
+// SOLICITUDES (diseño / plan personalizado)
+// ==========================================
+
+model Inquiry {
+  id          String      @id @default(cuid())
+  storeId     String
+
+  type        InquiryType
+  method      String      // 'whatsapp' | 'email'
+  contact     String      // phone or email
+  description String?     @db.Text
+
+  store       Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime    @default(now())
+
+  @@index([storeId])
+  @@map("inquiries")
+}
+
+enum InquiryType {
+  DESIGN
+  CUSTOM_PLAN
 }
