@@ -106,4 +106,11 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
+
+  @ApiProperty({
+    enum: ['FREE', 'PRO', 'BUSINESS'],
+    default: 'FREE',
+    description: 'Plan de la tienda. Util para que el storefront ajuste branding/features client-side.',
+  })
+  plan: 'FREE' | 'PRO' | 'BUSINESS';
 }

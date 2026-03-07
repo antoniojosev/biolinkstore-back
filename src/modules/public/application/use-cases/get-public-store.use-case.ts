@@ -73,6 +73,7 @@ export class GetPublicStoreUseCase {
       exchangeRateCode: resolved?.code ?? store.exchangeRateCode,
       hours: hoursPayload,
       isOpenNow,
+      plan: (store.subscription?.plan ?? 'FREE') as 'FREE' | 'PRO' | 'BUSINESS',
     };
   }
 }
