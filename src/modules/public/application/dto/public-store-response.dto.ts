@@ -63,4 +63,7 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ required: false })
   currencyConfig: any;
+
+  @ApiProperty({ enum: ['FREE', 'PRO', 'BUSINESS'], default: 'FREE' })
+  plan: 'FREE' | 'PRO' | 'BUSINESS';
 }

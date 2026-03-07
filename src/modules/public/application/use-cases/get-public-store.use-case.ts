@@ -40,6 +40,7 @@ export class GetPublicStoreUseCase {
       businessHours: store.businessHours,
       showBranding: store.showBranding,
       currencyConfig: store.currencyConfig,
+      plan: (store.subscription?.plan ?? 'FREE') as 'FREE' | 'PRO' | 'BUSINESS',
     };
   }
 }
