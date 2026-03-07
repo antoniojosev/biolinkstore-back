@@ -9,6 +9,7 @@ export class StoreMapper {
     return new Store({
       id: prismaStore.id,
       slug: prismaStore.slug,
+      username: prismaStore.username,
       name: prismaStore.name,
       description: prismaStore.description,
       logo: prismaStore.logo,
@@ -49,6 +50,7 @@ export class StoreMapper {
     return {
       id: store.id,
       slug: store.slug,
+      username: store.username,
       name: store.name,
       description: store.description,
       logo: store.logo,
