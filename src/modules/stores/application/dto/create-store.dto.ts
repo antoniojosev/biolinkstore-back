@@ -8,11 +8,12 @@ export class CreateStoreDto {
   @MaxLength(100)
   name: string;
 
-  @ApiProperty({ example: 'myamazingstore' })
+  @ApiProperty({ example: 'myamazingstore', required: false })
+  @IsOptional()
   @IsString()
   @MinLength(3)
   @MaxLength(50)
-  username: string;
+  username?: string;
 
   @ApiProperty({ example: 'Tienda de ropa y accesorios', required: false })
   @IsOptional()

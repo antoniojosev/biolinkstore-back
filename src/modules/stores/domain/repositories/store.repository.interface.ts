@@ -16,7 +16,7 @@ export interface IStoreRepository {
 export interface CreateStoreData {
   slug: string;
   name: string;
-  username: string;
+  username?: string;
   description?: string;
   primaryColor?: string;
   whatsappNumbers: string[];
