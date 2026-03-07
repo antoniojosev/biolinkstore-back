@@ -776,120 +776,51 @@ async function main() {
   console.log(`✅ Visitors: ${NUM_VISITORS}`);
 
   // ─── 7. Analytics Events (realistic funnel) ───────────────
-  let eventCount = 0;
+  const eventsToInsert: any[] = [];
 
   for (let day = 30; day >= 0; day--) {
-    // More traffic on recent days and weekends
     const baseVisits = day <= 7 ? randomBetween(15, 30) : randomBetween(5, 15);
 
     for (let v = 0; v < baseVisits; v++) {
       const visitorId = pick(visitorIds);
       const ts = daysAgo(day);
 
-      // PAGE_VIEW — every visit
-      await prisma.analyticsEvent.create({
-        data: {
-          storeId: store.id,
-          visitorId,
-          type: EventType.PAGE_VIEW,
-          createdAt: ts,
-        },
-      });
-      eventCount++;
+      eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.PAGE_VIEW, createdAt: ts });
 
-      // PRODUCT_VIEW — 70% of page views
       if (Math.random() < 0.7) {
         const prodId = pick(productIds);
         const ts2 = new Date(ts.getTime() + randomBetween(5, 120) * 1000);
-        await prisma.analyticsEvent.create({
-          data: {
-            storeId: store.id,
-            visitorId,
-            productId: prodId,
-            type: EventType.PRODUCT_VIEW,
-            createdAt: ts2,
-          },
-        });
-        eventCount++;
+        eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.PRODUCT_VIEW, createdAt: ts2 });
 
-        // ADD_TO_CART — 35% of product views
         if (Math.random() < 0.35) {
-          await prisma.analyticsEvent.create({
-            data: {
-              storeId: store.id,
-              visitorId,
-              productId: prodId,
-              type: EventType.ADD_TO_CART,
-              createdAt: new Date(ts2.getTime() + randomBetween(10, 60) * 1000),
-            },
-          });
-          eventCount++;
+          eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.ADD_TO_CART, createdAt: new Date(ts2.getTime() + randomBetween(10, 60) * 1000) });
 
-          // CHECKOUT_START — 50% of add to cart
           if (Math.random() < 0.5) {
-            await prisma.analyticsEvent.create({
-              data: {
-                storeId: store.id,
-                visitorId,
-                productId: prodId,
-                type: EventType.CHECKOUT_START,
-                createdAt: new Date(ts2.getTime() + randomBetween(30, 180) * 1000),
-              },
-            });
-            eventCount++;
+            eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.CHECKOUT_START, createdAt: new Date(ts2.getTime() + randomBetween(30, 180) * 1000) });
 
-            // CHECKOUT_COMPLETE — 60% of checkout starts
             if (Math.random() < 0.6) {
-              await prisma.analyticsEvent.create({
-                data: {
-                  storeId: store.id,
-                  visitorId,
-                  productId: prodId,
-                  type: EventType.CHECKOUT_COMPLETE,
-                  createdAt: new Date(ts2.getTime() + randomBetween(60, 300) * 1000),
-                },
-              });
-              eventCount++;
+              eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.CHECKOUT_COMPLETE, createdAt: new Date(ts2.getTime() + randomBetween(60, 300) * 1000) });
             }
           }
         }
       }
 
-      // CATEGORY_VIEW — 40% chance
       if (Math.random() < 0.4) {
-        await prisma.analyticsEvent.create({
-          data: {
-            storeId: store.id,
-            visitorId,
-            type: EventType.CATEGORY_VIEW,
-            metadata: { category: pick(categoriesData).name },
-            createdAt: new Date(ts.getTime() + randomBetween(2, 60) * 1000),
-          },
-        });
-        eventCount++;
+        eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.CATEGORY_VIEW, metadata: { category: pick(categoriesData).name }, createdAt: new Date(ts.getTime() + randomBetween(2, 60) * 1000) });
       }
 
-      // SEARCH — 15% chance
       if (Math.random() < 0.15) {
-        await prisma.analyticsEvent.create({
-          data: {
-            storeId: store.id,
-            visitorId,
-            type: EventType.SEARCH,
-            metadata: {
-              query: pick([
-                'remera', 'zapatillas', 'hoodie', 'negro', 'auriculares',
-                'mochila', 'gorra', 'jogger', 'short', 'campera',
-              ]),
-            },
-            createdAt: new Date(ts.getTime() + randomBetween(3, 30) * 1000),
-          },
-        });
-        eventCount++;
+        eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.SEARCH, metadata: { query: pick(['remera', 'zapatillas', 'hoodie', 'negro', 'auriculares', 'mochila', 'gorra', 'jogger', 'short', 'campera']) }, createdAt: new Date(ts.getTime() + randomBetween(3, 30) * 1000) });
       }
     }
   }
-  console.log(`✅ Analytics events: ~${eventCount}`);
+
+  // Insert in batches of 500 to avoid pgBouncer limits
+  const BATCH = 500;
+  for (let i = 0; i < eventsToInsert.length; i += BATCH) {
+    await prisma.analyticsEvent.createMany({ data: eventsToInsert.slice(i, i + BATCH) });
+  }
+  console.log(`✅ Analytics events: ~${eventsToInsert.length}`);
 
   // ─── 8. Orders (quotes via WhatsApp) ──────────────────────
   const orderStatuses: OrderStatus[] = [
@@ -965,7 +896,7 @@ async function main() {
   console.log(`   Products:  ${PRODUCT_DATA.length}`);
   console.log(`   Categories: ${categoriesData.length}`);
   console.log(`   Visitors:  ${NUM_VISITORS}`);
-  console.log(`   Events:    ~${eventCount}`);
+  console.log(`   Events:    ~${eventsToInsert.length}`);
   console.log(`   Orders:    ${orderCount}`);
   console.log('─────────────────────────────────────');
 }

@@ -18,11 +18,11 @@ export class RegisterDto {
   @MaxLength(100)
   name?: string;
 
-  @ApiProperty({ example: 'juangarcia', required: false })
-  @IsOptional()
+  @ApiProperty({ example: 'juangarcia' })
   @IsString()
+  @MinLength(3)
   @MaxLength(50)
-  username?: string;
+  username: string;
 
   @ApiProperty({ example: 'male', required: false })
   @IsOptional()

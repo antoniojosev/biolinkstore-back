@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '../../domain/repositories/store.repository.interface';
 import { SlugGeneratorService } from '../../domain/services/slug-generator.service';
@@ -22,12 +22,20 @@ export class UpdateStoreUseCase {
       throw new NotFoundException('Store not found');
     }
 
-    // Keep slug in sync with the store name
+    // If username is being changed, check availability and update slug
     const data: UpdateStoreDto & { slug?: string } = { ...dto };
-    const effectiveName = dto.name ?? existingStore.name;
-    const expectedSlug = generateSlug(effectiveName);
-    if (!existingStore.slug.startsWith(expectedSlug)) {
-      data.slug = await this.slugGeneratorService.generateUniqueSlug(effectiveName);
+    if (dto.username && dto.username !== existingStore.username) {
+      const usernameExists = await this.storeRepository.checkUsernameExists(dto.username);
+      if (usernameExists) {
+        throw new ConflictException('Username already in use');
+      }
+      data.slug = dto.username;
+    } else if (dto.name && dto.name !== existingStore.name && !dto.username) {
+      // If name changes but username doesn't, regenerate slug from name
+      const expectedSlug = generateSlug(dto.name);
+      if (!existingStore.slug.startsWith(expectedSlug)) {
+        data.slug = await this.slugGeneratorService.generateUniqueSlug(dto.name);
+      }
     }
 
     // Update store

@@ -84,6 +84,7 @@ model VerificationToken {
 model Store {
   id              String    @id @default(cuid())
   slug            String    @unique
+  username        String?   @unique
   name            String
   description     String?   @db.Text
 

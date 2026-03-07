@@ -3,6 +3,7 @@ import { Plan, SubscriptionStatus } from '@prisma/client';
 export class Store {
   id: string;
   slug: string;
+  username: string | null;
   name: string;
   description: string | null;
 

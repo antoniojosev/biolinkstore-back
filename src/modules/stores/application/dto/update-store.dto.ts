@@ -1,4 +1,4 @@
-import { IsString, IsArray, IsOptional, IsBoolean, IsHexColor, IsJSON } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsBoolean, IsHexColor, IsJSON, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateStoreDto {
@@ -6,6 +6,13 @@ export class UpdateStoreDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(50)
+  username?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

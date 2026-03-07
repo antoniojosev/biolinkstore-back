@@ -13,13 +13,12 @@ export class CreateStoreUseCase {
   constructor(
     @Inject(INJECTION_TOKENS.STORE_REPOSITORY)
     private readonly storeRepository: IStoreRepository,
-    private readonly slugGeneratorService: SlugGeneratorService,
     private readonly prisma: PrismaService,
   ) {}
 
   async execute(userId: string, dto: CreateStoreDto): Promise<StoreResponseDto> {
-    // Generate unique slug
-    const slug = await this.slugGeneratorService.generateUniqueSlug(dto.name);
+    // Use username as slug directly
+    const slug = dto.username;
 
     // Create store with subscription in transaction
     const result = await this.prisma.$transaction(async (tx) => {
@@ -27,6 +26,7 @@ export class CreateStoreUseCase {
       const store = await tx.store.create({
         data: {
           slug,
+          username: dto.username,
           name: dto.name,
           description: dto.description,
           whatsappNumbers: dto.whatsappNumbers ?? [],

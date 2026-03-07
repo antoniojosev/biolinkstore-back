@@ -90,4 +90,11 @@ export class PrismaStoreRepository implements IStoreRepository {
     });
     return count > 0;
   }
+
+  async checkUsernameExists(username: string): Promise<boolean> {
+    const count = await this.prisma.store.count({
+      where: { username },
+    });
+    return count > 0;
+  }
 }

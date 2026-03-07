@@ -39,7 +39,10 @@ import { StoresController } from './presentation/controllers/stores.controller';
       provide: INJECTION_TOKENS.STORE_REPOSITORY,
       useClass: PrismaStoreRepository,
     },
+    
+    // Direct repository for controller
+    PrismaStoreRepository,
   ],
-  exports: [INJECTION_TOKENS.STORE_REPOSITORY],
+  exports: [INJECTION_TOKENS.STORE_REPOSITORY, PrismaStoreRepository],
 })
 export class StoresModule {}

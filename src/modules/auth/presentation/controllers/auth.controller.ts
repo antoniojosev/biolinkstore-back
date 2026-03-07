@@ -117,7 +117,7 @@ export class AuthController {
     const result = await this.googleLoginUseCase.execute(req.user as User);
     const frontendUrl = this.configService.get<string>('app.frontendUrl');
     res.redirect(
-      `${frontendUrl}/auth/google/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`,
+      `${frontendUrl}/login/oauth?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`,
     );
   }
 }

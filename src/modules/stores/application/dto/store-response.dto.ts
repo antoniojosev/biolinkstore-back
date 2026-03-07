@@ -16,6 +16,9 @@ export class StoreResponseDto {
   @ApiProperty()
   slug: string;
 
+  @ApiProperty({ required: false, nullable: true })
+  username: string | null;
+
   @ApiProperty()
   name: string;
 

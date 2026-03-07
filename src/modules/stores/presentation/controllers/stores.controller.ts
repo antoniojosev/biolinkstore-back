@@ -10,17 +10,21 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { StoreOwnerGuard } from '@/common/guards/store-owner.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { Public } from '@/common/decorators/public.decorator';
 import { CreateStoreUseCase } from '../../application/use-cases/create-store.use-case';
 import { UpdateStoreUseCase } from '../../application/use-cases/update-store.use-case';
 import { GetStoreUseCase } from '../../application/use-cases/get-store.use-case';
 import { ListUserStoresUseCase } from '../../application/use-cases/list-user-stores.use-case';
 import { DeleteStoreUseCase } from '../../application/use-cases/delete-store.use-case';
 import { GetStoreCountsUseCase } from '../../application/use-cases/get-store-counts.use-case';
+import { IStoreRepository } from '../../domain/repositories/store.repository.interface';
+import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { CreateStoreDto } from '../../application/dto/create-store.dto';
 import { UpdateStoreDto } from '../../application/dto/update-store.dto';
 import { StoreResponseDto } from '../../application/dto/store-response.dto';
@@ -39,6 +43,7 @@ export class StoresController {
     private readonly listUserStoresUseCase: ListUserStoresUseCase,
     private readonly deleteStoreUseCase: DeleteStoreUseCase,
     private readonly getStoreCountsUseCase: GetStoreCountsUseCase,
+    @Inject(INJECTION_TOKENS.STORE_REPOSITORY) private readonly storeRepository: IStoreRepository,
   ) {}
 
   @Post()
@@ -59,6 +64,15 @@ export class StoresController {
     @Query() pagination: PaginationDto,
   ): Promise<PaginatedResult<StoreResponseDto>> {
     return this.listUserStoresUseCase.execute(user.userId, pagination);
+  }
+
+  @Public()
+  @Get('check-username')
+  @ApiOperation({ summary: 'Check if username is available' })
+  @ApiResponse({ status: 200, description: 'Username availability' })
+  async checkUsername(@Query('username') username: string): Promise<{ available: boolean }> {
+    const exists = await this.storeRepository.checkUsernameExists(username);
+    return { available: !exists };
   }
 
   @Get(':storeId')
