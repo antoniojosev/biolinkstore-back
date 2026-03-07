@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '../../domain/repositories/store.repository.interface';
-import { SlugGeneratorService } from '../../domain/services/slug-generator.service';
 import { CreateStoreDto } from '../dto/create-store.dto';
 import { StoreResponseDto } from '../dto/store-response.dto';
 import { StoreMapper } from '../mappers/store.mapper';
@@ -13,13 +13,12 @@ export class CreateStoreUseCase {
   constructor(
     @Inject(INJECTION_TOKENS.STORE_REPOSITORY)
     private readonly storeRepository: IStoreRepository,
-    private readonly slugGeneratorService: SlugGeneratorService,
     private readonly prisma: PrismaService,
   ) {}
 
   async execute(userId: string, dto: CreateStoreDto): Promise<StoreResponseDto> {
-    // Use username as slug if provided, otherwise generate from name
-    const slug = dto.username ?? await this.slugGeneratorService.generateUniqueSlug(dto.name);
+    // Use username as slug if provided, otherwise a random temp value
+    const slug = dto.username ?? randomUUID().replace(/-/g, '').slice(0, 16);
 
     // Create store with subscription in transaction
     const result = await this.prisma.$transaction(async (tx) => {
