@@ -624,6 +624,7 @@ async function main() {
   const store = await prisma.store.create({
     data: {
       slug: 'demo-store',
+      username: 'demo-store',
       name: 'URBAN STYLE',
       description: 'Tu tienda de moda urbana. Envíos a todo el país. Calidad premium a precios accesibles.',
       logo: IMAGES.storeLogo,
@@ -632,7 +633,7 @@ async function main() {
       secondaryColor: '#C9A86C',
       template: 'luxora',
       whatsappNumbers: ['+5491155551234'],
-      instagramHandle: '@urbanstyle.ar',
+      instagramHandle: 'urbanstyle.ar',
       email: 'hola@urbanstyle.com',
       currencyConfig: { code: 'ARS', symbol: '$', locale: 'es-AR' },
       stockEnabled: true,
