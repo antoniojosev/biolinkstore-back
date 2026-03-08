@@ -602,6 +602,12 @@ async function main() {
   if (existingUser) {
     const existingStores = await prisma.store.findMany({ where: { ownerId: existingUser.id } });
     for (const s of existingStores) {
+      // Delete order items before orders (FK order_items → products)
+      const orders = await prisma.orderIntent.findMany({ where: { storeId: s.id } });
+      for (const o of orders) {
+        await prisma.orderItem.deleteMany({ where: { orderId: o.id } });
+      }
+      await prisma.orderIntent.deleteMany({ where: { storeId: s.id } });
       await prisma.store.delete({ where: { id: s.id } });
     }
     await prisma.user.delete({ where: { id: existingUser.id } });
