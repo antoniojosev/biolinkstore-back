@@ -57,134 +57,149 @@ export class ForgotPasswordUseCase {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recupera tu contraseña — Bio Link Store</title>
 </head>
-<body style="margin:0;padding:0;background-color:#0a0f14;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0a0f14;">
+<body style="margin:0;padding:0;background-color:#111318;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#111318;min-height:100%;">
     <tr>
-      <td align="center" style="padding:48px 16px;">
+      <td align="center" style="padding:40px 16px;">
 
-        <!-- Card -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+        <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+
+          <!-- Logo -->
           <tr>
-            <td style="background-color:#0d1218;border:1px solid #1e3a30;border-radius:20px;padding:48px 40px;">
-
-              <!-- Logo -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <td align="center" style="padding:0 0 32px 0;">
+              <table cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td align="center" style="padding-bottom:32px;">
-                    <div style="display:inline-block;background-color:#33b380;border-radius:14px;width:52px;height:52px;text-align:center;line-height:52px;font-size:26px;">
-                      🔗
-                    </div>
-                    <div style="margin-top:12px;font-size:22px;font-weight:800;color:#33b380;letter-spacing:-0.3px;">
-                      Bio Link Store
-                    </div>
+                  <td align="center" style="font-size:22px;font-weight:700;color:#33b380;letter-spacing:-0.3px;">
+                    Bio Link Store
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
 
-              <!-- Divider -->
+          <!-- Card -->
+          <tr>
+            <td style="background-color:#1a1d24;border-radius:16px;padding:0;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                <!-- Lock icon -->
                 <tr>
-                  <td style="height:1px;background-color:#1a2e28;padding-bottom:32px;"></td>
+                  <td align="center" style="padding:40px 40px 0 40px;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td align="center" style="width:56px;height:56px;background-color:#252830;border-radius:50%;text-align:center;font-size:24px;line-height:56px;">
+                          &#128274;
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
-              </table>
 
-              <!-- Heading -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Heading -->
                 <tr>
-                  <td style="padding-bottom:8px;">
-                    <p style="margin:0;font-size:26px;font-weight:700;color:#ffffff;text-align:center;">
-                      Recuperá tu contraseña
-                    </p>
+                  <td align="center" style="padding:20px 40px 0 40px;">
+                    <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">Restablecer contraseña</p>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding-bottom:32px;">
-                    <p style="margin:0;font-size:15px;color:#6b8a80;text-align:center;">
-                      Te ayudamos a volver a tu cuenta
-                    </p>
+                  <td align="center" style="padding:8px 40px 0 40px;">
+                    <p style="margin:0;font-size:14px;color:#8b8f9a;line-height:1.5;">Te ayudamos a volver a tu cuenta</p>
                   </td>
                 </tr>
-              </table>
 
-              <!-- Body text -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Divider -->
                 <tr>
-                  <td style="padding-bottom:12px;">
-                    <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.7;">
-                      Hola <strong style="color:#33b380;">${name}</strong>,
-                    </p>
+                  <td style="padding:28px 40px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="height:1px;background-color:#2a2d35;font-size:1px;line-height:1px;">&nbsp;</td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
+
+                <!-- Body -->
                 <tr>
-                  <td style="padding-bottom:32px;">
-                    <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.7;">
+                  <td style="padding:0 40px;">
+                    <p style="margin:0 0 16px 0;font-size:15px;color:#c5c8d0;line-height:1.6;">
+                      Hola <strong style="color:#ffffff;">${name}</strong>,
+                    </p>
+                    <p style="margin:0;font-size:15px;color:#8b8f9a;line-height:1.6;">
                       Recibimos una solicitud para restablecer la contraseña de tu cuenta. Hacé clic en el botón de abajo para crear una nueva.
                     </p>
                   </td>
                 </tr>
-              </table>
 
-              <!-- Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Button -->
                 <tr>
-                  <td align="center" style="padding-bottom:32px;">
-                    <a href="${resetUrl}" style="display:inline-block;background-color:#33b380;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 36px;border-radius:10px;letter-spacing:0.1px;">
-                      Restablecer contraseña
-                    </a>
+                  <td align="center" style="padding:32px 40px;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td align="center" style="background-color:#33b380;border-radius:8px;">
+                          <a href="${resetUrl}" target="_blank" style="display:inline-block;padding:14px 40px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.2px;">
+                            Restablecer contraseña
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
-              </table>
 
-              <!-- Warning box -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Expiry notice -->
                 <tr>
-                  <td style="background-color:#1a1500;border:1px solid #3d2e00;border-radius:10px;padding:14px 18px;margin-bottom:24px;">
-                    <p style="margin:0;font-size:13px;color:#d4a017;text-align:center;">
-                      ⏱ Este enlace expira en <strong>1 hora</strong>
-                    </p>
+                  <td style="padding:0 40px 28px 40px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#252830;border-radius:8px;padding:12px 16px;text-align:center;">
+                          <p style="margin:0;font-size:13px;color:#8b8f9a;">
+                            Este enlace expira en <strong style="color:#c5c8d0;">1 hora</strong>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
-              </table>
 
-              <!-- Divider -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Divider -->
                 <tr>
-                  <td style="height:1px;background-color:#1a2e28;padding:24px 0;"></td>
+                  <td style="padding:0 40px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="height:1px;background-color:#2a2d35;font-size:1px;line-height:1px;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
-              </table>
 
-              <!-- Fallback URL -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Fallback URL -->
                 <tr>
-                  <td style="padding-bottom:32px;">
-                    <p style="margin:0 0 8px;font-size:13px;color:#4a6a5e;">
-                      ¿El botón no funciona? Copiá y pegá este enlace en tu navegador:
+                  <td style="padding:24px 40px 36px 40px;">
+                    <p style="margin:0 0 10px 0;font-size:12px;color:#6b6f7a;">
+                      Si el botón no funciona, copiá y pegá este enlace en tu navegador:
                     </p>
-                    <p style="margin:0;font-size:12px;color:#4a6a5e;word-break:break-all;background-color:#091018;border-radius:8px;padding:12px 14px;">
+                    <p style="margin:0;font-size:11px;color:#5a7a6e;word-break:break-all;">
                       ${resetUrl}
                     </p>
                   </td>
                 </tr>
-              </table>
 
-              <!-- Footer -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="border-top:1px solid #1a2e28;padding-top:24px;">
-                    <p style="margin:0 0 6px;font-size:12px;color:#3d5c52;text-align:center;">
-                      Si no solicitaste este cambio, podés ignorar este email con seguridad.
-                    </p>
-                    <p style="margin:0;font-size:12px;color:#3d5c52;text-align:center;">
-                      © 2026 Bio Link Store · <a href="https://biolinkstore.com" style="color:#33b380;text-decoration:none;">biolinkstore.com</a>
-                    </p>
-                  </td>
-                </tr>
               </table>
-
             </td>
           </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding:28px 0 0 0;">
+              <p style="margin:0 0 6px 0;font-size:12px;color:#52555e;">
+                Si no solicitaste este cambio, podés ignorar este email.
+              </p>
+              <p style="margin:0;font-size:12px;color:#52555e;">
+                &copy; 2026 Bio Link Store
+              </p>
+            </td>
+          </tr>
+
         </table>
-        <!-- /Card -->
 
       </td>
     </tr>
