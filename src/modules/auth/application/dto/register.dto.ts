@@ -34,4 +34,9 @@ export class RegisterDto {
   @IsOptional()
   @IsDateString()
   dateOfBirth?: string;
+
+  @ApiProperty({ required: false, description: 'Landing page visitor fingerprint' })
+  @IsOptional()
+  @IsString()
+  fingerprint?: string;
 }

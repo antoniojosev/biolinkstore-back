@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 // Configuration
 import configuration from './config/configuration';
@@ -25,6 +26,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { PaymentReportsModule } from './modules/payment-reports/payment-reports.module';
 import { ContactModule } from './modules/contact/contact.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { LandingAnalyticsModule } from './modules/landing-analytics/landing-analytics.module';
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -41,6 +44,9 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
       load: [configuration],
       envFilePath: ['.env.local', '.env.development', '.env'],
     }),
+
+    // Event emitter for SSE
+    EventEmitterModule.forRoot(),
 
     // Rate limiting
     ThrottlerModule.forRoot([
@@ -69,6 +75,8 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     UploadsModule,
     PaymentReportsModule,
     ContactModule,
+    AdminModule,
+    LandingAnalyticsModule,
   ],
   providers: [
     // Global JWT Auth Guard (can be overridden with @Public decorator)

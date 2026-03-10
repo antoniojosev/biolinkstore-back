@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
+import { LandingAnalyticsModule } from '../landing-analytics/landing-analytics.module';
 
 // Domain
 import { PasswordService } from './domain/services/password.service';
@@ -26,7 +27,7 @@ import { GoogleStrategy } from './infrastructure/strategies/google.strategy';
 import { AuthController } from './presentation/controllers/auth.controller';
 
 @Module({
-  imports: [ConfigModule, PassportModule, JwtModule.register({}), UsersModule],
+  imports: [ConfigModule, PassportModule, JwtModule.register({}), UsersModule, LandingAnalyticsModule],
   controllers: [AuthController],
   providers: [
     // Domain

@@ -29,6 +29,7 @@ model User {
   accounts        Account[]
   stores          Store[]
   refreshTokens   RefreshToken[]
+  landingVisitor  LandingVisitor?
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -529,4 +530,32 @@ model Inquiry {
 enum InquiryType {
   DESIGN
   CUSTOM_PLAN
+}
+
+// ==========================================
+// VISITANTES DE LANDING
+// ==========================================
+
+model LandingVisitor {
+  id          String    @id @default(cuid())
+  fingerprint String    @unique
+
+  ip          String?
+  userAgent   String?   @db.Text
+  referrer    String?
+  country     String?
+  city        String?
+  metadata    Json?
+
+  userId      String?   @unique
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  visitCount  Int       @default(1)
+  firstVisit  DateTime  @default(now())
+  lastVisit   DateTime  @default(now())
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("landing_visitors")
 }

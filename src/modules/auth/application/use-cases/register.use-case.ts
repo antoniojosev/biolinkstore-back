@@ -1,6 +1,7 @@
 import { Injectable, ConflictException, Inject } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IUserRepository } from '@/modules/users/domain/repositories/user.repository.interface';
+import { ILandingVisitorRepository } from '@/modules/landing-analytics/domain/repositories/landing-visitor.repository.interface';
 import { PasswordService } from '../../domain/services/password.service';
 import { TokenService } from '../../infrastructure/services/token.service';
 import { RegisterDto } from '../dto/register.dto';
@@ -13,6 +14,8 @@ export class RegisterUseCase {
   constructor(
     @Inject(INJECTION_TOKENS.USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
+    @Inject(INJECTION_TOKENS.LANDING_VISITOR_REPOSITORY)
+    private readonly landingVisitorRepo: ILandingVisitorRepository,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
     private readonly prisma: PrismaService,
@@ -44,6 +47,11 @@ export class RegisterUseCase {
 
     // Save refresh token
     await this.tokenService.saveRefreshToken(user.id, refreshToken);
+
+    // Link landing visitor to user (fire and forget)
+    if (dto.fingerprint) {
+      this.landingVisitorRepo.linkToUser(dto.fingerprint, user.id).catch(() => {});
+    }
 
     return {
       accessToken,
