@@ -1,4 +1,5 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IPaymentReportRepository } from '../../domain/repositories/payment-report.repository.interface';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
@@ -25,6 +26,7 @@ export class CreatePaymentReportUseCase {
     @Inject(INJECTION_TOKENS.STORE_REPOSITORY)
     private readonly storeRepo: IStoreRepository,
     private readonly emailService: EmailService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(storeId: string, dto: CreatePaymentReportDto): Promise<PaymentReportResponseDto> {
@@ -40,17 +42,33 @@ export class CreatePaymentReportUseCase {
       notes: dto.notes ?? null,
     });
 
+    // Fetch store once, use for both email and SSE
+    const store = await this.storeRepo.findByIdWithSubscription(storeId);
+
     // Send admin notification — fire and forget
-    this.sendAdminNotification(storeId, dto).catch((err) =>
+    this.sendAdminNotification(store, storeId, dto).catch((err) =>
       this.logger.error(`Failed to send payment report email: ${err.message}`),
     );
+
+    // Emit event for SSE stream
+    this.eventEmitter.emit('payment-report.created', {
+      ...PaymentReportMapper.toResponse(report),
+      store: {
+        name: store?.name ?? null,
+        slug: store?.slug ?? null,
+        username: store?.username ?? null,
+        currentPlan: store?.subscription?.plan ?? null,
+      },
+    });
 
     return PaymentReportMapper.toResponse(report);
   }
 
-  private async sendAdminNotification(storeId: string, dto: CreatePaymentReportDto): Promise<void> {
-    const store = await this.storeRepo.findByIdWithSubscription(storeId);
-
+  private async sendAdminNotification(
+    store: { name?: string; slug?: string; username?: string | null; subscription?: { plan: string } | null } | null,
+    storeId: string,
+    dto: CreatePaymentReportDto,
+  ): Promise<void> {
     const typeLabel = TYPE_LABELS[dto.type] ?? dto.type;
     const transferDate = new Date(dto.transferDate).toLocaleDateString('es-VE', {
       day: '2-digit', month: 'long', year: 'numeric',
