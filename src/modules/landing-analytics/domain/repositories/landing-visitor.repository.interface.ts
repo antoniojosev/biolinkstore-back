@@ -5,6 +5,8 @@ export interface UpsertLandingVisitorData {
   ip?: string | null;
   userAgent?: string | null;
   referrer?: string | null;
+  country?: string | null;
+  city?: string | null;
   metadata?: Record<string, unknown> | null;
 }
 
