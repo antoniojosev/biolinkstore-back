@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
 import { StoresModule } from '../stores/stores.module';
@@ -17,7 +17,7 @@ import { PrismaVisitorRepository } from './infrastructure/persistence/prisma-vis
 import { AnalyticsController } from './presentation/controllers/analytics.controller';
 
 @Module({
-  imports: [DatabaseModule, StoresModule, OrdersModule],
+  imports: [DatabaseModule, StoresModule, forwardRef(() => OrdersModule)],
   controllers: [AnalyticsController],
   providers: [
     // Use Cases

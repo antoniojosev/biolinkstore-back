@@ -4,6 +4,7 @@ import { IOrderRepository } from '../../domain/repositories/order.repository.int
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
 import { IProductRepository } from '@/modules/products/domain/repositories/product.repository.interface';
 import { IVariantRepository } from '@/modules/products/domain/repositories/variant.repository.interface';
+import { IVisitorRepository } from '@/modules/analytics/domain/repositories/visitor.repository.interface';
 import { MessageGeneratorService } from '../../domain/services/message-generator.service';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderResponseDto } from '../dto/order-response.dto';
@@ -19,6 +20,8 @@ export class CreateOrderUseCase {
     private readonly productRepository: IProductRepository,
     @Inject(INJECTION_TOKENS.VARIANT_REPOSITORY)
     private readonly variantRepository: IVariantRepository,
+    @Inject(INJECTION_TOKENS.VISITOR_REPOSITORY)
+    private readonly visitorRepository: IVisitorRepository,
     private readonly messageGeneratorService: MessageGeneratorService,
   ) {}
 
@@ -87,9 +90,22 @@ export class CreateOrderUseCase {
       whatsappNumber = store.whatsappNumbers[0];
     }
 
-    // 5. Create order intent
+    // 5. Look up visitor record if visitorId provided
+    let dbVisitorId: string | undefined;
+    if (dto.visitorId) {
+      const visitor = await this.visitorRepository.findByStoreAndVisitorId(
+        store.id,
+        dto.visitorId,
+      );
+      if (visitor) {
+        dbVisitorId = visitor.id;
+      }
+    }
+
+    // 6. Create order intent
     const order = await this.orderRepository.create({
       storeId: store.id,
+      visitorId: dbVisitorId,
       items: enrichedItems,
       subtotal,
       total,
@@ -103,13 +119,13 @@ export class CreateOrderUseCase {
       whatsappNumber,
     });
 
-    // 6. Generate WhatsApp message
+    // 7. Generate WhatsApp message
     const message = this.messageGeneratorService.generateWhatsAppMessage(order, store.name);
     const whatsappUrl = whatsappNumber
       ? this.messageGeneratorService.generateWhatsAppUrl(whatsappNumber, message)
       : null;
 
-    // 7. Return order response
+    // 8. Return order response
     return {
       id: order.id,
       storeId: order.storeId,

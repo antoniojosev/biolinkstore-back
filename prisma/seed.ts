@@ -792,32 +792,32 @@ async function main() {
       const visitorId = pick(visitorIds);
       const ts = daysAgo(day);
 
-      eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.PAGE_VIEW, createdAt: ts });
+      eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.PAGE_VIEW, createdAt: ts, isSeeded: true });
 
       if (Math.random() < 0.7) {
         const prodId = pick(productIds);
         const ts2 = new Date(ts.getTime() + randomBetween(5, 120) * 1000);
-        eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.PRODUCT_VIEW, createdAt: ts2 });
+        eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.PRODUCT_VIEW, createdAt: ts2, isSeeded: true });
 
         if (Math.random() < 0.35) {
-          eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.ADD_TO_CART, createdAt: new Date(ts2.getTime() + randomBetween(10, 60) * 1000) });
+          eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.ADD_TO_CART, createdAt: new Date(ts2.getTime() + randomBetween(10, 60) * 1000), isSeeded: true });
 
           if (Math.random() < 0.5) {
-            eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.CHECKOUT_START, createdAt: new Date(ts2.getTime() + randomBetween(30, 180) * 1000) });
+            eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.CHECKOUT_START, createdAt: new Date(ts2.getTime() + randomBetween(30, 180) * 1000), isSeeded: true });
 
             if (Math.random() < 0.6) {
-              eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.CHECKOUT_COMPLETE, createdAt: new Date(ts2.getTime() + randomBetween(60, 300) * 1000) });
+              eventsToInsert.push({ storeId: store.id, visitorId, productId: prodId, type: EventType.CHECKOUT_COMPLETE, createdAt: new Date(ts2.getTime() + randomBetween(60, 300) * 1000), isSeeded: true });
             }
           }
         }
       }
 
       if (Math.random() < 0.4) {
-        eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.CATEGORY_VIEW, metadata: { category: pick(categoriesData).name }, createdAt: new Date(ts.getTime() + randomBetween(2, 60) * 1000) });
+        eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.CATEGORY_VIEW, metadata: { category: pick(categoriesData).name }, createdAt: new Date(ts.getTime() + randomBetween(2, 60) * 1000), isSeeded: true });
       }
 
       if (Math.random() < 0.15) {
-        eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.SEARCH, metadata: { query: pick(['remera', 'zapatillas', 'hoodie', 'negro', 'auriculares', 'mochila', 'gorra', 'jogger', 'short', 'campera']) }, createdAt: new Date(ts.getTime() + randomBetween(3, 30) * 1000) });
+        eventsToInsert.push({ storeId: store.id, visitorId, type: EventType.SEARCH, metadata: { query: pick(['remera', 'zapatillas', 'hoodie', 'negro', 'auriculares', 'mochila', 'gorra', 'jogger', 'short', 'campera']) }, createdAt: new Date(ts.getTime() + randomBetween(3, 30) * 1000), isSeeded: true });
       }
     }
   }

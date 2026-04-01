@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
 import { StoresModule } from '../stores/stores.module';
 import { ProductsModule } from '../products/products.module';
+import { AnalyticsModule } from '../analytics/analytics.module';
 
 // Domain Services
 import { MessageGeneratorService } from './domain/services/message-generator.service';
@@ -20,7 +21,7 @@ import { PrismaOrderRepository } from './infrastructure/persistence/prisma-order
 import { OrdersController } from './presentation/controllers/orders.controller';
 
 @Module({
-  imports: [DatabaseModule, StoresModule, ProductsModule],
+  imports: [DatabaseModule, StoresModule, ProductsModule, forwardRef(() => AnalyticsModule)],
   controllers: [OrdersController],
   providers: [
     // Domain Services

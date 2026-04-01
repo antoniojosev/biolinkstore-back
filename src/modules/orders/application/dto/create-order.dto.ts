@@ -74,4 +74,9 @@ export class CreateOrderDto {
   @IsOptional()
   @IsString()
   whatsappNumber?: string;
+
+  @ApiProperty({ example: 'visitor-uuid', required: false })
+  @IsOptional()
+  @IsString()
+  visitorId?: string;
 }

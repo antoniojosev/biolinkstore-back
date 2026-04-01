@@ -31,9 +31,12 @@ model User {
   refreshTokens   RefreshToken[]
   landingVisitor  LandingVisitor?
 
+  isDemo          Boolean   @default(false)
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  @@index([isDemo])
   @@map("users")
 }
 
@@ -190,6 +193,7 @@ model ProductAttribute {
   name        String
   options     String[]
   type        String    @default("text")
+  role        String    @default("variant")
   optionsMeta Json?
   sortOrder   Int       @default(0)
 
@@ -264,9 +268,12 @@ model Visitor {
   storeId     String
   visitorId   String
 
+  ip          String?
   userAgent   String?
   country     String?
   city        String?
+
+  isExcluded  Boolean   @default(false)
 
   visitCount  Int       @default(1)
 
@@ -279,6 +286,7 @@ model Visitor {
 
   @@unique([storeId, visitorId])
   @@index([storeId])
+  @@index([storeId, isExcluded])
   @@map("visitors")
 }
 
@@ -290,6 +298,7 @@ model AnalyticsEvent {
 
   type        EventType
   metadata    Json?
+  isSeeded    Boolean   @default(false)
 
   store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
   visitor     Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
@@ -547,8 +556,11 @@ model LandingVisitor {
   city        String?
   metadata    Json?
 
-  userId      String?   @unique
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId          String?   @unique
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  isExcluded      Boolean         @default(false)
+  excludedReason  ExcludeReason?
 
   visitCount  Int       @default(1)
   firstVisit  DateTime  @default(now())
@@ -557,5 +569,12 @@ model LandingVisitor {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([isExcluded])
   @@map("landing_visitors")
+}
+
+enum ExcludeReason {
+  OWNER
+  DEMO
+  BOT
 }
