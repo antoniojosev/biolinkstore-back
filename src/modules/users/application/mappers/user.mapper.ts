@@ -11,6 +11,7 @@ export class UserMapper {
       name: prismaUser.name,
       avatar: prismaUser.avatar,
       emailVerified: prismaUser.emailVerified,
+      isDemo: prismaUser.isDemo,
       createdAt: prismaUser.createdAt,
       updatedAt: prismaUser.updatedAt,
     });
@@ -23,6 +24,7 @@ export class UserMapper {
       name: user.name,
       avatar: user.avatar,
       emailVerified: user.emailVerified,
+      isDemo: user.isDemo,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

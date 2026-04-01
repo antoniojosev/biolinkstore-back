@@ -31,6 +31,7 @@ import { LandingAnalyticsModule } from './modules/landing-analytics/landing-anal
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { DemoGuard } from './common/guards/demo.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -83,6 +84,11 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    // Global Demo Guard (blocks writes for demo users)
+    {
+      provide: APP_GUARD,
+      useClass: DemoGuard,
     },
     // Global Rate Limiting
     {

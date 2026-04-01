@@ -5,6 +5,7 @@ export class User {
   name: string | null;
   avatar: string | null;
   emailVerified: Date | null;
+  isDemo: boolean;
   createdAt: Date;
   updatedAt: Date;
 

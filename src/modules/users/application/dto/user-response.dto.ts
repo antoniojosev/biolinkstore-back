@@ -17,6 +17,9 @@ export class UserResponseDto {
   emailVerified: Date | null;
 
   @ApiProperty()
+  isDemo: boolean;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
