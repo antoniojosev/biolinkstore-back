@@ -81,8 +81,8 @@ export class CreatePaymentReportUseCase {
 <body style="margin:0;padding:0;background:#0d1218;font-family:system-ui,sans-serif;color:#e5e7eb;">
   <div style="max-width:560px;margin:32px auto;background:#131920;border:1px solid #ffffff18;border-radius:16px;overflow:hidden;">
 
-    <div style="background:linear-gradient(135deg,#33b38020,#327be215);border-bottom:1px solid #ffffff12;padding:28px 32px;">
-      <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:0.08em;color:#33b380;text-transform:uppercase;">Bio Link Store</p>
+    <div style="background:linear-gradient(135deg,#0F6BA820,#327be215);border-bottom:1px solid #ffffff12;padding:28px 32px;">
+      <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:0.08em;color:#0F6BA8;text-transform:uppercase;">ByLink</p>
       <h1 style="margin:0;font-size:22px;font-weight:700;color:#fff;">Nuevo reporte de pago</h1>
       <p style="margin:6px 0 0;font-size:13px;color:#9ca3af;">${typeLabel}${dto.targetPlan ? ` — Plan ${dto.targetPlan}` : ''}</p>
     </div>
@@ -110,14 +110,14 @@ export class CreatePaymentReportUseCase {
         </table>
       </div>
 
-      <a href="${dto.proofUrl}" style="display:block;text-align:center;padding:12px 20px;background:#33b380;color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;">
+      <a href="${dto.proofUrl}" style="display:block;text-align:center;padding:12px 20px;background:#0F6BA8;color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;">
         Ver comprobante →
       </a>
 
     </div>
 
     <div style="padding:16px 32px;border-top:1px solid #ffffff0a;text-align:center;">
-      <p style="margin:0;font-size:11px;color:#374151;">Bio Link Store · ${new Date().toLocaleString('es-VE')}</p>
+      <p style="margin:0;font-size:11px;color:#374151;">ByLink · ${new Date().toLocaleString('es-VE')}</p>
     </div>
 
   </div>

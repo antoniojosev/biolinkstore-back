@@ -46,7 +46,7 @@ export default () => ({
   },
   email: {
     resendApiKey: process.env.RESEND_API_KEY || '',
-    from: process.env.EMAIL_FROM || 'noreply@tuapp.com',
+    from: process.env.EMAIL_FROM || 'noreply@bylink.app',
     adminEmail: process.env.ADMIN_EMAIL || 'antoniovila.dev@gmail.com',
   },
 });
