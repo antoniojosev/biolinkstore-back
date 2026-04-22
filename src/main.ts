@@ -26,6 +26,8 @@ async function bootstrap() {
       'http://localhost:4200',
       'https://biolinkstore.com',
       'https://www.biolinkstore.com',
+      'https://antoniovila.dev',
+      'https://www.antoniovila.dev',
       /\.vercel\.app$/,
       /\.koyeb\.app$/,
       /\.tuapp\.com$/,
