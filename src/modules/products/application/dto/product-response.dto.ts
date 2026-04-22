@@ -103,9 +103,6 @@ export class ProductResponseDto {
   @ApiProperty()
   compareAtPrice: number | null;
 
-  @ApiProperty()
-  prices: any;
-
   @ApiProperty({ type: [String] })
   images: string[];
 

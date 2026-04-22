@@ -50,7 +50,6 @@ export class DuplicateProductUseCase {
       description: originalProduct.description || undefined,
       basePrice: originalProduct.basePrice,
       compareAtPrice: originalProduct.compareAtPrice || undefined,
-      prices: originalProduct.prices,
       images: originalProduct.images,
       videos: originalProduct.videos,
       stock: originalProduct.stock || undefined,

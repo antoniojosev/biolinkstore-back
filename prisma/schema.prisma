@@ -121,9 +121,6 @@ model Store {
   checkoutConfig  Json?
   currencyConfig  Json?
   whatsappTemplate String?  @db.Text
-  exchangeRateMode ExchangeRateMode @default(AUTO)
-  exchangeRateCode String   @default("USD_BCV")
-  customRate      Decimal?  @db.Decimal(18, 8)
   stockEnabled    Boolean   @default(false)
   showBranding    Boolean   @default(true)
 
@@ -146,6 +143,7 @@ model Store {
   paymentMethods  StorePaymentMethod[]
   hours           StoreHours[]
   views           StoreView[]
+  customRates     StoreCustomRate[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -219,7 +217,6 @@ model Product {
 
   basePrice       Decimal   @db.Decimal(10, 2)
   compareAtPrice  Decimal?  @db.Decimal(10, 2)
-  prices          Json?
 
   images          String[]
   videos          String[]
@@ -452,9 +449,9 @@ model OrderIntent {
   total           Decimal   @db.Decimal(10, 2)
   currency        String    @default("USD")
 
-  // Snapshot of resolved exchange rate at order creation time (BE-117)
-  exchangeRateSnapshot        Decimal?  @db.Decimal(18, 8)
-  exchangeRateSourceSnapshot  String?
+  // Snapshot de la tasa pública resuelta al crear la orden (lo que vio el cliente).
+  rateCodeSnapshot   String?
+  valueVesSnapshot   Decimal? @db.Decimal(14, 4)
 
   customerName    String?
   customerPhone   String?
@@ -479,20 +476,6 @@ model OrderIntent {
   @@index([storeId, createdAt])
   @@index([paymentMethodId])
   @@map("order_intents")
-}
-
-model ExchangeRateHistory {
-  id            String   @id @default(cuid())
-  storeId       String
-  rate          Decimal  @db.Decimal(18, 8)
-  source        String   // "BCV", "MANUAL", "MANUAL_UPDATE", "AUTO_RESOLVE"
-  effectiveFrom DateTime @default(now())
-  changedBy     String?  // userId that triggered the change
-
-  createdAt     DateTime @default(now())
-
-  @@index([storeId, effectiveFrom(sort: Desc)])
-  @@map("exchange_rate_history")
 }
 
 model OrderItem {
@@ -568,24 +551,6 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELED
   UNPAID
-}
-
-enum ExchangeRateMode {
-  AUTO
-  MANUAL
-}
-
-model ExchangeRate {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  rate      Decimal  @db.Decimal(18, 8)
-  source    String
-  fetchedAt DateTime
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("exchange_rates")
 }
 
 model DomainAddon {
@@ -764,4 +729,70 @@ enum PaymentMethodType {
   TRANSFER
   CASH
   OTHER
+}
+
+// ==========================================
+// TASAS DE CAMBIO
+// ==========================================
+
+model Rate {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  label         String
+  baseCurrency  String
+  sourceUrl     String?
+  sourcePath    String?
+  isActive      Boolean   @default(true)
+
+  snapshots     RateSnapshot[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([isActive])
+  @@map("rates")
+}
+
+model RateSnapshot {
+  id          String    @id @default(cuid())
+  rateCode    String
+  valueVes    Decimal   @db.Decimal(14, 4)
+  fetchedAt   DateTime  @default(now())
+
+  rate        Rate      @relation(fields: [rateCode], references: [code], onDelete: Cascade)
+
+  @@index([rateCode, fetchedAt(sort: Desc)])
+  @@map("rate_snapshots")
+}
+
+model StoreCustomRate {
+  id            String    @id @default(cuid())
+  storeId       String
+
+  label         String
+  baseCurrency  String
+  mode          CustomRateMode
+
+  valueVes      Decimal?  @db.Decimal(14, 4)
+
+  formula       String?
+
+  sourceUrl     String?
+  sourcePath    String?
+  lastValue     Decimal?  @db.Decimal(14, 4)
+  lastFetchedAt DateTime?
+
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([storeId])
+  @@map("store_custom_rates")
+}
+
+enum CustomRateMode {
+  MANUAL
+  FORMULA
+  API
 }
