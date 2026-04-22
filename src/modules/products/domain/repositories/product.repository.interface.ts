@@ -26,7 +26,6 @@ export interface CreateProductData {
   description?: string;
   basePrice: number;
   compareAtPrice?: number;
-  prices?: any;
   images?: string[];
   videos?: string[];
   stock?: number;
@@ -51,7 +50,6 @@ export interface UpdateProductData {
   description?: string;
   basePrice?: number;
   compareAtPrice?: number;
-  prices?: any;
   images?: string[];
   videos?: string[];
   stock?: number;

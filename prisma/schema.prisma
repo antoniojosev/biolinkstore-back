@@ -131,6 +131,7 @@ model Store {
   domainAddon     DomainAddon?
   paymentReports  PaymentReport[]
   inquiries       Inquiry[]
+  customRates     StoreCustomRate[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -156,7 +157,6 @@ model Product {
 
   basePrice       Decimal   @db.Decimal(10, 2)
   compareAtPrice  Decimal?  @db.Decimal(10, 2)
-  prices          Json?
 
   images          String[]
   videos          String[]
@@ -578,4 +578,70 @@ enum ExcludeReason {
   OWNER
   DEMO
   BOT
+}
+
+// ==========================================
+// TASAS DE CAMBIO
+// ==========================================
+
+model Rate {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  label         String
+  baseCurrency  String
+  sourceUrl     String?
+  sourcePath    String?
+  isActive      Boolean   @default(true)
+
+  snapshots     RateSnapshot[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([isActive])
+  @@map("rates")
+}
+
+model RateSnapshot {
+  id          String    @id @default(cuid())
+  rateCode    String
+  valueVes    Decimal   @db.Decimal(14, 4)
+  fetchedAt   DateTime  @default(now())
+
+  rate        Rate      @relation(fields: [rateCode], references: [code], onDelete: Cascade)
+
+  @@index([rateCode, fetchedAt(sort: Desc)])
+  @@map("rate_snapshots")
+}
+
+model StoreCustomRate {
+  id            String    @id @default(cuid())
+  storeId       String
+
+  label         String
+  baseCurrency  String
+  mode          CustomRateMode
+
+  valueVes      Decimal?  @db.Decimal(14, 4)
+
+  formula       String?
+
+  sourceUrl     String?
+  sourcePath    String?
+  lastValue     Decimal?  @db.Decimal(14, 4)
+  lastFetchedAt DateTime?
+
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([storeId])
+  @@map("store_custom_rates")
+}
+
+enum CustomRateMode {
+  MANUAL
+  FORMULA
+  API
 }

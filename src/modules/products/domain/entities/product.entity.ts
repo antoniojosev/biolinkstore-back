@@ -7,7 +7,6 @@ export class Product {
   tagline: string | null;
   basePrice: number;
   compareAtPrice: number | null;
-  prices: any;
   images: string[];
   videos: string[];
   stock: number | null;
