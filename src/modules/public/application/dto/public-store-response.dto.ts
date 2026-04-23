@@ -63,4 +63,17 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ required: false })
   currencyConfig: any;
+
+  @ApiProperty({
+    description: 'Tasa resuelta para conversiones (AUTO=BCV en tiempo real, MANUAL=tasa fija). Null si no hay tasa.',
+    required: false,
+    nullable: true,
+  })
+  exchangeRate: number | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  exchangeRateSource: string | null;
+
+  @ApiProperty({ required: false, nullable: true, example: 'USD_BCV' })
+  exchangeRateCode: string | null;
 }

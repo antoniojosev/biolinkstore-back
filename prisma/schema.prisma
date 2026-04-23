@@ -114,6 +114,9 @@ model Store {
   checkoutConfig  Json?
   currencyConfig  Json?
   whatsappTemplate String?  @db.Text
+  exchangeRateMode ExchangeRateMode @default(AUTO)
+  exchangeRateCode String   @default("USD_BCV")
+  customRate      Decimal?  @db.Decimal(18, 8)
   stockEnabled    Boolean   @default(false)
   showBranding    Boolean   @default(true)
 
@@ -436,6 +439,11 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELED
   UNPAID
+}
+
+enum ExchangeRateMode {
+  AUTO
+  MANUAL
 }
 
 model ExchangeRate {

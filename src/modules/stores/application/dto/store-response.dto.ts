@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Plan, SubscriptionStatus } from '@prisma/client';
+import { ExchangeRateMode, Plan, SubscriptionStatus } from '@prisma/client';
 
 export class SubscriptionDto {
   @ApiProperty({ enum: Plan })
@@ -81,6 +81,15 @@ export class StoreResponseDto {
 
   @ApiProperty({ required: false, nullable: true })
   whatsappTemplate: string | null;
+
+  @ApiProperty({ enum: ExchangeRateMode })
+  exchangeRateMode: ExchangeRateMode;
+
+  @ApiProperty({ example: 'USD_BCV' })
+  exchangeRateCode: string;
+
+  @ApiProperty({ required: false, nullable: true, example: 40.5 })
+  customRate: number | null;
 
   @ApiProperty()
   stockEnabled: boolean;

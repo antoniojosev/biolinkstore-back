@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { StoresModule } from '../stores/stores.module';
 import { ProductsModule } from '../products/products.module';
 import { CategoriesModule } from '../categories/categories.module';
+import { CurrencyModule } from '../currency/currency.module';
 
 // Application - Use Cases
 import { GetPublicStoreUseCase } from './application/use-cases/get-public-store.use-case';
@@ -13,7 +14,7 @@ import { GetPublicCategoriesUseCase } from './application/use-cases/get-public-c
 import { PublicStoreController } from './presentation/controllers/public-store.controller';
 
 @Module({
-  imports: [StoresModule, ProductsModule, CategoriesModule],
+  imports: [StoresModule, ProductsModule, CategoriesModule, CurrencyModule],
   controllers: [PublicStoreController],
   providers: [
     GetPublicStoreUseCase,

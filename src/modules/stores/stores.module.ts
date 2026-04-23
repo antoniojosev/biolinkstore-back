@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
+import { CurrencyModule } from '@/modules/currency/currency.module';
 
 // Domain
 import { SlugGeneratorService } from './domain/services/slug-generator.service';
@@ -16,6 +17,8 @@ import { GetStoreCountsUseCase } from './application/use-cases/get-store-counts.
 import { GetWhatsappTemplateUseCase } from './application/use-cases/whatsapp/get-whatsapp-template.use-case';
 import { UpdateWhatsappTemplateUseCase } from './application/use-cases/whatsapp/update-whatsapp-template.use-case';
 import { PreviewWhatsappTemplateUseCase } from './application/use-cases/whatsapp/preview-whatsapp-template.use-case';
+import { GetExchangeRateConfigUseCase } from './application/use-cases/exchange-rate/get-exchange-rate-config.use-case';
+import { UpdateExchangeRateConfigUseCase } from './application/use-cases/exchange-rate/update-exchange-rate-config.use-case';
 
 // Infrastructure
 import { PrismaStoreRepository } from './infrastructure/persistence/prisma-store.repository';
@@ -23,10 +26,11 @@ import { PrismaStoreRepository } from './infrastructure/persistence/prisma-store
 // Presentation
 import { StoresController } from './presentation/controllers/stores.controller';
 import { WhatsappTemplateController } from './presentation/controllers/whatsapp-template.controller';
+import { ExchangeRateConfigController } from './presentation/controllers/exchange-rate-config.controller';
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [StoresController, WhatsappTemplateController],
+  imports: [DatabaseModule, CurrencyModule],
+  controllers: [StoresController, WhatsappTemplateController, ExchangeRateConfigController],
   providers: [
     // Domain Services
     SlugGeneratorService,
@@ -42,6 +46,8 @@ import { WhatsappTemplateController } from './presentation/controllers/whatsapp-
     GetWhatsappTemplateUseCase,
     UpdateWhatsappTemplateUseCase,
     PreviewWhatsappTemplateUseCase,
+    GetExchangeRateConfigUseCase,
+    UpdateExchangeRateConfigUseCase,
 
     // Repository binding
     {

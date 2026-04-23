@@ -1,3 +1,4 @@
+import { ExchangeRateMode } from '@prisma/client';
 import { Store } from '../entities/store.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
@@ -47,6 +48,9 @@ export interface UpdateStoreData {
   checkoutConfig?: any;
   currencyConfig?: any;
   whatsappTemplate?: string | null;
+  exchangeRateMode?: ExchangeRateMode;
+  exchangeRateCode?: string;
+  customRate?: number | null;
   stockEnabled?: boolean;
   showBranding?: boolean;
 }
