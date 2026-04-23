@@ -356,6 +356,9 @@ model OrderIntent {
   whatsappNumber  String?
   messageGenerated String?  @db.Text
 
+  paymentMethodId String?
+  paymentMethod   StorePaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: SetNull)
+
   store           Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
   visitor         Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
 
@@ -363,6 +366,7 @@ model OrderIntent {
 
   @@index([storeId])
   @@index([storeId, createdAt])
+  @@index([paymentMethodId])
   @@map("order_intents")
 }
 
@@ -618,6 +622,8 @@ model StorePaymentMethod {
   instructions   String?            @db.Text
   enabled        Boolean            @default(true)
   displayOrder   Int                @default(0)
+
+  orders         OrderIntent[]
 
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt

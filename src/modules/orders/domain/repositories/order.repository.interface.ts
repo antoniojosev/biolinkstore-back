@@ -36,4 +36,5 @@ export interface CreateOrderData {
   channel: 'WHATSAPP' | 'INSTAGRAM';
   whatsappNumber?: string;
   messageGenerated?: string;
+  paymentMethodId?: string;
 }

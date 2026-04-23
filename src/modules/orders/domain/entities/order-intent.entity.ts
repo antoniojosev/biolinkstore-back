@@ -1,4 +1,12 @@
-import { OrderChannel, OrderStatus } from '@prisma/client';
+import { OrderChannel, OrderStatus, PaymentMethodType } from '@prisma/client';
+
+export interface OrderPaymentSnapshot {
+  id: string;
+  label: string;
+  type: PaymentMethodType;
+  details: Record<string, unknown>;
+  instructions: string | null;
+}
 
 export class OrderIntent {
   id: string;
@@ -17,6 +25,8 @@ export class OrderIntent {
   channel: OrderChannel;
   whatsappNumber: string | null;
   messageGenerated: string | null;
+  paymentMethodId: string | null;
+  payment: OrderPaymentSnapshot | null;
   createdAt: Date;
 
   constructor(partial: Partial<OrderIntent>) {

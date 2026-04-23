@@ -49,6 +49,14 @@ export class MessageGeneratorService {
       customerEmail: order.customerEmail,
       customerAddress: order.customerAddress,
       customerNotes: order.customerNotes,
+      payment: order.payment
+        ? {
+            label: order.payment.label,
+            type: order.payment.type,
+            details: order.payment.details,
+            instructions: order.payment.instructions,
+          }
+        : null,
       createdAt: order.createdAt,
     };
   }

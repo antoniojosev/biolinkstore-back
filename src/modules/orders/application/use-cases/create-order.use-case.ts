@@ -5,6 +5,7 @@ import { IStoreRepository } from '@/modules/stores/domain/repositories/store.rep
 import { IProductRepository } from '@/modules/products/domain/repositories/product.repository.interface';
 import { IVariantRepository } from '@/modules/products/domain/repositories/variant.repository.interface';
 import { IVisitorRepository } from '@/modules/analytics/domain/repositories/visitor.repository.interface';
+import { IPaymentMethodRepository } from '@/modules/payment-methods/domain/repositories/payment-method.repository.interface';
 import { MessageGeneratorService } from '../../domain/services/message-generator.service';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderResponseDto } from '../dto/order-response.dto';
@@ -22,6 +23,8 @@ export class CreateOrderUseCase {
     private readonly variantRepository: IVariantRepository,
     @Inject(INJECTION_TOKENS.VISITOR_REPOSITORY)
     private readonly visitorRepository: IVisitorRepository,
+    @Inject(INJECTION_TOKENS.PAYMENT_METHOD_REPOSITORY)
+    private readonly paymentMethodRepository: IPaymentMethodRepository,
     private readonly messageGeneratorService: MessageGeneratorService,
   ) {}
 
@@ -102,7 +105,18 @@ export class CreateOrderUseCase {
       }
     }
 
-    // 6. Create order intent
+    // 6. Validate payment method (if provided) belongs to this store and is enabled
+    if (dto.paymentMethodId) {
+      const method = await this.paymentMethodRepository.findById(dto.paymentMethodId);
+      if (!method || method.storeId !== store.id) {
+        throw new NotFoundException('Payment method not found for this store');
+      }
+      if (!method.enabled) {
+        throw new BadRequestException('Payment method is disabled');
+      }
+    }
+
+    // 7. Create order intent
     const order = await this.orderRepository.create({
       storeId: store.id,
       visitorId: dbVisitorId,
@@ -117,6 +131,7 @@ export class CreateOrderUseCase {
       customerNotes: dto.customerNotes,
       channel: dto.channel,
       whatsappNumber,
+      paymentMethodId: dto.paymentMethodId,
     });
 
     // 7. Generate WhatsApp message
@@ -155,6 +170,8 @@ export class CreateOrderUseCase {
       whatsappNumber: order.whatsappNumber,
       messageGenerated: message,
       whatsappUrl,
+      paymentMethodId: order.paymentMethodId,
+      payment: order.payment,
       createdAt: order.createdAt,
     };
   }

@@ -4,6 +4,7 @@ import { DatabaseModule } from '@/infrastructure/database/database.module';
 import { StoresModule } from '../stores/stores.module';
 import { ProductsModule } from '../products/products.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { PaymentMethodsModule } from '../payment-methods/payment-methods.module';
 
 // Domain Services
 import { MessageGeneratorService } from './domain/services/message-generator.service';
@@ -21,7 +22,13 @@ import { PrismaOrderRepository } from './infrastructure/persistence/prisma-order
 import { OrdersController } from './presentation/controllers/orders.controller';
 
 @Module({
-  imports: [DatabaseModule, StoresModule, ProductsModule, forwardRef(() => AnalyticsModule)],
+  imports: [
+    DatabaseModule,
+    StoresModule,
+    ProductsModule,
+    PaymentMethodsModule,
+    forwardRef(() => AnalyticsModule),
+  ],
   controllers: [OrdersController],
   providers: [
     // Domain Services

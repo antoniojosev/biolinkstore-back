@@ -7,6 +7,13 @@ export interface WhatsappItemData {
   quantity: number;
 }
 
+export interface WhatsappPaymentData {
+  label: string;
+  type: string;
+  details: Record<string, unknown>;
+  instructions?: string | null;
+}
+
 export interface WhatsappOrderData {
   id: string;
   items: WhatsappItemData[];
@@ -18,6 +25,7 @@ export interface WhatsappOrderData {
   customerEmail?: string | null;
   customerAddress?: string | null;
   customerNotes?: string | null;
+  payment?: WhatsappPaymentData | null;
   createdAt: Date;
 }
 
@@ -43,6 +51,9 @@ const SUPPORTED_ROOT_VARS = [
   'order.id',
   'order.date',
   'items',
+  'payment.method',
+  'payment.details',
+  'payment.instructions',
 ] as const;
 
 const SUPPORTED_ITEM_VARS = [
@@ -71,6 +82,10 @@ Nombre: {customer.name}
 Teléfono: {customer.phone}
 Email: {customer.email}
 Dirección: {customer.address}
+
+💳 *Metodo de pago:* {payment.method}
+{payment.details}
+{payment.instructions}
 
 📝 *Notas:* {customer.notes}
 
@@ -152,6 +167,12 @@ export class WhatsappTemplateEngine {
         customerEmail: 'juan@example.com',
         customerAddress: 'Calle 1, Caracas',
         customerNotes: 'Entregar en la tarde',
+        payment: {
+          label: 'Pago Movil Banesco',
+          type: 'PAGO_MOVIL',
+          details: { bank: 'Banesco', phone: '04141234567', ci: 'V-12345678' },
+          instructions: 'Enviar comprobante por este mismo chat',
+        },
         createdAt: new Date(),
       },
     };
@@ -209,9 +230,36 @@ export class WhatsappTemplateEngine {
         return order.createdAt.toISOString();
       case 'items':
         return '';
+      case 'payment.method':
+        return order.payment?.label ?? '';
+      case 'payment.details':
+        return order.payment ? this.formatPaymentDetails(order.payment) : '';
+      case 'payment.instructions':
+        return order.payment?.instructions ?? '';
       default:
         return null;
     }
+  }
+
+  private formatPaymentDetails(payment: WhatsappPaymentData): string {
+    const entries = Object.entries(payment.details ?? {})
+      .filter(([, v]) => v != null && v !== '')
+      .map(([k, v]) => `${this.humanizeKey(k)}: ${String(v)}`);
+    return entries.join('\n');
+  }
+
+  private humanizeKey(key: string): string {
+    const map: Record<string, string> = {
+      phone: 'Telefono',
+      bank: 'Banco',
+      ci: 'CI/RIF',
+      email: 'Correo',
+      holder: 'Titular',
+      account: 'Cuenta',
+      wallet: 'Wallet',
+      network: 'Red',
+    };
+    return map[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
   }
 
   private formatMoney(amount: number, currency: string): string {
