@@ -79,6 +79,9 @@ export class StoreResponseDto {
   @ApiProperty()
   currencyConfig: any;
 
+  @ApiProperty({ required: false, nullable: true })
+  whatsappTemplate: string | null;
+
   @ApiProperty()
   stockEnabled: boolean;
 

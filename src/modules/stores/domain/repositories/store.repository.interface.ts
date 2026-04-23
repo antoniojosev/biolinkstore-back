@@ -46,6 +46,7 @@ export interface UpdateStoreData {
   businessHours?: any;
   checkoutConfig?: any;
   currencyConfig?: any;
+  whatsappTemplate?: string | null;
   stockEnabled?: boolean;
   showBranding?: boolean;
 }

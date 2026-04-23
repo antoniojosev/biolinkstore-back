@@ -28,6 +28,7 @@ export class Store {
 
   checkoutConfig: any;
   currencyConfig: any;
+  whatsappTemplate: string | null;
   stockEnabled: boolean;
   showBranding: boolean;
 

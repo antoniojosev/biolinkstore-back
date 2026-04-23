@@ -120,7 +120,11 @@ export class CreateOrderUseCase {
     });
 
     // 7. Generate WhatsApp message
-    const message = this.messageGeneratorService.generateWhatsAppMessage(order, store.name);
+    const message = this.messageGeneratorService.generateWhatsAppMessage(order, {
+      name: store.name,
+      slug: store.slug,
+      whatsappTemplate: store.whatsappTemplate,
+    });
     const whatsappUrl = whatsappNumber
       ? this.messageGeneratorService.generateWhatsAppUrl(whatsappNumber, message)
       : null;

@@ -113,6 +113,7 @@ model Store {
 
   checkoutConfig  Json?
   currencyConfig  Json?
+  whatsappTemplate String?  @db.Text
   stockEnabled    Boolean   @default(false)
   showBranding    Boolean   @default(true)
 
