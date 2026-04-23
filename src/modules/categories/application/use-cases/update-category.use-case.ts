@@ -5,6 +5,7 @@ import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { CategoryResponseDto } from '../dto/category-response.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { generateSlug } from '@/common/utils/slug.util';
+import { validateParent } from '../validate-parent.util';
 
 @Injectable()
 export class UpdateCategoryUseCase {
@@ -17,6 +18,15 @@ export class UpdateCategoryUseCase {
     const existingCategory = await this.categoryRepository.findById(categoryId);
     if (!existingCategory) {
       throw new NotFoundException('Category not found');
+    }
+
+    if (dto.parentId !== undefined) {
+      await validateParent(
+        this.categoryRepository,
+        existingCategory.storeId,
+        dto.parentId,
+        categoryId,
+      );
     }
 
     // If name changed, generate new slug

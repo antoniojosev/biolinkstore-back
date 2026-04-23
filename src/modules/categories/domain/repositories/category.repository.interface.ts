@@ -19,6 +19,7 @@ export interface CreateCategoryData {
   image?: string;
   isVisible?: boolean;
   sortOrder?: number;
+  parentId?: string | null;
 }
 
 export interface UpdateCategoryData {
@@ -28,4 +29,5 @@ export interface UpdateCategoryData {
   image?: string;
   isVisible?: boolean;
   sortOrder?: number;
+  parentId?: string | null;
 }

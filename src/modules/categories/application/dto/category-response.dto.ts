@@ -25,6 +25,9 @@ export class CategoryResponseDto {
   @ApiProperty()
   sortOrder: number;
 
+  @ApiProperty({ required: false, nullable: true })
+  parentId: string | null;
+
   @ApiProperty({ required: false })
   productCount?: number;
 

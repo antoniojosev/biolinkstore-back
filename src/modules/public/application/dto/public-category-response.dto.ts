@@ -16,6 +16,9 @@ export class PublicCategoryResponseDto {
   @ApiProperty()
   image: string | null;
 
+  @ApiProperty({ required: false, nullable: true })
+  parentId: string | null;
+
   @ApiProperty()
   productCount: number;
 }

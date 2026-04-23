@@ -7,6 +7,7 @@ export class Category {
   image: string | null;
   isVisible: boolean;
   sortOrder: number;
+  parentId: string | null;
   productCount?: number;
   createdAt: Date;
   updatedAt: Date;

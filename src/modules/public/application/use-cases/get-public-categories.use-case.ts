@@ -37,6 +37,7 @@ export class GetPublicCategoriesUseCase {
         slug: category.slug,
         description: category.description,
         image: category.image,
+        parentId: category.parentId,
         productCount: category.productCount || 0,
       }));
   }

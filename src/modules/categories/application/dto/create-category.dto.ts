@@ -28,4 +28,14 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsNumber()
   sortOrder?: number;
+
+  @ApiProperty({
+    example: 'cat-parent-id',
+    required: false,
+    nullable: true,
+    description: 'Id de la categoria padre (misma tienda). Null para categoria raiz.',
+  })
+  @IsOptional()
+  @IsString()
+  parentId?: string | null;
 }

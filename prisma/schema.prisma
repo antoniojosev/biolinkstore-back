@@ -243,6 +243,10 @@ model Category {
   isVisible   Boolean   @default(true)
   sortOrder   Int       @default(0)
 
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryHierarchy")
+
   store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
   products    CategoriesOnProducts[]
 
@@ -251,6 +255,7 @@ model Category {
 
   @@unique([storeId, slug])
   @@index([storeId])
+  @@index([storeId, parentId])
   @@map("categories")
 }
 
