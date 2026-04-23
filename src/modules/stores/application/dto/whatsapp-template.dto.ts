@@ -29,6 +29,9 @@ export class WhatsappTemplateResponseDto {
   @ApiProperty({ description: 'True when store has no custom template and default is returned.' })
   isDefault: boolean;
 
+  @ApiProperty({ description: 'Plan permite editar el template (FREE=false, PRO/BUSINESS=true).' })
+  canEdit: boolean;
+
   @ApiProperty({
     description: 'List of supported root and item variables.',
   })

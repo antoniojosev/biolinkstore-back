@@ -9,6 +9,7 @@ import {
   UpdateWhatsappTemplateDto,
   WhatsappTemplateResponseDto,
 } from '../../dto/whatsapp-template.dto';
+import { enforceWhatsappTemplateEditAccess } from './validate-plan-access.util';
 
 @Injectable()
 export class UpdateWhatsappTemplateUseCase {
@@ -19,10 +20,12 @@ export class UpdateWhatsappTemplateUseCase {
   ) {}
 
   async execute(storeId: string, dto: UpdateWhatsappTemplateDto): Promise<WhatsappTemplateResponseDto> {
-    const store = await this.storeRepository.findById(storeId);
+    const store = await this.storeRepository.findByIdWithSubscription(storeId);
     if (!store) {
       throw new NotFoundException('Store not found');
     }
+
+    enforceWhatsappTemplateEditAccess(store.subscription?.plan);
 
     if (dto.template !== null) {
       const { valid, errors } = this.engine.validateTemplate(dto.template);
@@ -36,6 +39,7 @@ export class UpdateWhatsappTemplateUseCase {
     return {
       template: dto.template ?? DEFAULT_WHATSAPP_TEMPLATE,
       isDefault: dto.template === null,
+      canEdit: true,
       supportedVariables: this.engine.listSupportedVariables(),
     };
   }

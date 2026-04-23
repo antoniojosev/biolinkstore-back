@@ -16,14 +16,16 @@ export class GetWhatsappTemplateUseCase {
   ) {}
 
   async execute(storeId: string): Promise<WhatsappTemplateResponseDto> {
-    const store = await this.storeRepository.findById(storeId);
+    const store = await this.storeRepository.findByIdWithSubscription(storeId);
     if (!store) {
       throw new NotFoundException('Store not found');
     }
     const template = store.whatsappTemplate ?? DEFAULT_WHATSAPP_TEMPLATE;
+    const plan = store.subscription?.plan ?? 'FREE';
     return {
       template,
       isDefault: store.whatsappTemplate === null,
+      canEdit: plan !== 'FREE',
       supportedVariables: this.engine.listSupportedVariables(),
     };
   }
