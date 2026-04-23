@@ -14,6 +14,9 @@ export class ProductAttributeResponseDto {
   @ApiProperty()
   type: string;
 
+  @ApiProperty({ example: 'variant' })
+  role: string;
+
   @ApiProperty({ required: false })
   optionsMeta: any;
 
@@ -56,6 +59,9 @@ export class ProductResponseDto {
 
   @ApiProperty()
   slug: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  tagline: string | null;
 
   @ApiProperty()
   description: string | null;

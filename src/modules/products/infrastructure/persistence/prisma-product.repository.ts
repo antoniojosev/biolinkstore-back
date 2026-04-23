@@ -122,6 +122,7 @@ export class PrismaProductRepository implements IProductRepository {
         storeId: data.storeId,
         name: data.name,
         slug: data.slug,
+        tagline: data.tagline,
         description: data.description,
         basePrice: data.basePrice,
         compareAtPrice: data.compareAtPrice,
@@ -177,6 +178,7 @@ export class PrismaProductRepository implements IProductRepository {
       data: {
         name: data.name,
         slug: data.slug,
+        tagline: data.tagline,
         description: data.description,
         basePrice: data.basePrice,
         compareAtPrice: data.compareAtPrice,

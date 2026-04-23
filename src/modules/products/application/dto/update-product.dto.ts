@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsBoolean,
   IsArray,
+  MaxLength,
   Min,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -13,6 +14,12 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @ApiProperty({ required: false, maxLength: 80, nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  tagline?: string | null;
 
   @ApiProperty({ required: false })
   @IsOptional()

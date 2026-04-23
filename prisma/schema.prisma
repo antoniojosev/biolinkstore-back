@@ -152,6 +152,7 @@ model Product {
 
   name            String
   slug            String
+  tagline         String?   @db.VarChar(80)
   description     String?   @db.Text
 
   basePrice       Decimal   @db.Decimal(10, 2)

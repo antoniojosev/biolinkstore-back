@@ -23,6 +23,7 @@ export interface CreateProductData {
   storeId: string;
   name: string;
   slug: string;
+  tagline?: string | null;
   description?: string;
   basePrice: number;
   compareAtPrice?: number;
@@ -39,6 +40,7 @@ export interface CreateProductData {
     name: string;
     options: string[];
     type: string;
+    role?: string;
     optionsMeta?: any;
     sortOrder: number;
   }>;
@@ -48,6 +50,7 @@ export interface CreateProductData {
 export interface UpdateProductData {
   name?: string;
   slug?: string;
+  tagline?: string | null;
   description?: string;
   basePrice?: number;
   compareAtPrice?: number;

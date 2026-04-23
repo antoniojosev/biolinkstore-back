@@ -3,6 +3,7 @@ export class Product {
   storeId: string;
   name: string;
   slug: string;
+  tagline: string | null;
   description: string | null;
   basePrice: number;
   compareAtPrice: number | null;
@@ -32,6 +33,7 @@ export class ProductAttribute {
   name: string;
   options: string[];
   type: string;
+  role: string;
   optionsMeta: any;
   sortOrder: number;
 
