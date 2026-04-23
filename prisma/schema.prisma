@@ -131,6 +131,7 @@ model Store {
   domainAddon     DomainAddon?
   paymentReports  PaymentReport[]
   inquiries       Inquiry[]
+  paymentMethods  StorePaymentMethod[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -577,4 +578,36 @@ enum ExcludeReason {
   OWNER
   DEMO
   BOT
+}
+
+// ==========================================
+// PAYMENT METHODS (per-store, merchant-configured)
+// ==========================================
+
+model StorePaymentMethod {
+  id             String             @id @default(cuid())
+  storeId        String
+  store          Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  type           PaymentMethodType
+  label          String             @db.VarChar(80)
+  details        Json
+  instructions   String?            @db.Text
+  enabled        Boolean            @default(true)
+  displayOrder   Int                @default(0)
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([storeId, enabled, displayOrder])
+  @@map("store_payment_methods")
+}
+
+enum PaymentMethodType {
+  PAGO_MOVIL
+  ZELLE
+  BINANCE
+  TRANSFER
+  CASH
+  OTHER
 }
