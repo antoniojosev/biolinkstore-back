@@ -9,10 +9,16 @@ import { GetPublicCategoriesUseCase } from '../../application/use-cases/get-publ
 import { GenerateStoreQrUseCase } from '../../application/use-cases/generate-store-qr.use-case';
 import { CheckSlugExistsUseCase } from '../../application/use-cases/check-slug-exists.use-case';
 import { GenerateStoreOgUseCase } from '../../application/use-cases/generate-store-og.use-case';
+import { GetPublicRatesUseCase } from '../../application/use-cases/get-public-rates.use-case';
+import { GetStoreVisibleRatesUseCase } from '../../application/use-cases/get-store-visible-rates.use-case';
 import { PublicStoreResponseDto } from '../../application/dto/public-store-response.dto';
 import { PublicProductResponseDto } from '../../application/dto/public-product-response.dto';
 import { PublicCategoryResponseDto } from '../../application/dto/public-category-response.dto';
 import { PublicProductFiltersDto } from '../../application/dto/public-product-filters.dto';
+import {
+  PublicRateResponseDto,
+  StoreVisibleRatesResponseDto,
+} from '../../application/dto/public-rate-response.dto';
 import { PaginatedResult } from '@/common/interfaces/pagination.interface';
 
 @ApiTags('Public')
@@ -27,7 +33,16 @@ export class PublicStoreController {
     private readonly generateStoreQrUseCase: GenerateStoreQrUseCase,
     private readonly checkSlugExistsUseCase: CheckSlugExistsUseCase,
     private readonly generateStoreOgUseCase: GenerateStoreOgUseCase,
+    private readonly getPublicRatesUseCase: GetPublicRatesUseCase,
+    private readonly getStoreVisibleRatesUseCase: GetStoreVisibleRatesUseCase,
   ) {}
+
+  @Get('rates')
+  @ApiOperation({ summary: 'Get all active official rates with current value' })
+  @ApiResponse({ status: 200, type: [PublicRateResponseDto] })
+  async getRates(): Promise<PublicRateResponseDto[]> {
+    return this.getPublicRatesUseCase.execute();
+  }
 
   @Get(':slug')
   @ApiOperation({ summary: 'Get public store by slug (no auth required)' })
@@ -153,5 +168,16 @@ export class PublicStoreController {
     res.setHeader('Cache-Control', 'public, max-age=86400');
     res.setHeader('X-OG-Cache', cached ? 'HIT' : 'MISS');
     res.end(buffer);
+  }
+
+  @Get(':slug/rates')
+  @ApiOperation({
+    summary: 'Get rates visible to buyer for a store (filtered by plan + store config)',
+  })
+  @ApiParam({ name: 'slug', type: 'string', example: 'mi-tienda' })
+  @ApiResponse({ status: 200, type: StoreVisibleRatesResponseDto })
+  @ApiResponse({ status: 404, description: 'Store not found' })
+  async getStoreRates(@Param('slug') slug: string): Promise<StoreVisibleRatesResponseDto> {
+    return this.getStoreVisibleRatesUseCase.execute(slug);
   }
 }
