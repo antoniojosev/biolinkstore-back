@@ -438,6 +438,19 @@ enum SubscriptionStatus {
   UNPAID
 }
 
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  rate      Decimal  @db.Decimal(18, 8)
+  source    String
+  fetchedAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("exchange_rates")
+}
+
 model DomainAddon {
   id              String    @id @default(cuid())
   storeId         String    @unique
