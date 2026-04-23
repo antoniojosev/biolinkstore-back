@@ -5,9 +5,15 @@ import { GetPublicStoreUseCase } from '../../application/use-cases/get-public-st
 import { GetPublicProductsUseCase } from '../../application/use-cases/get-public-products.use-case';
 import { GetPublicProductUseCase } from '../../application/use-cases/get-public-product.use-case';
 import { GetPublicCategoriesUseCase } from '../../application/use-cases/get-public-categories.use-case';
+import { GetPublicRatesUseCase } from '../../application/use-cases/get-public-rates.use-case';
+import { GetStoreVisibleRatesUseCase } from '../../application/use-cases/get-store-visible-rates.use-case';
 import { PublicStoreResponseDto } from '../../application/dto/public-store-response.dto';
 import { PublicProductResponseDto } from '../../application/dto/public-product-response.dto';
 import { PublicCategoryResponseDto } from '../../application/dto/public-category-response.dto';
+import {
+  PublicRateResponseDto,
+  StoreVisibleRatesResponseDto,
+} from '../../application/dto/public-rate-response.dto';
 import { PaginatedResult } from '@/common/interfaces/pagination.interface';
 import { ProductFilterParams } from '@/modules/products/domain/repositories/product.repository.interface';
 
@@ -20,7 +26,16 @@ export class PublicStoreController {
     private readonly getPublicProductsUseCase: GetPublicProductsUseCase,
     private readonly getPublicProductUseCase: GetPublicProductUseCase,
     private readonly getPublicCategoriesUseCase: GetPublicCategoriesUseCase,
+    private readonly getPublicRatesUseCase: GetPublicRatesUseCase,
+    private readonly getStoreVisibleRatesUseCase: GetStoreVisibleRatesUseCase,
   ) {}
+
+  @Get('rates')
+  @ApiOperation({ summary: 'Get all active official rates with current value' })
+  @ApiResponse({ status: 200, type: [PublicRateResponseDto] })
+  async getRates(): Promise<PublicRateResponseDto[]> {
+    return this.getPublicRatesUseCase.execute();
+  }
 
   @Get(':slug')
   @ApiOperation({ summary: 'Get public store by slug (no auth required)' })
@@ -73,5 +88,16 @@ export class PublicStoreController {
     @Param('productSlug') productSlug: string,
   ): Promise<PublicProductResponseDto> {
     return this.getPublicProductUseCase.execute(slug, productSlug);
+  }
+
+  @Get(':slug/rates')
+  @ApiOperation({
+    summary: 'Get rates visible to buyer for a store (filtered by plan + store config)',
+  })
+  @ApiParam({ name: 'slug', type: 'string', example: 'mi-tienda' })
+  @ApiResponse({ status: 200, type: StoreVisibleRatesResponseDto })
+  @ApiResponse({ status: 404, description: 'Store not found' })
+  async getStoreRates(@Param('slug') slug: string): Promise<StoreVisibleRatesResponseDto> {
+    return this.getStoreVisibleRatesUseCase.execute(slug);
   }
 }
