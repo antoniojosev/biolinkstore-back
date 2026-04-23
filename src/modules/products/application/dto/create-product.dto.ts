@@ -16,8 +16,15 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductAttributeOptionsMetaConstraint } from './validators/attribute-options-meta.validator';
 
-export const ATTRIBUTE_TYPES = ['text', 'color', 'size', 'multi-select'] as const;
-export const ATTRIBUTE_ROLES = ['variant', 'ingredient-included', 'ingredient-extra'] as const;
+export const ATTRIBUTE_TYPES = ['text', 'color', 'size', 'multi-select', 'number'] as const;
+export const ATTRIBUTE_ROLES = [
+  'variant',
+  'ingredient-included',
+  'ingredient-extra',
+  'spec',
+  'dietary',
+  'availability',
+] as const;
 
 export class ProductAttributeDto {
   @ApiProperty({ example: 'Talla' })

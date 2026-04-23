@@ -51,6 +51,21 @@ function validateSelectableShape(meta: Record<string, unknown>): string | null {
   return null;
 }
 
+function validateDescriptiveShape(meta: Record<string, unknown>): string | null {
+  for (const [option, raw] of Object.entries(meta)) {
+    if (!isPlainObject(raw)) {
+      return `optionsMeta.${option} must be an object`;
+    }
+    for (const [k, v] of Object.entries(raw)) {
+      const t = typeof v;
+      if (t !== 'string' && t !== 'number' && t !== 'boolean' && v !== null) {
+        return `optionsMeta.${option}.${k} must be string | number | boolean`;
+      }
+    }
+  }
+  return null;
+}
+
 @ValidatorConstraint({ name: 'ProductAttributeOptionsMeta', async: false })
 export class ProductAttributeOptionsMetaConstraint implements ValidatorConstraintInterface {
   private message = 'optionsMeta invalid';
@@ -74,14 +89,19 @@ export class ProductAttributeOptionsMetaConstraint implements ValidatorConstrain
       }
     }
 
+    const isDescriptive =
+      role === 'spec' || role === 'dietary' || role === 'availability';
     const isSelectable =
-      type === 'multi-select' ||
-      role === 'ingredient-included' ||
-      role === 'ingredient-extra';
+      !isDescriptive &&
+      (type === 'multi-select' ||
+        role === 'ingredient-included' ||
+        role === 'ingredient-extra');
 
-    const error = isSelectable
-      ? validateSelectableShape(value)
-      : validateVariantShape(value);
+    const error = isDescriptive
+      ? validateDescriptiveShape(value)
+      : isSelectable
+        ? validateSelectableShape(value)
+        : validateVariantShape(value);
     if (error) {
       this.message = error;
       return false;
