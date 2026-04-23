@@ -9,6 +9,7 @@ export interface IProductRepository {
   update(id: string, data: UpdateProductData): Promise<Product>;
   delete(id: string): Promise<void>;
   checkSlugExists(storeId: string, slug: string): Promise<boolean>;
+  countByStoreId(storeId: string): Promise<number>;
 }
 
 export interface ProductFilterParams extends PaginationParams {

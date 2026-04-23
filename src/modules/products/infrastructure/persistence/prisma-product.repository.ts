@@ -220,4 +220,8 @@ export class PrismaProductRepository implements IProductRepository {
     });
     return count > 0;
   }
+
+  async countByStoreId(storeId: string): Promise<number> {
+    return this.prisma.product.count({ where: { storeId } });
+  }
 }
