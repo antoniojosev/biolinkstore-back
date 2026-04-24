@@ -1,4 +1,5 @@
 import { ProductRealEstateData } from './product-real-estate-data.entity';
+import { ProductServiceData } from './product-service-data.entity';
 
 export class Product {
   id: string;
@@ -22,6 +23,7 @@ export class Product {
   variants?: ProductVariant[];
   categoryIds?: string[];
   realEstateData?: ProductRealEstateData | null;
+  serviceData?: ProductServiceData | null;
   createdAt: Date;
   updatedAt: Date;
 

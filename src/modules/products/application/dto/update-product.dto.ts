@@ -11,6 +11,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { UpdateProductRealEstateDataDto } from './update-product-real-estate-data.dto';
+import { UpdateProductServiceDataDto } from './update-product-service-data.dto';
 
 export class UpdateProductDto {
   @ApiProperty({ required: false })
@@ -90,4 +91,10 @@ export class UpdateProductDto {
   @ValidateNested()
   @Type(() => UpdateProductRealEstateDataDto)
   realEstateData?: UpdateProductRealEstateDataDto;
+
+  @ApiProperty({ type: UpdateProductServiceDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateProductServiceDataDto)
+  serviceData?: UpdateProductServiceDataDto;
 }

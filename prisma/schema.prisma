@@ -180,6 +180,7 @@ model Product {
   attributes      ProductAttribute[]
   variants        ProductVariant[]
   realEstateData  ProductRealEstateData?
+  serviceData     ProductServiceData?
 
   analyticsEvents AnalyticsEvent[]
   orderItems      OrderItem[]
@@ -212,6 +213,27 @@ model ProductRealEstateData {
 enum RealEstateListingType {
   SALE
   RENT
+}
+
+model ProductServiceData {
+  id          String           @id @default(cuid())
+  productId   String           @unique
+  product     Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  duration    Int?
+  modality    ServiceModality?
+  coverage    String?
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("product_service_data")
+}
+
+enum ServiceModality {
+  IN_PERSON
+  ONLINE
+  HYBRID
 }
 
 model ProductAttribute {

@@ -69,6 +69,13 @@ export class CreateProductUseCase {
             listingType: dto.realEstateData.listingType ?? null,
           }
         : undefined,
+      serviceData: dto.serviceData
+        ? {
+            duration: dto.serviceData.duration ?? null,
+            modality: dto.serviceData.modality ?? null,
+            coverage: dto.serviceData.coverage ?? null,
+          }
+        : undefined,
     });
 
     return ProductMapper.toResponse(product);

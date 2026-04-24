@@ -25,6 +25,7 @@ export class PrismaProductRepository implements IProductRepository {
         variants: true,
         categories: true,
         realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -46,6 +47,7 @@ export class PrismaProductRepository implements IProductRepository {
         variants: true,
         categories: true,
         realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -159,6 +161,15 @@ export class PrismaProductRepository implements IProductRepository {
               },
             }
           : undefined,
+        serviceData: data.serviceData
+          ? {
+              create: {
+                duration: data.serviceData.duration ?? null,
+                modality: data.serviceData.modality ?? null,
+                coverage: data.serviceData.coverage ?? null,
+              },
+            }
+          : undefined,
       },
       include: {
         attributes: {
@@ -167,6 +178,7 @@ export class PrismaProductRepository implements IProductRepository {
         variants: true,
         categories: true,
         realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -207,6 +219,25 @@ export class PrismaProductRepository implements IProductRepository {
         }
       : {};
 
+    const serviceUpdate = data.serviceData
+      ? {
+          serviceData: {
+            upsert: {
+              create: {
+                duration: data.serviceData.duration ?? null,
+                modality: data.serviceData.modality ?? null,
+                coverage: data.serviceData.coverage ?? null,
+              },
+              update: {
+                duration: data.serviceData.duration,
+                modality: data.serviceData.modality,
+                coverage: data.serviceData.coverage,
+              },
+            },
+          },
+        }
+      : {};
+
     const product = await this.prisma.product.update({
       where: { id },
       data: {
@@ -227,6 +258,7 @@ export class PrismaProductRepository implements IProductRepository {
         sortOrder: data.sortOrder,
         ...categoryUpdate,
         ...realEstateUpdate,
+        ...serviceUpdate,
       },
       include: {
         attributes: {
@@ -235,6 +267,7 @@ export class PrismaProductRepository implements IProductRepository {
         variants: true,
         categories: true,
         realEstateData: true,
+        serviceData: true,
       },
     });
 

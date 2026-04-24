@@ -1,5 +1,6 @@
 import { Product } from '../entities/product.entity';
 import { RealEstateListingType } from '../entities/product-real-estate-data.entity';
+import { ServiceModality } from '../entities/product-service-data.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
 export interface IProductRepository {
@@ -48,6 +49,7 @@ export interface CreateProductData {
   }>;
   categoryIds?: string[];
   realEstateData?: RealEstateDataInput;
+  serviceData?: ServiceDataInput;
 }
 
 export interface UpdateProductData {
@@ -68,6 +70,7 @@ export interface UpdateProductData {
   sortOrder?: number;
   categoryIds?: string[];
   realEstateData?: RealEstateDataInput;
+  serviceData?: ServiceDataInput;
 }
 
 export interface RealEstateDataInput {
@@ -75,4 +78,10 @@ export interface RealEstateDataInput {
   bathrooms?: number | null;
   area?: number | null;
   listingType?: RealEstateListingType | null;
+}
+
+export interface ServiceDataInput {
+  duration?: number | null;
+  modality?: ServiceModality | null;
+  coverage?: string | null;
 }

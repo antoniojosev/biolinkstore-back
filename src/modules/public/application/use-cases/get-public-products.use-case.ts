@@ -75,6 +75,13 @@ export class GetPublicProductsUseCase {
             listingType: product.realEstateData.listingType,
           }
         : null,
+      serviceData: product.serviceData
+        ? {
+            duration: product.serviceData.duration,
+            modality: product.serviceData.modality,
+            coverage: product.serviceData.coverage,
+          }
+        : null,
     }));
 
     return {

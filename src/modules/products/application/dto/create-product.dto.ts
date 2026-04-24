@@ -16,6 +16,7 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductAttributeOptionsMetaConstraint } from './validators/attribute-options-meta.validator';
 import { CreateProductRealEstateDataDto } from './create-product-real-estate-data.dto';
+import { CreateProductServiceDataDto } from './create-product-service-data.dto';
 
 export const ATTRIBUTE_TYPES = ['text', 'color', 'size', 'multi-select', 'number'] as const;
 export const ATTRIBUTE_ROLES = [
@@ -147,4 +148,10 @@ export class CreateProductDto {
   @ValidateNested()
   @Type(() => CreateProductRealEstateDataDto)
   realEstateData?: CreateProductRealEstateDataDto;
+
+  @ApiProperty({ type: CreateProductServiceDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateProductServiceDataDto)
+  serviceData?: CreateProductServiceDataDto;
 }

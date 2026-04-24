@@ -33,7 +33,7 @@ export class UpdateProductUseCase {
       slug = undefined;
     }
 
-    const { realEstateData, ...rest } = dto;
+    const { realEstateData, serviceData, ...rest } = dto;
 
     const product = await this.productRepository.update(productId, {
       ...rest,
@@ -44,6 +44,13 @@ export class UpdateProductUseCase {
             bathrooms: realEstateData.bathrooms ?? null,
             area: realEstateData.area ?? null,
             listingType: realEstateData.listingType ?? null,
+          }
+        : undefined,
+      serviceData: serviceData
+        ? {
+            duration: serviceData.duration ?? null,
+            modality: serviceData.modality ?? null,
+            coverage: serviceData.coverage ?? null,
           }
         : undefined,
     });

@@ -18,6 +18,20 @@ export class ProductRealEstateDataResponseDto {
   listingType: 'SALE' | 'RENT' | null;
 }
 
+export class ProductServiceDataResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ nullable: true })
+  duration: number | null;
+
+  @ApiProperty({ nullable: true, enum: ['IN_PERSON', 'ONLINE', 'HYBRID'] })
+  modality: 'IN_PERSON' | 'ONLINE' | 'HYBRID' | null;
+
+  @ApiProperty({ nullable: true })
+  coverage: string | null;
+}
+
 export class ProductAttributeResponseDto {
   @ApiProperty()
   id: string;
@@ -127,6 +141,9 @@ export class ProductResponseDto {
 
   @ApiProperty({ type: ProductRealEstateDataResponseDto, required: false, nullable: true })
   realEstateData?: ProductRealEstateDataResponseDto | null;
+
+  @ApiProperty({ type: ProductServiceDataResponseDto, required: false, nullable: true })
+  serviceData?: ProductServiceDataResponseDto | null;
 
   @ApiProperty()
   createdAt: Date;

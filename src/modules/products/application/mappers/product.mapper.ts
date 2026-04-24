@@ -3,6 +3,7 @@ import {
   ProductAttribute as PrismaAttribute,
   ProductVariant as PrismaVariant,
   ProductRealEstateData as PrismaRealEstateData,
+  ProductServiceData as PrismaServiceData,
   CategoriesOnProducts,
 } from '@prisma/client';
 import { Product, ProductAttribute, ProductVariant } from '../../domain/entities/product.entity';
@@ -10,6 +11,10 @@ import {
   ProductRealEstateData,
   RealEstateListingType,
 } from '../../domain/entities/product-real-estate-data.entity';
+import {
+  ProductServiceData,
+  ServiceModality,
+} from '../../domain/entities/product-service-data.entity';
 import { ProductResponseDto, ProductAttributeResponseDto, ProductVariantResponseDto } from '../dto/product-response.dto';
 
 type ProductWithRelations = PrismaProduct & {
@@ -17,6 +22,7 @@ type ProductWithRelations = PrismaProduct & {
   variants?: PrismaVariant[];
   categories?: CategoriesOnProducts[];
   realEstateData?: PrismaRealEstateData | null;
+  serviceData?: PrismaServiceData | null;
 };
 
 export class ProductMapper {
@@ -76,6 +82,19 @@ export class ProductMapper {
         : prismaProduct.realEstateData === null
           ? null
           : undefined,
+      serviceData: prismaProduct.serviceData
+        ? new ProductServiceData({
+            id: prismaProduct.serviceData.id,
+            productId: prismaProduct.serviceData.productId,
+            duration: prismaProduct.serviceData.duration,
+            modality: prismaProduct.serviceData.modality as ServiceModality | null,
+            coverage: prismaProduct.serviceData.coverage,
+            createdAt: prismaProduct.serviceData.createdAt,
+            updatedAt: prismaProduct.serviceData.updatedAt,
+          })
+        : prismaProduct.serviceData === null
+          ? null
+          : undefined,
       createdAt: prismaProduct.createdAt,
       updatedAt: prismaProduct.updatedAt,
     });
@@ -128,6 +147,16 @@ export class ProductMapper {
             listingType: product.realEstateData.listingType,
           }
         : product.realEstateData === null
+          ? null
+          : undefined,
+      serviceData: product.serviceData
+        ? {
+            id: product.serviceData.id,
+            duration: product.serviceData.duration,
+            modality: product.serviceData.modality,
+            coverage: product.serviceData.coverage,
+          }
+        : product.serviceData === null
           ? null
           : undefined,
       createdAt: product.createdAt,
