@@ -6,6 +6,7 @@ import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
 import { Store } from '@/modules/stores/domain/entities/store.entity';
 import { IStorageService } from '@/infrastructure/storage/storage.interface';
+import { resolvePublicStore } from '../services/resolve-public-store.helper';
 
 export interface OgImageResult {
   buffer: Buffer;
@@ -60,7 +61,8 @@ export class GenerateStoreOgUseCase {
   ) {}
 
   async execute(slug: string): Promise<OgImageResult> {
-    const store = await this.storeRepository.findBySlug(slug);
+    // BE-122: resolve via slug or verified custom domain
+    const store = await resolvePublicStore(this.storeRepository, slug);
     if (!store) throw new NotFoundException('Store not found');
 
     const cacheKey = this.buildCacheKey(store);

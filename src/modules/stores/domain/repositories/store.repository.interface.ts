@@ -6,6 +6,7 @@ export interface IStoreRepository {
   findById(id: string): Promise<Store | null>;
   findByIdWithSubscription(id: string): Promise<Store | null>;
   findBySlug(slug: string): Promise<Store | null>;
+  findByVerifiedCustomDomain(domain: string): Promise<Store | null>;
   findByOwnerId(ownerId: string, params?: PaginationParams): Promise<PaginatedResult<Store>>;
   create(data: CreateStoreData): Promise<Store>;
   update(id: string, data: UpdateStoreData): Promise<Store>;

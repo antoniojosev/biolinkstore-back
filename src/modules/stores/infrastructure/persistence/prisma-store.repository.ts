@@ -38,6 +38,14 @@ export class PrismaStoreRepository implements IStoreRepository {
     return store ? StoreMapper.toDomain(store) : null;
   }
 
+  async findByVerifiedCustomDomain(domain: string): Promise<Store | null> {
+    const store = await this.prisma.store.findFirst({
+      where: { customDomain: domain, domainVerified: true },
+      include: { subscription: true },
+    });
+    return store ? StoreMapper.toDomain(store) : null;
+  }
+
   async findByOwnerId(
     ownerId: string,
     params: PaginationParams = {},
