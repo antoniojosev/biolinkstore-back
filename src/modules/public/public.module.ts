@@ -9,6 +9,7 @@ import { GetPublicStoreUseCase } from './application/use-cases/get-public-store.
 import { GetPublicProductsUseCase } from './application/use-cases/get-public-products.use-case';
 import { GetPublicProductUseCase } from './application/use-cases/get-public-product.use-case';
 import { GetPublicCategoriesUseCase } from './application/use-cases/get-public-categories.use-case';
+import { GenerateStoreQrUseCase } from './application/use-cases/generate-store-qr.use-case';
 
 // Presentation - Controllers
 import { PublicStoreController } from './presentation/controllers/public-store.controller';
@@ -21,6 +22,7 @@ import { PublicStoreController } from './presentation/controllers/public-store.c
     GetPublicProductsUseCase,
     GetPublicProductUseCase,
     GetPublicCategoriesUseCase,
+    GenerateStoreQrUseCase,
   ],
 })
 export class PublicModule {}

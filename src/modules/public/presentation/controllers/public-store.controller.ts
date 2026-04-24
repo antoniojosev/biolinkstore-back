@@ -1,10 +1,12 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Response } from 'express';
 import { Public } from '@/common/decorators/public.decorator';
 import { GetPublicStoreUseCase } from '../../application/use-cases/get-public-store.use-case';
 import { GetPublicProductsUseCase } from '../../application/use-cases/get-public-products.use-case';
 import { GetPublicProductUseCase } from '../../application/use-cases/get-public-product.use-case';
 import { GetPublicCategoriesUseCase } from '../../application/use-cases/get-public-categories.use-case';
+import { GenerateStoreQrUseCase } from '../../application/use-cases/generate-store-qr.use-case';
 import { PublicStoreResponseDto } from '../../application/dto/public-store-response.dto';
 import { PublicProductResponseDto } from '../../application/dto/public-product-response.dto';
 import { PublicCategoryResponseDto } from '../../application/dto/public-category-response.dto';
@@ -20,6 +22,7 @@ export class PublicStoreController {
     private readonly getPublicProductsUseCase: GetPublicProductsUseCase,
     private readonly getPublicProductUseCase: GetPublicProductUseCase,
     private readonly getPublicCategoriesUseCase: GetPublicCategoriesUseCase,
+    private readonly generateStoreQrUseCase: GenerateStoreQrUseCase,
   ) {}
 
   @Get(':slug')
@@ -81,5 +84,19 @@ export class PublicStoreController {
     @Param('productSlug') productSlug: string,
   ): Promise<PublicProductResponseDto> {
     return this.getPublicProductUseCase.execute(slug, productSlug);
+  }
+
+  @Get(':slug/qr.png')
+  @ApiOperation({ summary: 'Get store QR code as PNG (512x512, target = public store URL)' })
+  @ApiParam({ name: 'slug', type: 'string', example: 'mi-tienda' })
+  @ApiResponse({ status: 200, description: 'QR PNG image stream', content: { 'image/png': {} } })
+  @ApiResponse({ status: 404, description: 'Store not found' })
+  async getStoreQr(@Param('slug') slug: string, @Res() res: Response): Promise<void> {
+    const { buffer } = await this.generateStoreQrUseCase.execute(slug);
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.end(buffer);
   }
 }
