@@ -32,6 +32,7 @@ import { StoresController } from './presentation/controllers/stores.controller';
 import { WhatsappTemplateController } from './presentation/controllers/whatsapp-template.controller';
 import { ExchangeRateConfigController } from './presentation/controllers/exchange-rate-config.controller';
 import { StoreHoursController } from './presentation/controllers/store-hours.controller';
+import { ExchangeRateHistoryController } from './presentation/controllers/exchange-rate-history.controller';
 
 @Module({
   imports: [DatabaseModule, CurrencyModule],
@@ -40,6 +41,7 @@ import { StoreHoursController } from './presentation/controllers/store-hours.con
     WhatsappTemplateController,
     ExchangeRateConfigController,
     StoreHoursController,
+    ExchangeRateHistoryController,
   ],
   providers: [
     // Domain Services

@@ -2,10 +2,12 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { ResolveRateUseCase } from '@/modules/currency/application/use-cases/resolve-rate.use-case';
+import { IExchangeRateHistoryRepository } from '@/modules/currency/domain/repositories/exchange-rate-history.repository.interface';
 import { IStoreRepository } from '../../../domain/repositories/store.repository.interface';
 import {
   ExchangeRateConfigResponseDto,
@@ -15,15 +17,20 @@ import { enforceManualRateAccess } from './validate-plan-access.util';
 
 @Injectable()
 export class UpdateExchangeRateConfigUseCase {
+  private readonly logger = new Logger(UpdateExchangeRateConfigUseCase.name);
+
   constructor(
     @Inject(INJECTION_TOKENS.STORE_REPOSITORY)
     private readonly storeRepository: IStoreRepository,
+    @Inject(INJECTION_TOKENS.EXCHANGE_RATE_HISTORY_REPOSITORY)
+    private readonly historyRepository: IExchangeRateHistoryRepository,
     private readonly resolveRate: ResolveRateUseCase,
   ) {}
 
   async execute(
     storeId: string,
     dto: UpdateExchangeRateConfigDto,
+    userId?: string,
   ): Promise<ExchangeRateConfigResponseDto> {
     const store = await this.storeRepository.findByIdWithSubscription(storeId);
     if (!store) {
@@ -49,7 +56,20 @@ export class UpdateExchangeRateConfigUseCase {
       exchangeRateMode: updated.exchangeRateMode,
       exchangeRateCode: updated.exchangeRateCode,
       customRate: updated.customRate,
+      storeId: updated.id,
     });
+
+    // Append history entry for this manual config change.
+    if (resolved) {
+      this.historyRepository
+        .create({
+          storeId: updated.id,
+          rate: resolved.rate,
+          source: dto.mode === 'MANUAL' ? 'MANUAL_UPDATE' : `AUTO:${resolved.source}`,
+          changedBy: userId ?? null,
+        })
+        .catch((err) => this.logger.warn(`History write failed: ${err?.message ?? err}`));
+    }
 
     const plan = store.subscription?.plan;
     return {

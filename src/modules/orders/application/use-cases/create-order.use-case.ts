@@ -6,6 +6,7 @@ import { IProductRepository } from '@/modules/products/domain/repositories/produ
 import { IVariantRepository } from '@/modules/products/domain/repositories/variant.repository.interface';
 import { IVisitorRepository } from '@/modules/analytics/domain/repositories/visitor.repository.interface';
 import { IPaymentMethodRepository } from '@/modules/payment-methods/domain/repositories/payment-method.repository.interface';
+import { ResolveRateUseCase } from '@/modules/currency/application/use-cases/resolve-rate.use-case';
 import { MessageGeneratorService } from '../../domain/services/message-generator.service';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderResponseDto } from '../dto/order-response.dto';
@@ -26,6 +27,7 @@ export class CreateOrderUseCase {
     @Inject(INJECTION_TOKENS.PAYMENT_METHOD_REPOSITORY)
     private readonly paymentMethodRepository: IPaymentMethodRepository,
     private readonly messageGeneratorService: MessageGeneratorService,
+    private readonly resolveRate: ResolveRateUseCase,
   ) {}
 
   async execute(storeSlug: string, dto: CreateOrderDto): Promise<OrderResponseDto> {
@@ -116,7 +118,15 @@ export class CreateOrderUseCase {
       }
     }
 
-    // 7. Create order intent
+    // 7. Snapshot effective exchange rate at order creation time (BE-117)
+    const resolvedRate = await this.resolveRate.execute({
+      exchangeRateMode: store.exchangeRateMode,
+      exchangeRateCode: store.exchangeRateCode,
+      customRate: store.customRate,
+      storeId: store.id,
+    });
+
+    // 8. Create order intent
     const order = await this.orderRepository.create({
       storeId: store.id,
       visitorId: dbVisitorId,
@@ -132,6 +142,8 @@ export class CreateOrderUseCase {
       channel: dto.channel,
       whatsappNumber,
       paymentMethodId: dto.paymentMethodId,
+      exchangeRateSnapshot: resolvedRate?.rate ?? null,
+      exchangeRateSourceSnapshot: resolvedRate?.source ?? null,
     });
 
     // 7. Generate WhatsApp message

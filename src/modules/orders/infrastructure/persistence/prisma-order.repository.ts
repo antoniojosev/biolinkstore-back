@@ -101,6 +101,8 @@ export class PrismaOrderRepository implements IOrderRepository {
         whatsappNumber: data.whatsappNumber,
         messageGenerated: data.messageGenerated,
         paymentMethodId: data.paymentMethodId,
+        exchangeRateSnapshot: data.exchangeRateSnapshot ?? null,
+        exchangeRateSourceSnapshot: data.exchangeRateSourceSnapshot ?? null,
         items: {
           create: data.items,
         },

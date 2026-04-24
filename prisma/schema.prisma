@@ -446,6 +446,10 @@ model OrderIntent {
   total           Decimal   @db.Decimal(10, 2)
   currency        String    @default("USD")
 
+  // Snapshot of resolved exchange rate at order creation time (BE-117)
+  exchangeRateSnapshot        Decimal?  @db.Decimal(18, 8)
+  exchangeRateSourceSnapshot  String?
+
   customerName    String?
   customerPhone   String?
   customerEmail   String?
@@ -469,6 +473,20 @@ model OrderIntent {
   @@index([storeId, createdAt])
   @@index([paymentMethodId])
   @@map("order_intents")
+}
+
+model ExchangeRateHistory {
+  id            String   @id @default(cuid())
+  storeId       String
+  rate          Decimal  @db.Decimal(18, 8)
+  source        String   // "BCV", "MANUAL", "MANUAL_UPDATE", "AUTO_RESOLVE"
+  effectiveFrom DateTime @default(now())
+  changedBy     String?  // userId that triggered the change
+
+  createdAt     DateTime @default(now())
+
+  @@index([storeId, effectiveFrom(sort: Desc)])
+  @@map("exchange_rate_history")
 }
 
 model OrderItem {

@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { StoreOwnerGuard } from '@/common/guards/store-owner.guard';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import {
   ExchangeRateConfigResponseDto,
   UpdateExchangeRateConfigDto,
@@ -34,7 +35,8 @@ export class ExchangeRateConfigController {
   update(
     @Param('storeId') storeId: string,
     @Body() dto: UpdateExchangeRateConfigDto,
+    @CurrentUser() user: { userId: string },
   ): Promise<ExchangeRateConfigResponseDto> {
-    return this.updateUseCase.execute(storeId, dto);
+    return this.updateUseCase.execute(storeId, dto, user?.userId);
   }
 }
