@@ -28,6 +28,9 @@ export class PrismaOrderRepository implements IOrderRepository {
       subtotal: Number(order.subtotal),
       total: Number(order.total),
       currency: order.currency,
+      exchangeRateSnapshot:
+        order.exchangeRateSnapshot != null ? Number(order.exchangeRateSnapshot) : null,
+      exchangeRateSourceSnapshot: order.exchangeRateSourceSnapshot ?? null,
       customerName: order.customerName,
       customerPhone: order.customerPhone,
       customerEmail: order.customerEmail,

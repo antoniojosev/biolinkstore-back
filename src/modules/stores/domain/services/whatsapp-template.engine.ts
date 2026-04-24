@@ -16,10 +16,13 @@ export interface WhatsappPaymentData {
 
 export interface WhatsappOrderData {
   id: string;
+  orderNumber?: string | null;
   items: WhatsappItemData[];
   subtotal: number;
   total: number;
   currency: string;
+  exchangeRate?: number | null;
+  exchangeRateSource?: string | null;
   customerName?: string | null;
   customerPhone?: string | null;
   customerEmail?: string | null;
@@ -29,8 +32,16 @@ export interface WhatsappOrderData {
   createdAt: Date;
 }
 
+export interface WhatsappStoreData {
+  name: string;
+  slug: string;
+  phone?: string | null;
+  address?: string | null;
+  email?: string | null;
+}
+
 export interface WhatsappTemplateContext {
-  store: { name: string; slug: string };
+  store: WhatsappStoreData;
   order: WhatsappOrderData;
 }
 
@@ -38,19 +49,34 @@ const ITEM_BLOCK_RE = /\{#items\}([\s\S]*?)\{\/items\}/g;
 const VAR_RE = /\{([a-zA-Z][a-zA-Z0-9_.]*)\}/g;
 
 const SUPPORTED_ROOT_VARS = [
+  // store
   'store.name',
   'store.slug',
+  'store.phone',
+  'store.address',
+  'store.email',
+  // customer
   'customer.name',
   'customer.phone',
   'customer.email',
   'customer.address',
   'customer.notes',
+  // order totals (legacy short form)
   'subtotal',
   'total',
   'currency',
+  // order fields (explicit namespace)
   'order.id',
+  'order.number',
   'order.date',
+  'order.subtotal',
+  'order.total',
+  'order.totalBs',
+  'order.currency',
+  'order.exchangeRate',
+  'order.exchangeRateSource',
   'items',
+  // payment
   'payment.method',
   'payment.details',
   'payment.instructions',
@@ -152,9 +178,16 @@ export class WhatsappTemplateEngine {
 
   buildSampleContext(storeName: string, storeSlug: string): WhatsappTemplateContext {
     return {
-      store: { name: storeName, slug: storeSlug },
+      store: {
+        name: storeName,
+        slug: storeSlug,
+        phone: '+58 212 5551234',
+        address: 'Av. Principal, Caracas',
+        email: 'contacto@mitienda.com',
+      },
       order: {
         id: 'preview-123',
+        orderNumber: '00001',
         items: [
           { productName: 'Producto A', variantName: 'Talla M', unitPrice: 19.99, quantity: 2 },
           { productName: 'Producto B', variantName: null, unitPrice: 9.5, quantity: 1 },
@@ -162,6 +195,8 @@ export class WhatsappTemplateEngine {
         subtotal: 49.48,
         total: 49.48,
         currency: 'USD',
+        exchangeRate: 36.5,
+        exchangeRateSource: 'BCV',
         customerName: 'Juan Perez',
         customerPhone: '+58 412 1234567',
         customerEmail: 'juan@example.com',
@@ -204,10 +239,18 @@ export class WhatsappTemplateEngine {
   private resolveRootVar(path: string, ctx: WhatsappTemplateContext): string | null {
     const { store, order } = ctx;
     switch (path) {
+      // store
       case 'store.name':
         return store.name;
       case 'store.slug':
         return store.slug;
+      case 'store.phone':
+        return store.phone ?? '';
+      case 'store.address':
+        return store.address ?? '';
+      case 'store.email':
+        return store.email ?? '';
+      // customer
       case 'customer.name':
         return order.customerName ?? '';
       case 'customer.phone':
@@ -218,18 +261,35 @@ export class WhatsappTemplateEngine {
         return order.customerAddress ?? '';
       case 'customer.notes':
         return order.customerNotes ?? '';
+      // legacy short form (kept for backwards compat)
       case 'subtotal':
         return this.formatMoney(order.subtotal, order.currency);
       case 'total':
         return this.formatMoney(order.total, order.currency);
       case 'currency':
         return order.currency;
+      // order namespace
       case 'order.id':
         return order.id;
+      case 'order.number':
+        return order.orderNumber ?? order.id;
       case 'order.date':
         return order.createdAt.toISOString();
+      case 'order.subtotal':
+        return this.formatMoney(order.subtotal, order.currency);
+      case 'order.total':
+        return this.formatMoney(order.total, order.currency);
+      case 'order.totalBs':
+        return this.formatTotalBs(order);
+      case 'order.currency':
+        return order.currency;
+      case 'order.exchangeRate':
+        return order.exchangeRate != null ? order.exchangeRate.toFixed(2) : '';
+      case 'order.exchangeRateSource':
+        return order.exchangeRateSource ?? '';
       case 'items':
         return '';
+      // payment
       case 'payment.method':
         return order.payment?.label ?? '';
       case 'payment.details':
@@ -265,6 +325,23 @@ export class WhatsappTemplateEngine {
   private formatMoney(amount: number, currency: string): string {
     const symbol = currency === 'USD' ? '$' : currency === 'VES' ? 'Bs ' : `${currency} `;
     return `${symbol}${amount.toFixed(2)}`;
+  }
+
+  /**
+   * Formats the order total in Bolivares.
+   * - If currency is already VES, returns the total as-is.
+   * - If USD and an exchangeRate snapshot exists, converts total * rate.
+   * - Otherwise returns empty string (graceful fallback — the template author
+   *   is responsible for only using this var when rate is expected).
+   */
+  private formatTotalBs(order: WhatsappOrderData): string {
+    if (order.currency === 'VES') {
+      return `Bs ${order.total.toFixed(2)}`;
+    }
+    if (order.exchangeRate != null && order.exchangeRate > 0) {
+      return `Bs ${(order.total * order.exchangeRate).toFixed(2)}`;
+    }
+    return '';
   }
 
   private collapseBlankLines(text: string): string {

@@ -150,6 +150,9 @@ export class CreateOrderUseCase {
     const message = this.messageGeneratorService.generateWhatsAppMessage(order, {
       name: store.name,
       slug: store.slug,
+      phone: store.phone,
+      address: store.address,
+      email: store.email,
       whatsappTemplate: store.whatsappTemplate,
     });
     const whatsappUrl = whatsappNumber
