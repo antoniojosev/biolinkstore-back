@@ -108,7 +108,9 @@ model Store {
   facebookUrl     String?
   tiktokUrl       String?
   email           String?
+  phone           String?
   address         String?
+  socialLinks     Json?
   businessHours   Json?
 
   checkoutConfig  Json?

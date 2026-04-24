@@ -1,5 +1,5 @@
 import { ExchangeRateMode } from '@prisma/client';
-import { Store } from '../entities/store.entity';
+import { Store, StoreSocialLinks } from '../entities/store.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
 export interface IStoreRepository {
@@ -43,7 +43,9 @@ export interface UpdateStoreData {
   facebookUrl?: string;
   tiktokUrl?: string;
   email?: string;
+  phone?: string | null;
   address?: string;
+  socialLinks?: StoreSocialLinks | null;
   businessHours?: any;
   checkoutConfig?: any;
   currencyConfig?: any;

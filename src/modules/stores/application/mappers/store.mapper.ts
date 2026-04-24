@@ -1,5 +1,5 @@
 import { Store as PrismaStore, Subscription as PrismaSubscription } from '@prisma/client';
-import { Store } from '../../domain/entities/store.entity';
+import { Store, StoreSocialLinks } from '../../domain/entities/store.entity';
 import { StoreResponseDto } from '../dto/store-response.dto';
 
 type StoreWithSubscription = PrismaStore & { subscription?: PrismaSubscription | null };
@@ -26,7 +26,9 @@ export class StoreMapper {
       facebookUrl: prismaStore.facebookUrl,
       tiktokUrl: prismaStore.tiktokUrl,
       email: prismaStore.email,
+      phone: prismaStore.phone,
       address: prismaStore.address,
+      socialLinks: (prismaStore.socialLinks as StoreSocialLinks | null) ?? null,
       businessHours: prismaStore.businessHours,
       checkoutConfig: prismaStore.checkoutConfig,
       currencyConfig: prismaStore.currencyConfig,
@@ -71,7 +73,9 @@ export class StoreMapper {
       facebookUrl: store.facebookUrl,
       tiktokUrl: store.tiktokUrl,
       email: store.email,
+      phone: store.phone,
       address: store.address,
+      socialLinks: store.socialLinks,
       businessHours: store.businessHours,
       checkoutConfig: store.checkoutConfig,
       currencyConfig: store.currencyConfig,

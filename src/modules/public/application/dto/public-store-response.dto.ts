@@ -52,8 +52,20 @@ export class PublicStoreResponseDto {
   @ApiProperty()
   email: string | null;
 
+  @ApiProperty({ required: false, nullable: true })
+  phone: string | null;
+
   @ApiProperty()
   address: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  socialLinks: {
+    instagram?: string;
+    tiktok?: string;
+    facebook?: string;
+    whatsapp?: string;
+    twitter?: string;
+  } | null;
 
   @ApiProperty()
   businessHours: any;

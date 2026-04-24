@@ -1,5 +1,7 @@
-import { IsString, IsArray, IsOptional, IsBoolean, IsHexColor, IsJSON, MinLength, MaxLength } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsBoolean, IsHexColor, IsJSON, IsEmail, Matches, MinLength, MaxLength, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { SocialLinksDto } from './social-links.dto';
 
 export class UpdateStoreDto {
   @ApiProperty({ required: false })
@@ -86,13 +88,25 @@ export class UpdateStoreDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
+  @IsEmail()
   email?: string;
+
+  @ApiProperty({ required: false, example: '+584141234567', description: 'Phone in E.164 format' })
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{7,14}$/, { message: 'phone must be in E.164 format (e.g. +584141234567)' })
+  phone?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   address?: string;
+
+  @ApiProperty({ required: false, type: SocialLinksDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SocialLinksDto)
+  socialLinks?: SocialLinksDto;
 
   @ApiProperty({ required: false })
   @IsOptional()
