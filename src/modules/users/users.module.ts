@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
 
@@ -6,6 +6,8 @@ import { DatabaseModule } from '@/infrastructure/database/database.module';
 import { GetUserUseCase } from './application/use-cases/get-user.use-case';
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case';
+import { ListMyStoresUseCase } from './application/use-cases/list-my-stores.use-case';
+import { ActivateUserStoreUseCase } from './application/use-cases/activate-user-store.use-case';
 
 // Infrastructure
 import { PrismaUserRepository } from './infrastructure/persistence/prisma-user.repository';
@@ -24,6 +26,8 @@ import { PasswordService } from '@/modules/auth/domain/services/password.service
     GetUserUseCase,
     CreateUserUseCase,
     UpdateUserUseCase,
+    ListMyStoresUseCase,
+    ActivateUserStoreUseCase,
 
     // Domain services
     PasswordService,
