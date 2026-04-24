@@ -139,6 +139,7 @@ model Store {
   inquiries       Inquiry[]
   paymentMethods  StorePaymentMethod[]
   hours           StoreHours[]
+  views           StoreView[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -165,6 +166,24 @@ model StoreHours {
   @@unique([storeId, dayOfWeek])
   @@index([storeId])
   @@map("store_hours")
+}
+
+model StoreView {
+  id           String   @id @default(cuid())
+  storeId      String
+  sessionId    String
+  referrer     String?
+  country      String?
+  device       String?
+  scrollDepth  Int?
+  timeOnPage   Int?
+
+  createdAt    DateTime @default(now())
+
+  store        Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, createdAt])
+  @@map("store_views")
 }
 
 // ==========================================
