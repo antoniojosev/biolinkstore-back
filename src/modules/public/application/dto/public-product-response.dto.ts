@@ -54,6 +54,20 @@ export class PublicCategoryDto {
   slug: string;
 }
 
+export class PublicProductRealEstateDataDto {
+  @ApiProperty({ nullable: true })
+  bedrooms: number | null;
+
+  @ApiProperty({ nullable: true })
+  bathrooms: number | null;
+
+  @ApiProperty({ nullable: true })
+  area: number | null;
+
+  @ApiProperty({ nullable: true, enum: ['SALE', 'RENT'] })
+  listingType: 'SALE' | 'RENT' | null;
+}
+
 export class PublicProductResponseDto {
   @ApiProperty()
   id: string;
@@ -96,4 +110,7 @@ export class PublicProductResponseDto {
 
   @ApiProperty({ type: [PublicCategoryDto], required: false })
   categories?: PublicCategoryDto[];
+
+  @ApiProperty({ type: PublicProductRealEstateDataDto, required: false, nullable: true })
+  realEstateData?: PublicProductRealEstateDataDto | null;
 }

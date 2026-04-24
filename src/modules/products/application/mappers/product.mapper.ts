@@ -2,15 +2,21 @@ import {
   Product as PrismaProduct,
   ProductAttribute as PrismaAttribute,
   ProductVariant as PrismaVariant,
+  ProductRealEstateData as PrismaRealEstateData,
   CategoriesOnProducts,
 } from '@prisma/client';
 import { Product, ProductAttribute, ProductVariant } from '../../domain/entities/product.entity';
+import {
+  ProductRealEstateData,
+  RealEstateListingType,
+} from '../../domain/entities/product-real-estate-data.entity';
 import { ProductResponseDto, ProductAttributeResponseDto, ProductVariantResponseDto } from '../dto/product-response.dto';
 
 type ProductWithRelations = PrismaProduct & {
   attributes?: PrismaAttribute[];
   variants?: PrismaVariant[];
   categories?: CategoriesOnProducts[];
+  realEstateData?: PrismaRealEstateData | null;
 };
 
 export class ProductMapper {
@@ -54,6 +60,22 @@ export class ProductMapper {
         isAvailable: variant.isAvailable,
       })),
       categoryIds: prismaProduct.categories?.map((cat) => cat.categoryId),
+      realEstateData: prismaProduct.realEstateData
+        ? new ProductRealEstateData({
+            id: prismaProduct.realEstateData.id,
+            productId: prismaProduct.realEstateData.productId,
+            bedrooms: prismaProduct.realEstateData.bedrooms,
+            bathrooms: prismaProduct.realEstateData.bathrooms,
+            area: prismaProduct.realEstateData.area
+              ? Number(prismaProduct.realEstateData.area)
+              : null,
+            listingType: prismaProduct.realEstateData.listingType as RealEstateListingType | null,
+            createdAt: prismaProduct.realEstateData.createdAt,
+            updatedAt: prismaProduct.realEstateData.updatedAt,
+          })
+        : prismaProduct.realEstateData === null
+          ? null
+          : undefined,
       createdAt: prismaProduct.createdAt,
       updatedAt: prismaProduct.updatedAt,
     });
@@ -97,6 +119,17 @@ export class ProductMapper {
         isAvailable: variant.isAvailable,
       })),
       categoryIds: product.categoryIds,
+      realEstateData: product.realEstateData
+        ? {
+            id: product.realEstateData.id,
+            bedrooms: product.realEstateData.bedrooms,
+            bathrooms: product.realEstateData.bathrooms,
+            area: product.realEstateData.area,
+            listingType: product.realEstateData.listingType,
+          }
+        : product.realEstateData === null
+          ? null
+          : undefined,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     };

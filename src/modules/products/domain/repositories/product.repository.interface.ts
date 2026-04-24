@@ -1,4 +1,5 @@
 import { Product } from '../entities/product.entity';
+import { RealEstateListingType } from '../entities/product-real-estate-data.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
 export interface IProductRepository {
@@ -46,6 +47,7 @@ export interface CreateProductData {
     sortOrder: number;
   }>;
   categoryIds?: string[];
+  realEstateData?: RealEstateDataInput;
 }
 
 export interface UpdateProductData {
@@ -65,4 +67,12 @@ export interface UpdateProductData {
   isOnSale?: boolean;
   sortOrder?: number;
   categoryIds?: string[];
+  realEstateData?: RealEstateDataInput;
+}
+
+export interface RealEstateDataInput {
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  area?: number | null;
+  listingType?: RealEstateListingType | null;
 }

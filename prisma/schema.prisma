@@ -179,6 +179,7 @@ model Product {
   categories      CategoriesOnProducts[]
   attributes      ProductAttribute[]
   variants        ProductVariant[]
+  realEstateData  ProductRealEstateData?
 
   analyticsEvents AnalyticsEvent[]
   orderItems      OrderItem[]
@@ -190,6 +191,27 @@ model Product {
   @@index([storeId])
   @@index([storeId, isVisible])
   @@map("products")
+}
+
+model ProductRealEstateData {
+  id            String                 @id @default(cuid())
+  productId     String                 @unique
+  product       Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  bedrooms      Int?
+  bathrooms     Int?
+  area          Decimal?               @db.Decimal(10, 2)
+  listingType   RealEstateListingType?
+
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  @@map("product_real_estate_data")
+}
+
+enum RealEstateListingType {
+  SALE
+  RENT
 }
 
 model ProductAttribute {

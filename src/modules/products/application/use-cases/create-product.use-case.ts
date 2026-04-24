@@ -61,6 +61,14 @@ export class CreateProductUseCase {
         sortOrder: attr.sortOrder ?? index,
       })),
       categoryIds: dto.categoryIds,
+      realEstateData: dto.realEstateData
+        ? {
+            bedrooms: dto.realEstateData.bedrooms ?? null,
+            bathrooms: dto.realEstateData.bathrooms ?? null,
+            area: dto.realEstateData.area ?? null,
+            listingType: dto.realEstateData.listingType ?? null,
+          }
+        : undefined,
     });
 
     return ProductMapper.toResponse(product);

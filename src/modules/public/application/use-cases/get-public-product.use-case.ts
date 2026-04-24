@@ -66,6 +66,14 @@ export class GetPublicProductUseCase {
         name: '',
         slug: '',
       })),
+      realEstateData: product.realEstateData
+        ? {
+            bedrooms: product.realEstateData.bedrooms,
+            bathrooms: product.realEstateData.bathrooms,
+            area: product.realEstateData.area,
+            listingType: product.realEstateData.listingType,
+          }
+        : null,
     };
   }
 }

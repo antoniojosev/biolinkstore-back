@@ -6,8 +6,11 @@ import {
   IsArray,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { UpdateProductRealEstateDataDto } from './update-product-real-estate-data.dto';
 
 export class UpdateProductDto {
   @ApiProperty({ required: false })
@@ -81,4 +84,10 @@ export class UpdateProductDto {
   @IsArray()
   @IsString({ each: true })
   categoryIds?: string[];
+
+  @ApiProperty({ type: UpdateProductRealEstateDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateProductRealEstateDataDto)
+  realEstateData?: UpdateProductRealEstateDataDto;
 }

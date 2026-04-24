@@ -67,6 +67,14 @@ export class GetPublicProductsUseCase {
         name: '', // Would need to fetch category names if needed
         slug: '',
       })),
+      realEstateData: product.realEstateData
+        ? {
+            bedrooms: product.realEstateData.bedrooms,
+            bathrooms: product.realEstateData.bathrooms,
+            area: product.realEstateData.area,
+            listingType: product.realEstateData.listingType,
+          }
+        : null,
     }));
 
     return {

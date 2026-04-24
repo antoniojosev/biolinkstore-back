@@ -24,6 +24,7 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
       },
     });
 
@@ -44,6 +45,7 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
       },
     });
 
@@ -147,6 +149,16 @@ export class PrismaProductRepository implements IProductRepository {
               })),
             }
           : undefined,
+        realEstateData: data.realEstateData
+          ? {
+              create: {
+                bedrooms: data.realEstateData.bedrooms ?? null,
+                bathrooms: data.realEstateData.bathrooms ?? null,
+                area: data.realEstateData.area ?? null,
+                listingType: data.realEstateData.listingType ?? null,
+              },
+            }
+          : undefined,
       },
       include: {
         attributes: {
@@ -154,6 +166,7 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
       },
     });
 
@@ -169,6 +182,27 @@ export class PrismaProductRepository implements IProductRepository {
             create: data.categoryIds.map((categoryId) => ({
               categoryId,
             })),
+          },
+        }
+      : {};
+
+    const realEstateUpdate = data.realEstateData
+      ? {
+          realEstateData: {
+            upsert: {
+              create: {
+                bedrooms: data.realEstateData.bedrooms ?? null,
+                bathrooms: data.realEstateData.bathrooms ?? null,
+                area: data.realEstateData.area ?? null,
+                listingType: data.realEstateData.listingType ?? null,
+              },
+              update: {
+                bedrooms: data.realEstateData.bedrooms,
+                bathrooms: data.realEstateData.bathrooms,
+                area: data.realEstateData.area,
+                listingType: data.realEstateData.listingType,
+              },
+            },
           },
         }
       : {};
@@ -192,6 +226,7 @@ export class PrismaProductRepository implements IProductRepository {
         isOnSale: data.isOnSale,
         sortOrder: data.sortOrder,
         ...categoryUpdate,
+        ...realEstateUpdate,
       },
       include: {
         attributes: {
@@ -199,6 +234,7 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
       },
     });
 

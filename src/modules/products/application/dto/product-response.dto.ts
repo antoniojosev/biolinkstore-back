@@ -1,6 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Decimal } from '@prisma/client/runtime/library';
 
+export class ProductRealEstateDataResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ nullable: true })
+  bedrooms: number | null;
+
+  @ApiProperty({ nullable: true })
+  bathrooms: number | null;
+
+  @ApiProperty({ nullable: true })
+  area: number | null;
+
+  @ApiProperty({ nullable: true, enum: ['SALE', 'RENT'] })
+  listingType: 'SALE' | 'RENT' | null;
+}
+
 export class ProductAttributeResponseDto {
   @ApiProperty()
   id: string;
@@ -107,6 +124,9 @@ export class ProductResponseDto {
 
   @ApiProperty({ type: [String], required: false })
   categoryIds?: string[];
+
+  @ApiProperty({ type: ProductRealEstateDataResponseDto, required: false, nullable: true })
+  realEstateData?: ProductRealEstateDataResponseDto | null;
 
   @ApiProperty()
   createdAt: Date;
