@@ -8,6 +8,7 @@ import { GetPublicProductUseCase } from '../../application/use-cases/get-public-
 import { GetPublicCategoriesUseCase } from '../../application/use-cases/get-public-categories.use-case';
 import { GenerateStoreQrUseCase } from '../../application/use-cases/generate-store-qr.use-case';
 import { CheckSlugExistsUseCase } from '../../application/use-cases/check-slug-exists.use-case';
+import { GenerateStoreOgUseCase } from '../../application/use-cases/generate-store-og.use-case';
 import { PublicStoreResponseDto } from '../../application/dto/public-store-response.dto';
 import { PublicProductResponseDto } from '../../application/dto/public-product-response.dto';
 import { PublicCategoryResponseDto } from '../../application/dto/public-category-response.dto';
@@ -25,6 +26,7 @@ export class PublicStoreController {
     private readonly getPublicCategoriesUseCase: GetPublicCategoriesUseCase,
     private readonly generateStoreQrUseCase: GenerateStoreQrUseCase,
     private readonly checkSlugExistsUseCase: CheckSlugExistsUseCase,
+    private readonly generateStoreOgUseCase: GenerateStoreOgUseCase,
   ) {}
 
   @Get(':slug')
@@ -125,6 +127,21 @@ export class PublicStoreController {
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Content-Length', buffer.length);
     res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.end(buffer);
+  }
+
+  @Get(':slug/og.png')
+  @ApiOperation({ summary: 'Dynamic OG image (1200x630) for store sharing' })
+  @ApiParam({ name: 'slug', type: 'string' })
+  @ApiResponse({ status: 200, description: 'OG PNG image', content: { 'image/png': {} } })
+  @ApiResponse({ status: 404, description: 'Store not found' })
+  async getStoreOg(@Param('slug') slug: string, @Res() res: Response): Promise<void> {
+    const { buffer, cached } = await this.generateStoreOgUseCase.execute(slug);
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('X-OG-Cache', cached ? 'HIT' : 'MISS');
     res.end(buffer);
   }
 }
