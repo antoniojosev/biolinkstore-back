@@ -1,5 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ExchangeRateMode, Plan, SubscriptionStatus } from '@prisma/client';
+import { ExchangeRateMode, Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
+
+export class StoreCtaDto {
+  @ApiProperty({ enum: StoreCtaType, example: 'WHATSAPP' })
+  type: StoreCtaType;
+
+  @ApiProperty({ required: false, nullable: true })
+  label: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  url: string | null;
+}
 
 export class SubscriptionDto {
   @ApiProperty({ enum: Plan })
@@ -114,6 +125,9 @@ export class StoreResponseDto {
 
   @ApiProperty()
   domainVerified: boolean;
+
+  @ApiProperty({ type: StoreCtaDto, description: 'Configurable primary CTA (BE-121)' })
+  cta: StoreCtaDto;
 
   @ApiProperty()
   ownerId: string;

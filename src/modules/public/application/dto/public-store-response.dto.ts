@@ -1,4 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { StoreCtaType } from '@prisma/client';
+
+export class PublicStoreCtaDto {
+  @ApiProperty({ enum: StoreCtaType, example: 'WHATSAPP' })
+  type: StoreCtaType;
+
+  @ApiProperty({ required: false, nullable: true })
+  label: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  url: string | null;
+}
 
 export class PublicStoreResponseDto {
   @ApiProperty()
@@ -106,4 +118,10 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
+
+  @ApiProperty({
+    type: PublicStoreCtaDto,
+    description: 'Configurable primary CTA (BE-121). Storefront resolves URL based on type.',
+  })
+  cta: PublicStoreCtaDto;
 }

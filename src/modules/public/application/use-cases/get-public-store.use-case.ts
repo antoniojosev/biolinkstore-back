@@ -73,6 +73,11 @@ export class GetPublicStoreUseCase {
       exchangeRateCode: resolved?.code ?? store.exchangeRateCode,
       hours: hoursPayload,
       isOpenNow,
+      cta: {
+        type: store.ctaType,
+        label: store.ctaLabel,
+        url: store.ctaUrl,
+      },
     };
   }
 }

@@ -79,6 +79,13 @@ export class PrismaStoreRepository implements IStoreRepository {
         socialLinks === null ? Prisma.JsonNull : (socialLinks as Prisma.InputJsonValue);
     }
 
+    // BE-121: when CTA mode is not EXTERNAL_LINK/CALL, force-clear url to avoid stale data
+    if (data.ctaType !== undefined && (data.ctaType === 'WHATSAPP' || data.ctaType === 'NONE')) {
+      if (data.ctaUrl === undefined) {
+        prismaData.ctaUrl = null;
+      }
+    }
+
     const store = await this.prisma.store.update({
       where: { id },
       data: prismaData,

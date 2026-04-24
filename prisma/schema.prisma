@@ -130,6 +130,11 @@ model Store {
   customDomain    String?   @unique
   domainVerified  Boolean   @default(false)
 
+  // BE-121: configurable CTA per store
+  ctaType         StoreCtaType @default(WHATSAPP)
+  ctaLabel        String?      @db.VarChar(60)
+  ctaUrl          String?
+
   ownerId         String
   owner           User      @relation(fields: [ownerId], references: [id])
   activeForUsers  User[]    @relation("UserActiveStore")
@@ -573,6 +578,14 @@ enum SubscriptionStatus {
 enum ExchangeRateMode {
   AUTO
   MANUAL
+}
+
+// BE-121: kind of primary CTA the storefront shows
+enum StoreCtaType {
+  WHATSAPP
+  EXTERNAL_LINK
+  CALL
+  NONE
 }
 
 model ExchangeRate {

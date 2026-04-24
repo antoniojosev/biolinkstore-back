@@ -1,7 +1,58 @@
-import { IsString, IsArray, IsOptional, IsBoolean, IsHexColor, IsJSON, IsEmail, Matches, MinLength, MaxLength, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsOptional,
+  IsBoolean,
+  IsHexColor,
+  IsEmail,
+  IsEnum,
+  Matches,
+  MinLength,
+  MaxLength,
+  ValidateNested,
+  ValidateIf,
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { StoreCtaType } from '@prisma/client';
 import { SocialLinksDto } from './social-links.dto';
+
+const TEL_OR_E164_REGEX = /^(?:tel:)?\+?[1-9]\d{7,14}$/;
+const HTTP_URL_REGEX = /^https?:\/\/[^\s]+$/i;
+
+@ValidatorConstraint({ name: 'CtaUrlConsistency', async: false })
+export class CtaUrlConsistencyValidator implements ValidatorConstraintInterface {
+  validate(value: unknown, args: ValidationArguments): boolean {
+    const obj = args.object as { ctaType?: StoreCtaType; ctaUrl?: string | null };
+    if (obj.ctaType === undefined) return true; // not setting cta this update
+    if (obj.ctaType === StoreCtaType.EXTERNAL_LINK) {
+      if (typeof value !== 'string' || !HTTP_URL_REGEX.test(value)) return false;
+      return true;
+    }
+    if (obj.ctaType === StoreCtaType.CALL) {
+      if (value === null || value === undefined) return false;
+      if (typeof value !== 'string' || !TEL_OR_E164_REGEX.test(value)) return false;
+      return true;
+    }
+    // WHATSAPP / NONE → ctaUrl is ignored, accept any value (including null/undefined)
+    return true;
+  }
+
+  defaultMessage(args: ValidationArguments): string {
+    const obj = args.object as { ctaType?: StoreCtaType };
+    if (obj.ctaType === StoreCtaType.EXTERNAL_LINK) {
+      return 'ctaUrl is required and must be http(s)://... when ctaType=EXTERNAL_LINK';
+    }
+    if (obj.ctaType === StoreCtaType.CALL) {
+      return 'ctaUrl must be tel:+E.164 or +E.164 when ctaType=CALL';
+    }
+    return 'ctaUrl invalid';
+  }
+}
 
 export class UpdateStoreDto {
   @ApiProperty({ required: false })
@@ -117,4 +168,30 @@ export class UpdateStoreDto {
   @IsOptional()
   @IsBoolean()
   showBranding?: boolean;
+
+  // BE-121: configurable CTA
+  @ApiProperty({
+    required: false,
+    enum: StoreCtaType,
+    description: 'Primary CTA type. WHATSAPP = use whatsappNumbers; EXTERNAL_LINK = ctaUrl required; CALL = ctaUrl must be tel:/E.164; NONE = hide CTA.',
+  })
+  @IsOptional()
+  @IsEnum(StoreCtaType)
+  ctaType?: StoreCtaType;
+
+  @ApiProperty({ required: false, nullable: true, maxLength: 60 })
+  @IsOptional()
+  @ValidateIf((_o, value) => value !== null)
+  @IsString()
+  @MaxLength(60)
+  ctaLabel?: string | null;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description: 'Required when ctaType=EXTERNAL_LINK (http(s)://...). For ctaType=CALL must be tel:+E.164 or plain E.164.',
+  })
+  @IsOptional()
+  @Validate(CtaUrlConsistencyValidator)
+  ctaUrl?: string | null;
 }
