@@ -55,4 +55,9 @@ export interface UpdateStoreData {
   customRate?: number | null;
   stockEnabled?: boolean;
   showBranding?: boolean;
+  aboutShort?: string | null;
+  aboutLong?: string | null;
+  locationLat?: number | null;
+  locationLng?: number | null;
+  locationLabel?: string | null;
 }

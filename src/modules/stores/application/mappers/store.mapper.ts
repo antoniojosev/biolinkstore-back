@@ -40,6 +40,11 @@ export class StoreMapper {
       showBranding: prismaStore.showBranding,
       customDomain: prismaStore.customDomain,
       domainVerified: prismaStore.domainVerified,
+      aboutShort: prismaStore.aboutShort,
+      aboutLong: prismaStore.aboutLong,
+      locationLat: prismaStore.locationLat ? Number(prismaStore.locationLat) : null,
+      locationLng: prismaStore.locationLng ? Number(prismaStore.locationLng) : null,
+      locationLabel: prismaStore.locationLabel,
       ownerId: prismaStore.ownerId,
       subscription: prismaStore.subscription
         ? {
@@ -87,6 +92,11 @@ export class StoreMapper {
       showBranding: store.showBranding,
       customDomain: store.customDomain,
       domainVerified: store.domainVerified,
+      aboutShort: store.aboutShort,
+      aboutLong: store.aboutLong,
+      locationLat: store.locationLat,
+      locationLng: store.locationLng,
+      locationLabel: store.locationLabel,
       ownerId: store.ownerId,
       subscription: store.subscription,
       createdAt: store.createdAt,

@@ -130,6 +130,13 @@ model Store {
   customDomain    String?   @unique
   domainVerified  Boolean   @default(false)
 
+  // BE-123: structured store info
+  aboutShort      String?   @db.VarChar(120)
+  aboutLong       String?   @db.Text
+  locationLat     Decimal?  @db.Decimal(10, 7)
+  locationLng     Decimal?  @db.Decimal(10, 7)
+  locationLabel   String?   @db.VarChar(120)
+
   ownerId         String
   owner           User      @relation(fields: [ownerId], references: [id])
   activeForUsers  User[]    @relation("UserActiveStore")

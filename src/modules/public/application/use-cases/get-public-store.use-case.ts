@@ -73,6 +73,11 @@ export class GetPublicStoreUseCase {
       exchangeRateCode: resolved?.code ?? store.exchangeRateCode,
       hours: hoursPayload,
       isOpenNow,
+      aboutShort: store.aboutShort,
+      aboutLong: store.aboutLong,
+      locationLat: store.locationLat,
+      locationLng: store.locationLng,
+      locationLabel: store.locationLabel,
     };
   }
 }

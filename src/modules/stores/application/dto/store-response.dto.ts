@@ -115,6 +115,21 @@ export class StoreResponseDto {
   @ApiProperty()
   domainVerified: boolean;
 
+  @ApiProperty({ required: false, nullable: true, maxLength: 120, description: 'BE-123: short about (≤120)' })
+  aboutShort: string | null;
+
+  @ApiProperty({ required: false, nullable: true, description: 'BE-123: long about (≤2000)' })
+  aboutLong: string | null;
+
+  @ApiProperty({ required: false, nullable: true, example: 10.213 })
+  locationLat: number | null;
+
+  @ApiProperty({ required: false, nullable: true, example: -64.682 })
+  locationLng: number | null;
+
+  @ApiProperty({ required: false, nullable: true, maxLength: 120 })
+  locationLabel: string | null;
+
   @ApiProperty()
   ownerId: string;
 
