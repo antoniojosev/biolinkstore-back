@@ -8,8 +8,8 @@ import { GetPublicCategoriesUseCase } from '../../application/use-cases/get-publ
 import { PublicStoreResponseDto } from '../../application/dto/public-store-response.dto';
 import { PublicProductResponseDto } from '../../application/dto/public-product-response.dto';
 import { PublicCategoryResponseDto } from '../../application/dto/public-category-response.dto';
+import { PublicProductFiltersDto } from '../../application/dto/public-product-filters.dto';
 import { PaginatedResult } from '@/common/interfaces/pagination.interface';
-import { ProductFilterParams } from '@/modules/products/domain/repositories/product.repository.interface';
 
 @ApiTags('Public')
 @Public()
@@ -54,10 +54,18 @@ export class PublicStoreController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'sortBy', required: false, type: String })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({ name: 'bedrooms', required: false, type: Number })
+  @ApiQuery({ name: 'bathrooms', required: false, type: Number })
+  @ApiQuery({ name: 'area_min', required: false, type: Number })
+  @ApiQuery({ name: 'area_max', required: false, type: Number })
+  @ApiQuery({ name: 'listingType', required: false, enum: ['SALE', 'RENT'] })
+  @ApiQuery({ name: 'modality', required: false, enum: ['IN_PERSON', 'ONLINE', 'HYBRID'] })
+  @ApiQuery({ name: 'duration_min', required: false, type: Number })
+  @ApiQuery({ name: 'duration_max', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Products retrieved' })
   async getProducts(
     @Param('slug') slug: string,
-    @Query() filters: ProductFilterParams,
+    @Query() filters: PublicProductFiltersDto,
   ): Promise<PaginatedResult<PublicProductResponseDto>> {
     return this.getPublicProductsUseCase.execute(slug, filters);
   }

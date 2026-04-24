@@ -98,6 +98,44 @@ export class PrismaProductRepository implements IProductRepository {
       ];
     }
 
+    // Real estate niche filter — implies realEstateData IS NOT NULL
+    const { bedrooms, bathrooms, area_min, area_max, listingType } = params;
+    const hasRealEstateFilter =
+      bedrooms !== undefined ||
+      bathrooms !== undefined ||
+      area_min !== undefined ||
+      area_max !== undefined ||
+      listingType !== undefined;
+
+    if (hasRealEstateFilter) {
+      const realEstateWhere: any = {};
+      if (bedrooms !== undefined) realEstateWhere.bedrooms = bedrooms;
+      if (bathrooms !== undefined) realEstateWhere.bathrooms = bathrooms;
+      if (area_min !== undefined || area_max !== undefined) {
+        realEstateWhere.area = {};
+        if (area_min !== undefined) realEstateWhere.area.gte = area_min;
+        if (area_max !== undefined) realEstateWhere.area.lte = area_max;
+      }
+      if (listingType !== undefined) realEstateWhere.listingType = listingType;
+      where.realEstateData = { is: realEstateWhere };
+    }
+
+    // Services niche filter — implies serviceData IS NOT NULL
+    const { modality, duration_min, duration_max } = params;
+    const hasServiceFilter =
+      modality !== undefined || duration_min !== undefined || duration_max !== undefined;
+
+    if (hasServiceFilter) {
+      const serviceWhere: any = {};
+      if (modality !== undefined) serviceWhere.modality = modality;
+      if (duration_min !== undefined || duration_max !== undefined) {
+        serviceWhere.duration = {};
+        if (duration_min !== undefined) serviceWhere.duration.gte = duration_min;
+        if (duration_max !== undefined) serviceWhere.duration.lte = duration_max;
+      }
+      where.serviceData = { is: serviceWhere };
+    }
+
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -107,6 +145,8 @@ export class PrismaProductRepository implements IProductRepository {
           },
           variants: true,
           categories: true,
+          realEstateData: true,
+          serviceData: true,
         },
         skip: calculateSkip(page, limit),
         take: limit,
