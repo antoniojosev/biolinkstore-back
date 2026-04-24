@@ -41,13 +41,23 @@ export class PublicStoreController {
   @Get(':slug/categories')
   @ApiOperation({ summary: 'Get public categories for a store (no auth required)' })
   @ApiParam({ name: 'slug', type: 'string', example: 'mi-tienda' })
+  @ApiQuery({
+    name: 'tree',
+    required: false,
+    type: Boolean,
+    description: 'If true, returns nested tree (children populated). Default: flat list.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Categories retrieved',
     type: [PublicCategoryResponseDto],
   })
-  async getCategories(@Param('slug') slug: string): Promise<PublicCategoryResponseDto[]> {
-    return this.getPublicCategoriesUseCase.execute(slug);
+  async getCategories(
+    @Param('slug') slug: string,
+    @Query('tree') tree?: string,
+  ): Promise<PublicCategoryResponseDto[]> {
+    const asTree = tree === 'true' || tree === '1';
+    return this.getPublicCategoriesUseCase.execute(slug, asTree);
   }
 
   @Get(':slug/products')
