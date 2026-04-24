@@ -22,10 +22,16 @@ import { GetExchangeRateConfigUseCase } from './application/use-cases/exchange-r
 import { UpdateExchangeRateConfigUseCase } from './application/use-cases/exchange-rate/update-exchange-rate-config.use-case';
 import { GetStoreHoursUseCase } from './application/use-cases/hours/get-store-hours.use-case';
 import { UpdateStoreHoursUseCase } from './application/use-cases/hours/update-store-hours.use-case';
+import { CreateSocialLinkUseCase } from './application/use-cases/social-links/create-social-link.use-case';
+import { ListSocialLinksUseCase } from './application/use-cases/social-links/list-social-links.use-case';
+import { UpdateSocialLinkUseCase } from './application/use-cases/social-links/update-social-link.use-case';
+import { DeleteSocialLinkUseCase } from './application/use-cases/social-links/delete-social-link.use-case';
+import { ReorderSocialLinksUseCase } from './application/use-cases/social-links/reorder-social-links.use-case';
 
 // Infrastructure
 import { PrismaStoreRepository } from './infrastructure/persistence/prisma-store.repository';
 import { PrismaStoreHoursRepository } from './infrastructure/persistence/prisma-store-hours.repository';
+import { PrismaStoreSocialLinkRepository } from './infrastructure/persistence/prisma-store-social-link.repository';
 
 // Presentation
 import { StoresController } from './presentation/controllers/stores.controller';
@@ -33,6 +39,7 @@ import { WhatsappTemplateController } from './presentation/controllers/whatsapp-
 import { ExchangeRateConfigController } from './presentation/controllers/exchange-rate-config.controller';
 import { StoreHoursController } from './presentation/controllers/store-hours.controller';
 import { ExchangeRateHistoryController } from './presentation/controllers/exchange-rate-history.controller';
+import { StoreSocialLinksController } from './presentation/controllers/store-social-links.controller';
 
 @Module({
   imports: [DatabaseModule, CurrencyModule],
@@ -42,6 +49,7 @@ import { ExchangeRateHistoryController } from './presentation/controllers/exchan
     ExchangeRateConfigController,
     StoreHoursController,
     ExchangeRateHistoryController,
+    StoreSocialLinksController,
   ],
   providers: [
     // Domain Services
@@ -63,6 +71,11 @@ import { ExchangeRateHistoryController } from './presentation/controllers/exchan
     UpdateExchangeRateConfigUseCase,
     GetStoreHoursUseCase,
     UpdateStoreHoursUseCase,
+    CreateSocialLinkUseCase,
+    ListSocialLinksUseCase,
+    UpdateSocialLinkUseCase,
+    DeleteSocialLinkUseCase,
+    ReorderSocialLinksUseCase,
 
     // Repository bindings
     {
@@ -73,6 +86,10 @@ import { ExchangeRateHistoryController } from './presentation/controllers/exchan
       provide: INJECTION_TOKENS.STORE_HOURS_REPOSITORY,
       useClass: PrismaStoreHoursRepository,
     },
+    {
+      provide: INJECTION_TOKENS.STORE_SOCIAL_LINK_REPOSITORY,
+      useClass: PrismaStoreSocialLinkRepository,
+    },
 
     // Direct repository for controller
     PrismaStoreRepository,
@@ -80,6 +97,7 @@ import { ExchangeRateHistoryController } from './presentation/controllers/exchan
   exports: [
     INJECTION_TOKENS.STORE_REPOSITORY,
     INJECTION_TOKENS.STORE_HOURS_REPOSITORY,
+    INJECTION_TOKENS.STORE_SOCIAL_LINK_REPOSITORY,
     PrismaStoreRepository,
     WhatsappTemplateEngine,
     StoreHoursService,

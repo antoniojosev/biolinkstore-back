@@ -1,4 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { SocialPlatform } from '@prisma/client';
+
+export class PublicStoreSocialDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ enum: SocialPlatform })
+  platform: SocialPlatform;
+
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  label: string | null;
+
+  @ApiProperty()
+  sortOrder: number;
+}
 
 export class PublicStoreResponseDto {
   @ApiProperty()
@@ -106,4 +124,10 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
+
+  @ApiProperty({
+    type: [PublicStoreSocialDto],
+    description: 'BE-124: visible social links sorted by sortOrder. Lazy-migrated from legacy JSON on first read.',
+  })
+  socials: PublicStoreSocialDto[];
 }

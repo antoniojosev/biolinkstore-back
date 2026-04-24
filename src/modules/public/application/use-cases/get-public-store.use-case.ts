@@ -2,7 +2,9 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
 import { IStoreHoursRepository } from '@/modules/stores/domain/repositories/store-hours.repository.interface';
+import { IStoreSocialLinkRepository } from '@/modules/stores/domain/repositories/store-social-link.repository.interface';
 import { StoreHoursService } from '@/modules/stores/domain/services/store-hours.service';
+import { buildSocialLinkRowsFromLegacyJson } from '@/modules/stores/domain/services/social-link-migration.service';
 import { ResolveRateUseCase } from '@/modules/currency/application/use-cases/resolve-rate.use-case';
 import { PublicStoreResponseDto } from '../dto/public-store-response.dto';
 
@@ -13,6 +15,8 @@ export class GetPublicStoreUseCase {
     private readonly storeRepository: IStoreRepository,
     @Inject(INJECTION_TOKENS.STORE_HOURS_REPOSITORY)
     private readonly hoursRepository: IStoreHoursRepository,
+    @Inject(INJECTION_TOKENS.STORE_SOCIAL_LINK_REPOSITORY)
+    private readonly socialRepository: IStoreSocialLinkRepository,
     private readonly hoursService: StoreHoursService,
     private readonly resolveRate: ResolveRateUseCase,
   ) {}
@@ -24,14 +28,35 @@ export class GetPublicStoreUseCase {
       throw new NotFoundException('Store not found');
     }
 
-    const [resolved, hours] = await Promise.all([
+    const [resolved, hours, socialRows] = await Promise.all([
       this.resolveRate.execute({
         exchangeRateMode: store.exchangeRateMode,
         exchangeRateCode: store.exchangeRateCode,
         customRate: store.customRate,
       }),
       this.hoursRepository.findByStoreId(store.id),
+      this.socialRepository.findByStoreId(store.id),
     ]);
+
+    // BE-124: lazy hydrate from legacy JSON if no rows yet
+    let activeSocialRows = socialRows;
+    if (socialRows.length === 0 && store.socialLinks) {
+      const seed = buildSocialLinkRowsFromLegacyJson(store.id, store.socialLinks);
+      if (seed.length > 0) {
+        await this.socialRepository.createMany(seed);
+        activeSocialRows = await this.socialRepository.findByStoreId(store.id);
+      }
+    }
+
+    const visibleSocials = activeSocialRows
+      .filter((r) => r.visible)
+      .map((r) => ({
+        id: r.id,
+        platform: r.platform,
+        url: r.url,
+        label: r.label,
+        sortOrder: r.sortOrder,
+      }));
 
     const hoursPayload = hours.length > 0
       ? hours.map((h) => ({
@@ -73,6 +98,7 @@ export class GetPublicStoreUseCase {
       exchangeRateCode: resolved?.code ?? store.exchangeRateCode,
       hours: hoursPayload,
       isOpenNow,
+      socials: visibleSocials,
     };
   }
 }
