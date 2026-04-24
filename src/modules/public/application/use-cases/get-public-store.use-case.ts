@@ -1,6 +1,8 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
+import { IStoreHoursRepository } from '@/modules/stores/domain/repositories/store-hours.repository.interface';
+import { StoreHoursService } from '@/modules/stores/domain/services/store-hours.service';
 import { ResolveRateUseCase } from '@/modules/currency/application/use-cases/resolve-rate.use-case';
 import { PublicStoreResponseDto } from '../dto/public-store-response.dto';
 
@@ -9,6 +11,9 @@ export class GetPublicStoreUseCase {
   constructor(
     @Inject(INJECTION_TOKENS.STORE_REPOSITORY)
     private readonly storeRepository: IStoreRepository,
+    @Inject(INJECTION_TOKENS.STORE_HOURS_REPOSITORY)
+    private readonly hoursRepository: IStoreHoursRepository,
+    private readonly hoursService: StoreHoursService,
     private readonly resolveRate: ResolveRateUseCase,
   ) {}
 
@@ -19,11 +24,25 @@ export class GetPublicStoreUseCase {
       throw new NotFoundException('Store not found');
     }
 
-    const resolved = await this.resolveRate.execute({
-      exchangeRateMode: store.exchangeRateMode,
-      exchangeRateCode: store.exchangeRateCode,
-      customRate: store.customRate,
-    });
+    const [resolved, hours] = await Promise.all([
+      this.resolveRate.execute({
+        exchangeRateMode: store.exchangeRateMode,
+        exchangeRateCode: store.exchangeRateCode,
+        customRate: store.customRate,
+      }),
+      this.hoursRepository.findByStoreId(store.id),
+    ]);
+
+    const hoursPayload = hours.length > 0
+      ? hours.map((h) => ({
+          dayOfWeek: h.dayOfWeek,
+          openTime: h.openTime,
+          closeTime: h.closeTime,
+          closed: h.closed,
+        }))
+      : null;
+
+    const isOpenNow = hours.length > 0 ? this.hoursService.isStoreOpenNow(hours) : false;
 
     return {
       id: store.id,
@@ -52,6 +71,8 @@ export class GetPublicStoreUseCase {
       exchangeRate: resolved?.rate ?? null,
       exchangeRateSource: resolved?.source ?? null,
       exchangeRateCode: resolved?.code ?? store.exchangeRateCode,
+      hours: hoursPayload,
+      isOpenNow,
     };
   }
 }

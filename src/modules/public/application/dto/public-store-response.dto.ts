@@ -88,4 +88,22 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ required: false, nullable: true, example: 'USD_BCV' })
   exchangeRateCode: string | null;
+
+  @ApiProperty({
+    description: '7-day operating hours (0=Sunday, 6=Saturday)',
+    required: false,
+    nullable: true,
+    example: [
+      { dayOfWeek: 0, openTime: '09:00', closeTime: '18:00', closed: true },
+    ],
+  })
+  hours: Array<{
+    dayOfWeek: number;
+    openTime: string;
+    closeTime: string;
+    closed: boolean;
+  }> | null;
+
+  @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
+  isOpenNow: boolean;
 }

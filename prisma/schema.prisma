@@ -138,6 +138,7 @@ model Store {
   paymentReports  PaymentReport[]
   inquiries       Inquiry[]
   paymentMethods  StorePaymentMethod[]
+  hours           StoreHours[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -146,6 +147,24 @@ model Store {
   @@index([slug])
   @@index([customDomain])
   @@map("stores")
+}
+
+model StoreHours {
+  id         String   @id @default(cuid())
+  storeId    String
+  dayOfWeek  Int      // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  openTime   String   // "HH:mm"
+  closeTime  String   // "HH:mm"
+  closed     Boolean  @default(false)
+
+  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([storeId, dayOfWeek])
+  @@index([storeId])
+  @@map("store_hours")
 }
 
 // ==========================================
