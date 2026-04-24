@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res, HttpStatus, NotFoundException, Headers, Ip } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Public } from '@/common/decorators/public.decorator';
@@ -7,6 +7,7 @@ import { GetPublicProductsUseCase } from '../../application/use-cases/get-public
 import { GetPublicProductUseCase } from '../../application/use-cases/get-public-product.use-case';
 import { GetPublicCategoriesUseCase } from '../../application/use-cases/get-public-categories.use-case';
 import { GenerateStoreQrUseCase } from '../../application/use-cases/generate-store-qr.use-case';
+import { CheckSlugExistsUseCase } from '../../application/use-cases/check-slug-exists.use-case';
 import { PublicStoreResponseDto } from '../../application/dto/public-store-response.dto';
 import { PublicProductResponseDto } from '../../application/dto/public-product-response.dto';
 import { PublicCategoryResponseDto } from '../../application/dto/public-category-response.dto';
@@ -23,6 +24,7 @@ export class PublicStoreController {
     private readonly getPublicProductUseCase: GetPublicProductUseCase,
     private readonly getPublicCategoriesUseCase: GetPublicCategoriesUseCase,
     private readonly generateStoreQrUseCase: GenerateStoreQrUseCase,
+    private readonly checkSlugExistsUseCase: CheckSlugExistsUseCase,
   ) {}
 
   @Get(':slug')
@@ -84,6 +86,32 @@ export class PublicStoreController {
     @Param('productSlug') productSlug: string,
   ): Promise<PublicProductResponseDto> {
     return this.getPublicProductUseCase.execute(slug, productSlug);
+  }
+
+  @Get(':slug/exists')
+  @ApiOperation({ summary: 'Check if a slug exists; logs miss when not found' })
+  @ApiParam({ name: 'slug', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Slug exists' })
+  @ApiResponse({ status: 404, description: 'Slug not found, includes suggestions' })
+  async checkExists(
+    @Param('slug') slug: string,
+    @Res() res: Response,
+    @Ip() ip: string,
+    @Headers('x-forwarded-for') forwardedFor?: string,
+    @Headers('referer') referer?: string,
+  ): Promise<void> {
+    const clientIp = forwardedFor?.split(',')[0]?.trim() || ip;
+    const result = await this.checkSlugExistsUseCase.execute(slug, {
+      ip: clientIp,
+      referrer: referer ?? null,
+    });
+
+    if (result.exists) {
+      res.status(HttpStatus.OK).json({ exists: true });
+      return;
+    }
+
+    res.status(HttpStatus.NOT_FOUND).json({ exists: false, suggested: result.suggested ?? [] });
   }
 
   @Get(':slug/qr.png')

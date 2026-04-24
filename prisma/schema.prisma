@@ -186,6 +186,18 @@ model StoreView {
   @@map("store_views")
 }
 
+model SlugMiss {
+  id        String   @id @default(cuid())
+  slug      String
+  ip        String?
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  @@index([slug])
+  @@index([createdAt])
+  @@map("slug_misses")
+}
+
 // ==========================================
 // PRODUCTOS
 // ==========================================
