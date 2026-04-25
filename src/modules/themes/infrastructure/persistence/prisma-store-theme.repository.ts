@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { StoreTheme as PrismaStoreTheme } from '@prisma/client';
+import { Prisma, StoreTheme as PrismaStoreTheme } from '@prisma/client';
 import { PrismaService } from '@/infrastructure/database/prisma/prisma.service';
 import { StoreTheme } from '../../domain/entities/store-theme.entity';
 import { IStoreThemeRepository } from '../../domain/repositories/store-theme.repository.interface';
@@ -30,5 +30,67 @@ export class PrismaStoreThemeRepository implements IStoreThemeRepository {
   async findByStoreId(storeId: string): Promise<StoreTheme | null> {
     const row = await this.prisma.storeTheme.findUnique({ where: { storeId } });
     return row ? toDomain(row) : null;
+  }
+
+  async findByStoreIdOrCreate(
+    storeId: string,
+    defaults: {
+      activeTemplate: string;
+      draftsByTemplate: Record<string, unknown>;
+    },
+  ): Promise<StoreTheme> {
+    const row = await this.prisma.storeTheme.upsert({
+      where: { storeId },
+      update: {},
+      create: {
+        storeId,
+        activeTemplate: defaults.activeTemplate,
+        draftsByTemplate: defaults.draftsByTemplate as Prisma.InputJsonValue,
+      },
+    });
+    return toDomain(row);
+  }
+
+  async updateDraftTokens(
+    storeId: string,
+    _templateKey: string,
+    draftsByTemplate: Record<string, unknown>,
+  ): Promise<StoreTheme> {
+    const row = await this.prisma.storeTheme.update({
+      where: { storeId },
+      data: {
+        draftsByTemplate: draftsByTemplate as Prisma.InputJsonValue,
+      },
+    });
+    return toDomain(row);
+  }
+
+  async updateDraftSections(
+    storeId: string,
+    _templateKey: string,
+    draftsByTemplate: Record<string, unknown>,
+  ): Promise<StoreTheme> {
+    const row = await this.prisma.storeTheme.update({
+      where: { storeId },
+      data: {
+        draftsByTemplate: draftsByTemplate as Prisma.InputJsonValue,
+      },
+    });
+    return toDomain(row);
+  }
+
+  async updateDraftsByTemplateAndActive(
+    storeId: string,
+    draftsByTemplate: Record<string, unknown>,
+    activeTemplate: string,
+  ): Promise<StoreTheme> {
+    const row = await this.prisma.storeTheme.update({
+      where: { storeId },
+      data: {
+        draftsByTemplate: draftsByTemplate as Prisma.InputJsonValue,
+        activeTemplate,
+      },
+    });
+    return toDomain(row);
   }
 }
