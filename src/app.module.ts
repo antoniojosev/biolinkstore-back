@@ -30,6 +30,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { LandingAnalyticsModule } from './modules/landing-analytics/landing-analytics.module';
 import { PaymentMethodsModule } from './modules/payment-methods/payment-methods.module';
 import { CurrencyModule } from './modules/currency/currency.module';
+import { ThemesModule } from './modules/themes/themes.module';
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -82,6 +83,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     LandingAnalyticsModule,
     PaymentMethodsModule,
     CurrencyModule,
+    ThemesModule,
   ],
   providers: [
     // Global JWT Auth Guard (can be overridden with @Public decorator)
