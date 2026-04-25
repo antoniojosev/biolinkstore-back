@@ -94,6 +94,12 @@ function buildMocks(state: MockRepoState) {
         return state.theme;
       },
     ),
+    publish: jest.fn(async () => {
+      throw new Error('not used in switch tests');
+    }),
+    swapRollback: jest.fn(async () => {
+      throw new Error('not used in switch tests');
+    }),
   };
 
   const templateRepo: ITemplateRepository = {

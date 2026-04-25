@@ -93,4 +93,81 @@ export class PrismaStoreThemeRepository implements IStoreThemeRepository {
     });
     return toDomain(row);
   }
+
+  async publish(
+    storeId: string,
+    params: {
+      publishedTemplate: string;
+      publishedTree: unknown;
+      publishedTokens: unknown;
+      rollbackTemplate: string | null;
+      rollbackTree: unknown | null;
+      rollbackTokens: unknown | null;
+      publishedAt: Date;
+      version: number;
+    },
+  ): Promise<StoreTheme> {
+    // Una sola operación update toca todos los campos a la vez, lo que es
+    // atómico por sí mismo a nivel de fila en Postgres. Envolvemos en
+    // $transaction de todas formas para honrar el contrato del repo
+    // (snapshot + promoción explícitamente atómicos) y dejar espacio si más
+    // adelante necesitamos lecturas consistentes pre-update.
+    const row = await this.prisma.$transaction(async (tx) => {
+      return tx.storeTheme.update({
+        where: { storeId },
+        data: {
+          publishedTemplate: params.publishedTemplate,
+          publishedTree: params.publishedTree as Prisma.InputJsonValue,
+          publishedTokens: params.publishedTokens as Prisma.InputJsonValue,
+          rollbackTemplate: params.rollbackTemplate,
+          rollbackTree:
+            params.rollbackTree === null
+              ? Prisma.JsonNull
+              : (params.rollbackTree as Prisma.InputJsonValue),
+          rollbackTokens:
+            params.rollbackTokens === null
+              ? Prisma.JsonNull
+              : (params.rollbackTokens as Prisma.InputJsonValue),
+          publishedAt: params.publishedAt,
+          version: params.version,
+        },
+      });
+    });
+    return toDomain(row);
+  }
+
+  async swapRollback(
+    storeId: string,
+    params: {
+      publishedTemplate: string;
+      publishedTree: unknown;
+      publishedTokens: unknown;
+      rollbackTemplate: string | null;
+      rollbackTree: unknown | null;
+      rollbackTokens: unknown | null;
+      publishedAt: Date;
+    },
+  ): Promise<StoreTheme> {
+    const row = await this.prisma.$transaction(async (tx) => {
+      return tx.storeTheme.update({
+        where: { storeId },
+        data: {
+          publishedTemplate: params.publishedTemplate,
+          publishedTree: params.publishedTree as Prisma.InputJsonValue,
+          publishedTokens: params.publishedTokens as Prisma.InputJsonValue,
+          rollbackTemplate: params.rollbackTemplate,
+          rollbackTree:
+            params.rollbackTree === null
+              ? Prisma.JsonNull
+              : (params.rollbackTree as Prisma.InputJsonValue),
+          rollbackTokens:
+            params.rollbackTokens === null
+              ? Prisma.JsonNull
+              : (params.rollbackTokens as Prisma.InputJsonValue),
+          publishedAt: params.publishedAt,
+        },
+      });
+    });
+    return toDomain(row);
+  }
 }

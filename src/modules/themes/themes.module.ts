@@ -12,6 +12,9 @@ import { UpdateDraftTokensUseCase } from './application/use-cases/update-draft-t
 import { UpdateDraftSectionsUseCase } from './application/use-cases/update-draft-sections.use-case';
 import { SwitchTemplateUseCase } from './application/use-cases/switch-template.use-case';
 import { ResetDraftUseCase } from './application/use-cases/reset-draft.use-case';
+import { PublishThemeUseCase } from './application/use-cases/publish-theme.use-case';
+import { RollbackThemeUseCase } from './application/use-cases/rollback-theme.use-case';
+import { GetPublicStoreThemeUseCase } from './application/use-cases/get-public-store-theme.use-case';
 
 // Services
 import { StoreThemeAssembler } from './application/services/store-theme-assembler.service';
@@ -25,10 +28,16 @@ import { PrismaStoreThemeRepository } from './infrastructure/persistence/prisma-
 import { TemplatesController } from './presentation/controllers/templates.controller';
 import { PalettesController } from './presentation/controllers/palettes.controller';
 import { StoreThemesController } from './presentation/controllers/store-themes.controller';
+import { PublicStoreThemeController } from './presentation/controllers/public-store-theme.controller';
 
 @Module({
   imports: [DatabaseModule, StoresModule],
-  controllers: [TemplatesController, PalettesController, StoreThemesController],
+  controllers: [
+    TemplatesController,
+    PalettesController,
+    StoreThemesController,
+    PublicStoreThemeController,
+  ],
   providers: [
     ListTemplatesUseCase,
     GetTemplateUseCase,
@@ -38,6 +47,9 @@ import { StoreThemesController } from './presentation/controllers/store-themes.c
     UpdateDraftSectionsUseCase,
     SwitchTemplateUseCase,
     ResetDraftUseCase,
+    PublishThemeUseCase,
+    RollbackThemeUseCase,
+    GetPublicStoreThemeUseCase,
 
     StoreThemeAssembler,
 

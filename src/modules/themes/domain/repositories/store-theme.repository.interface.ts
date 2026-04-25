@@ -52,4 +52,47 @@ export interface IStoreThemeRepository {
     draftsByTemplate: Record<string, unknown>,
     activeTemplate: string,
   ): Promise<StoreTheme>;
+
+  /**
+   * Publica el draft del template indicado:
+   *   - Snapshot del actual published → rollback (si había published).
+   *   - Promueve el draft del template indicado → published.
+   *   - Bumpea version y publishedAt = now.
+   *   - NO toca el draft (sigue editable).
+   *
+   * Atomicidad: la operación se ejecuta dentro de una transacción para
+   * garantizar que no quedemos en un estado parcial (rollback huérfano sin
+   * published, etc.).
+   */
+  publish(
+    storeId: string,
+    params: {
+      publishedTemplate: string;
+      publishedTree: unknown;
+      publishedTokens: unknown;
+      rollbackTemplate: string | null;
+      rollbackTree: unknown | null;
+      rollbackTokens: unknown | null;
+      publishedAt: Date;
+      version: number;
+    },
+  ): Promise<StoreTheme>;
+
+  /**
+   * Swap atómico published ↔ rollback. NO toca drafts ni activeTemplate.
+   * `publishedAt` se actualiza a `now` (acabamos de re-publicar la versión vieja).
+   * NO incrementa version.
+   */
+  swapRollback(
+    storeId: string,
+    params: {
+      publishedTemplate: string;
+      publishedTree: unknown;
+      publishedTokens: unknown;
+      rollbackTemplate: string | null;
+      rollbackTree: unknown | null;
+      rollbackTokens: unknown | null;
+      publishedAt: Date;
+    },
+  ): Promise<StoreTheme>;
 }

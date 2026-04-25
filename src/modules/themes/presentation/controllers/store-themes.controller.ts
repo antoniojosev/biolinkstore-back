@@ -23,6 +23,8 @@ import { UpdateDraftTokensUseCase } from '../../application/use-cases/update-dra
 import { UpdateDraftSectionsUseCase } from '../../application/use-cases/update-draft-sections.use-case';
 import { SwitchTemplateUseCase } from '../../application/use-cases/switch-template.use-case';
 import { ResetDraftUseCase } from '../../application/use-cases/reset-draft.use-case';
+import { PublishThemeUseCase } from '../../application/use-cases/publish-theme.use-case';
+import { RollbackThemeUseCase } from '../../application/use-cases/rollback-theme.use-case';
 import { StoreThemeResponseDto } from '../../application/dto/store-theme-response.dto';
 import { UpdateDraftTokensDto } from '../../application/dto/update-draft-tokens.dto';
 import { UpdateDraftSectionsDto } from '../../application/dto/update-draft-sections.dto';
@@ -39,6 +41,8 @@ export class StoreThemesController {
     private readonly updateDraftSections: UpdateDraftSectionsUseCase,
     private readonly switchTemplate: SwitchTemplateUseCase,
     private readonly resetDraft: ResetDraftUseCase,
+    private readonly publishTheme: PublishThemeUseCase,
+    private readonly rollbackTheme: RollbackThemeUseCase,
   ) {}
 
   @Get()
@@ -113,5 +117,33 @@ export class StoreThemesController {
   @ApiResponse({ status: 200, type: StoreThemeResponseDto })
   async reset(@Param('storeId') storeId: string): Promise<StoreThemeResponseDto> {
     return this.resetDraft.execute(storeId);
+  }
+
+  @Post('publish')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Publicar el draft activo (snapshot anterior → rollback)',
+    description:
+      'Promueve drafts[activeTemplate] a published. El published actual (si existe) se mueve a rollback. version++. publishedAt=now. El draft permanece editable.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: StoreThemeResponseDto })
+  @ApiResponse({ status: 400, description: 'No hay draft para el template activo' })
+  async publish(@Param('storeId') storeId: string): Promise<StoreThemeResponseDto> {
+    return this.publishTheme.execute(storeId);
+  }
+
+  @Post('rollback')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Volver al snapshot anterior (swap published ↔ rollback)',
+    description:
+      'Swap atómico published ↔ rollback. NO toca drafts ni activeTemplate. NO incrementa version. publishedAt=now.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: StoreThemeResponseDto })
+  @ApiResponse({ status: 400, description: 'No hay rollback disponible' })
+  async rollback(@Param('storeId') storeId: string): Promise<StoreThemeResponseDto> {
+    return this.rollbackTheme.execute(storeId);
   }
 }
