@@ -7,12 +7,14 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -25,10 +27,13 @@ import { SwitchTemplateUseCase } from '../../application/use-cases/switch-templa
 import { ResetDraftUseCase } from '../../application/use-cases/reset-draft.use-case';
 import { PublishThemeUseCase } from '../../application/use-cases/publish-theme.use-case';
 import { RollbackThemeUseCase } from '../../application/use-cases/rollback-theme.use-case';
+import { GetStorePreviewUseCase } from '../../application/use-cases/get-store-preview.use-case';
 import { StoreThemeResponseDto } from '../../application/dto/store-theme-response.dto';
 import { UpdateDraftTokensDto } from '../../application/dto/update-draft-tokens.dto';
 import { UpdateDraftSectionsDto } from '../../application/dto/update-draft-sections.dto';
 import { SwitchTemplateDto } from '../../application/dto/switch-template.dto';
+import { StorePreviewQueryDto } from '../../application/dto/store-preview-query.dto';
+import { StorePreviewResponseDto } from '../../application/dto/store-preview-response.dto';
 
 @ApiTags('Page Builder — Store Theme (edit)')
 @ApiBearerAuth()
@@ -43,6 +48,7 @@ export class StoreThemesController {
     private readonly resetDraft: ResetDraftUseCase,
     private readonly publishTheme: PublishThemeUseCase,
     private readonly rollbackTheme: RollbackThemeUseCase,
+    private readonly getStorePreview: GetStorePreviewUseCase,
   ) {}
 
   @Get()
@@ -145,5 +151,28 @@ export class StoreThemesController {
   @ApiResponse({ status: 400, description: 'No hay rollback disponible' })
   async rollback(@Param('storeId') storeId: string): Promise<StoreThemeResponseDto> {
     return this.rollbackTheme.execute(storeId);
+  }
+
+  @Get('preview')
+  @ApiOperation({
+    summary: 'Preview con datos reales del store + draft overlay',
+    description:
+      'Devuelve la tienda real (store + productos + categorías visibles) combinada con el draft del template indicado por query (`?template=`) o el activeTemplate del theme. Si no existe draft del template, usa defaults sintetizados (no persiste). Si el store no tiene productos visibles, fallback a demoData del template (mode="demo-fallback"). Lectura pura — nunca escribe en DB. Plan-gated: 403 si el plan del store no cubre el template pedido.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiQuery({
+    name: 'template',
+    required: false,
+    type: 'string',
+    description: 'Key del template a previewar. Default: theme.activeTemplate.',
+  })
+  @ApiResponse({ status: 200, type: StorePreviewResponseDto })
+  @ApiResponse({ status: 403, description: 'Plan insuficiente para template' })
+  @ApiResponse({ status: 404, description: 'Store o template no encontrado' })
+  async preview(
+    @Param('storeId') storeId: string,
+    @Query() query: StorePreviewQueryDto,
+  ): Promise<StorePreviewResponseDto> {
+    return this.getStorePreview.execute(storeId, query.template);
   }
 }
