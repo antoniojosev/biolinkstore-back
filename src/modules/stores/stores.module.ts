@@ -83,6 +83,8 @@ import { ExchangeRateHistoryController } from './presentation/controllers/exchan
     PrismaStoreRepository,
     WhatsappTemplateEngine,
     StoreHoursService,
+    // BE-127: needed by UsersModule -> CreateAdditionalStoreUseCase.
+    CreateStoreUseCase,
   ],
 })
 export class StoresModule {}
