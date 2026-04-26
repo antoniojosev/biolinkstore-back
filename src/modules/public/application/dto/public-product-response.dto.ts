@@ -98,6 +98,9 @@ export class PublicProductResponseDto {
   @ApiProperty()
   compareAtPrice: number | null;
 
+  @ApiProperty({ example: 'USD', enum: ['USD', 'EUR', 'VES'] })
+  priceCurrency: string;
+
   @ApiProperty({ type: [String] })
   images: string[];
 

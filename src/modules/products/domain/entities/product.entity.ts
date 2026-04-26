@@ -10,6 +10,7 @@ export class Product {
   description: string | null;
   basePrice: number;
   compareAtPrice: number | null;
+  priceCurrency: string;
   images: string[];
   videos: string[];
   stock: number | null;

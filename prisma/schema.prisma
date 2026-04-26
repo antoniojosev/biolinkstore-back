@@ -217,6 +217,7 @@ model Product {
 
   basePrice      Decimal  @db.Decimal(10, 2)
   compareAtPrice Decimal? @db.Decimal(10, 2)
+  priceCurrency  String   @default("USD")
 
   images String[]
   videos String[]

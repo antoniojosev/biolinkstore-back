@@ -45,6 +45,7 @@ export class CreateProductUseCase {
       description: dto.description,
       basePrice: dto.basePrice,
       compareAtPrice: dto.compareAtPrice,
+      priceCurrency: dto.priceCurrency,
       images: dto.images || [],
       videos: dto.videos || [],
       stock: dto.stock,

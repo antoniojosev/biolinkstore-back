@@ -92,6 +92,17 @@ export class CreateProductDto {
   @Min(0)
   compareAtPrice?: number;
 
+  @ApiProperty({
+    example: 'USD',
+    enum: ['USD', 'EUR', 'VES'],
+    required: false,
+    description: 'Moneda en la que el vendedor define el basePrice. Default USD.',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['USD', 'EUR', 'VES'])
+  priceCurrency?: string;
+
   @ApiProperty({ example: ['https://example.com/image1.jpg'], required: false, type: [String] })
   @IsOptional()
   @IsArray()

@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsBoolean,
   IsArray,
+  IsIn,
   MaxLength,
   Min,
   ValidateNested,
@@ -41,6 +42,16 @@ export class UpdateProductDto {
   @IsNumber()
   @Min(0)
   compareAtPrice?: number;
+
+  @ApiProperty({
+    required: false,
+    enum: ['USD', 'EUR', 'VES'],
+    description: 'Moneda en la que el vendedor define el basePrice.',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['USD', 'EUR', 'VES'])
+  priceCurrency?: string;
 
   @ApiProperty({ required: false, type: [String] })
   @IsOptional()

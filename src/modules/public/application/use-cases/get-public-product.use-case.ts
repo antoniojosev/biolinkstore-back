@@ -39,6 +39,7 @@ export class GetPublicProductUseCase {
       description: product.description,
       basePrice: product.basePrice,
       compareAtPrice: product.compareAtPrice,
+      priceCurrency: product.priceCurrency,
       images: product.images,
       videos: product.videos,
       stock: store.stockEnabled ? product.stock : null,

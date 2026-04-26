@@ -40,6 +40,7 @@ export class GetPublicProductsUseCase {
       description: product.description,
       basePrice: product.basePrice,
       compareAtPrice: product.compareAtPrice,
+      priceCurrency: product.priceCurrency,
       images: product.images,
       videos: product.videos,
       stock: store.stockEnabled ? product.stock : null, // Hide stock if disabled
