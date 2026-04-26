@@ -1,4 +1,5 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Plan } from '@prisma/client';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
@@ -6,10 +7,12 @@ import { IProductRepository } from '@/modules/products/domain/repositories/produ
 import { IVariantRepository } from '@/modules/products/domain/repositories/variant.repository.interface';
 import { IVisitorRepository } from '@/modules/analytics/domain/repositories/visitor.repository.interface';
 import { IPaymentMethodRepository } from '@/modules/payment-methods/domain/repositories/payment-method.repository.interface';
-import { ResolveRateUseCase } from '@/modules/currency/application/use-cases/resolve-rate.use-case';
+import { RateResolverService } from '@/modules/rates/application/services/rate-resolver.service';
 import { MessageGeneratorService } from '../../domain/services/message-generator.service';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderResponseDto } from '../dto/order-response.dto';
+
+const DEFAULT_PUBLIC_RATE_CODE = 'USD_BCV';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -27,17 +30,15 @@ export class CreateOrderUseCase {
     @Inject(INJECTION_TOKENS.PAYMENT_METHOD_REPOSITORY)
     private readonly paymentMethodRepository: IPaymentMethodRepository,
     private readonly messageGeneratorService: MessageGeneratorService,
-    private readonly resolveRate: ResolveRateUseCase,
+    private readonly rateResolver: RateResolverService,
   ) {}
 
   async execute(storeSlug: string, dto: CreateOrderDto): Promise<OrderResponseDto> {
-    // 1. Verify store exists
     const store = await this.storeRepository.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException('Store not found');
     }
 
-    // 2. Validate and enrich order items
     const enrichedItems = await Promise.all(
       dto.items.map(async (item) => {
         const product = await this.productRepository.findById(item.productId);
@@ -52,7 +53,6 @@ export class CreateOrderUseCase {
         let variantName: string | null = null;
         let price = product.basePrice;
 
-        // If variant specified, validate and get variant price
         if (item.variantId) {
           const variant = await this.variantRepository.findById(item.variantId);
           if (!variant || variant.productId !== product.id) {
@@ -78,24 +78,20 @@ export class CreateOrderUseCase {
       }),
     );
 
-    // 3. Calculate totals
     const subtotal = enrichedItems.reduce(
       (sum, item) => sum + item.unitPrice * item.quantity,
       0,
     );
-    const total = subtotal; // Can add taxes, shipping, etc. here
+    const total = subtotal;
 
-    // 4. Determine WhatsApp number
     let whatsappNumber = dto.whatsappNumber;
     if (dto.channel === 'WHATSAPP' && !whatsappNumber) {
-      // Use store's first WhatsApp number if not provided
       if (store.whatsappNumbers.length === 0) {
         throw new BadRequestException('Store has no WhatsApp numbers configured');
       }
       whatsappNumber = store.whatsappNumbers[0];
     }
 
-    // 5. Look up visitor record if visitorId provided
     let dbVisitorId: string | undefined;
     if (dto.visitorId) {
       const visitor = await this.visitorRepository.findByStoreAndVisitorId(
@@ -107,7 +103,6 @@ export class CreateOrderUseCase {
       }
     }
 
-    // 6. Validate payment method (if provided) belongs to this store and is enabled
     if (dto.paymentMethodId) {
       const method = await this.paymentMethodRepository.findById(dto.paymentMethodId);
       if (!method || method.storeId !== store.id) {
@@ -118,15 +113,11 @@ export class CreateOrderUseCase {
       }
     }
 
-    // 7. Snapshot effective exchange rate at order creation time (BE-117)
-    const resolvedRate = await this.resolveRate.execute({
-      exchangeRateMode: store.exchangeRateMode,
-      exchangeRateCode: store.exchangeRateCode,
-      customRate: store.customRate,
-      storeId: store.id,
-    });
+    // Snapshot de la tasa publica resuelta — lo que vio el cliente al pedir.
+    // Source: store.currencyConfig.defaultRate (PRO/BUSINESS) o USD_BCV (FREE/default).
+    const publicRateCode = this.resolvePublicRateCode(store);
+    const resolvedPublic = await this.rateResolver.resolveOfficial(publicRateCode);
 
-    // 8. Create order intent
     const order = await this.orderRepository.create({
       storeId: store.id,
       visitorId: dbVisitorId,
@@ -142,11 +133,10 @@ export class CreateOrderUseCase {
       channel: dto.channel,
       whatsappNumber,
       paymentMethodId: dto.paymentMethodId,
-      exchangeRateSnapshot: resolvedRate?.rate ?? null,
-      exchangeRateSourceSnapshot: resolvedRate?.source ?? null,
+      rateCodeSnapshot: resolvedPublic ? resolvedPublic.code : null,
+      valueVesSnapshot: resolvedPublic ? resolvedPublic.valueVes : null,
     });
 
-    // 7. Generate WhatsApp message
     const message = this.messageGeneratorService.generateWhatsAppMessage(order, {
       name: store.name,
       slug: store.slug,
@@ -159,7 +149,6 @@ export class CreateOrderUseCase {
       ? this.messageGeneratorService.generateWhatsAppUrl(whatsappNumber, message)
       : null;
 
-    // 8. Return order response
     return {
       id: order.id,
       storeId: order.storeId,
@@ -189,6 +178,16 @@ export class CreateOrderUseCase {
       payment: order.payment,
       createdAt: order.createdAt,
     };
+  }
+
+  private resolvePublicRateCode(store: { subscription?: { plan: Plan }; currencyConfig: any }): string {
+    const plan = store.subscription?.plan ?? Plan.FREE;
+    if (plan === Plan.FREE) return DEFAULT_PUBLIC_RATE_CODE;
+    const config = (store.currencyConfig ?? {}) as { defaultRate?: unknown };
+    if (typeof config.defaultRate === 'string' && config.defaultRate.length > 0) {
+      return config.defaultRate;
+    }
+    return DEFAULT_PUBLIC_RATE_CODE;
   }
 
   private generateVariantName(combination: any): string {

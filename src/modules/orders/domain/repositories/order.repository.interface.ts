@@ -37,6 +37,6 @@ export interface CreateOrderData {
   whatsappNumber?: string;
   messageGenerated?: string;
   paymentMethodId?: string;
-  exchangeRateSnapshot?: number | null;
-  exchangeRateSourceSnapshot?: string | null;
+  rateCodeSnapshot?: string | null;
+  valueVesSnapshot?: number | null;
 }

@@ -28,9 +28,9 @@ export class PrismaOrderRepository implements IOrderRepository {
       subtotal: Number(order.subtotal),
       total: Number(order.total),
       currency: order.currency,
-      exchangeRateSnapshot:
-        order.exchangeRateSnapshot != null ? Number(order.exchangeRateSnapshot) : null,
-      exchangeRateSourceSnapshot: order.exchangeRateSourceSnapshot ?? null,
+      rateCodeSnapshot: order.rateCodeSnapshot ?? null,
+      valueVesSnapshot:
+        order.valueVesSnapshot != null ? Number(order.valueVesSnapshot) : null,
       customerName: order.customerName,
       customerPhone: order.customerPhone,
       customerEmail: order.customerEmail,
@@ -104,8 +104,8 @@ export class PrismaOrderRepository implements IOrderRepository {
         whatsappNumber: data.whatsappNumber,
         messageGenerated: data.messageGenerated,
         paymentMethodId: data.paymentMethodId,
-        exchangeRateSnapshot: data.exchangeRateSnapshot ?? null,
-        exchangeRateSourceSnapshot: data.exchangeRateSourceSnapshot ?? null,
+        rateCodeSnapshot: data.rateCodeSnapshot ?? null,
+        valueVesSnapshot: data.valueVesSnapshot ?? null,
         items: {
           create: data.items,
         },

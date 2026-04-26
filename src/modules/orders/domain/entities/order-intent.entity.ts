@@ -16,8 +16,8 @@ export class OrderIntent {
   subtotal: number;
   total: number;
   currency: string;
-  exchangeRateSnapshot: number | null;
-  exchangeRateSourceSnapshot: string | null;
+  rateCodeSnapshot: string | null;
+  valueVesSnapshot: number | null;
   customerName: string | null;
   customerPhone: string | null;
   customerEmail: string | null;

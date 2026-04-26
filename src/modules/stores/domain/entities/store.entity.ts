@@ -1,4 +1,4 @@
-import { ExchangeRateMode, Plan, SubscriptionStatus } from '@prisma/client';
+import { Plan, SubscriptionStatus } from '@prisma/client';
 
 export interface StoreSocialLinks {
   instagram?: string;
@@ -39,9 +39,6 @@ export class Store {
   checkoutConfig: any;
   currencyConfig: any;
   whatsappTemplate: string | null;
-  exchangeRateMode: ExchangeRateMode;
-  exchangeRateCode: string;
-  customRate: number | null;
   stockEnabled: boolean;
   showBranding: boolean;
 

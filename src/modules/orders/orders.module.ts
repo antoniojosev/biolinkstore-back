@@ -5,7 +5,7 @@ import { StoresModule } from '../stores/stores.module';
 import { ProductsModule } from '../products/products.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { PaymentMethodsModule } from '../payment-methods/payment-methods.module';
-import { CurrencyModule } from '../currency/currency.module';
+import { RatesModule } from '../rates/rates.module';
 
 // Domain Services
 import { MessageGeneratorService } from './domain/services/message-generator.service';
@@ -28,7 +28,7 @@ import { OrdersController } from './presentation/controllers/orders.controller';
     StoresModule,
     ProductsModule,
     PaymentMethodsModule,
-    CurrencyModule,
+    RatesModule,
     forwardRef(() => AnalyticsModule),
   ],
   controllers: [OrdersController],

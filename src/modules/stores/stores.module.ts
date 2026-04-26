@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
-import { CurrencyModule } from '@/modules/currency/currency.module';
 
 // Domain
 import { SlugGeneratorService } from './domain/services/slug-generator.service';
@@ -18,8 +17,6 @@ import { GetStoreCountsUseCase } from './application/use-cases/get-store-counts.
 import { GetWhatsappTemplateUseCase } from './application/use-cases/whatsapp/get-whatsapp-template.use-case';
 import { UpdateWhatsappTemplateUseCase } from './application/use-cases/whatsapp/update-whatsapp-template.use-case';
 import { PreviewWhatsappTemplateUseCase } from './application/use-cases/whatsapp/preview-whatsapp-template.use-case';
-import { GetExchangeRateConfigUseCase } from './application/use-cases/exchange-rate/get-exchange-rate-config.use-case';
-import { UpdateExchangeRateConfigUseCase } from './application/use-cases/exchange-rate/update-exchange-rate-config.use-case';
 import { GetStoreHoursUseCase } from './application/use-cases/hours/get-store-hours.use-case';
 import { UpdateStoreHoursUseCase } from './application/use-cases/hours/update-store-hours.use-case';
 
@@ -30,19 +27,11 @@ import { PrismaStoreHoursRepository } from './infrastructure/persistence/prisma-
 // Presentation
 import { StoresController } from './presentation/controllers/stores.controller';
 import { WhatsappTemplateController } from './presentation/controllers/whatsapp-template.controller';
-import { ExchangeRateConfigController } from './presentation/controllers/exchange-rate-config.controller';
 import { StoreHoursController } from './presentation/controllers/store-hours.controller';
-import { ExchangeRateHistoryController } from './presentation/controllers/exchange-rate-history.controller';
 
 @Module({
-  imports: [DatabaseModule, CurrencyModule],
-  controllers: [
-    StoresController,
-    WhatsappTemplateController,
-    ExchangeRateConfigController,
-    StoreHoursController,
-    ExchangeRateHistoryController,
-  ],
+  imports: [DatabaseModule],
+  controllers: [StoresController, WhatsappTemplateController, StoreHoursController],
   providers: [
     // Domain Services
     SlugGeneratorService,
@@ -59,8 +48,6 @@ import { ExchangeRateHistoryController } from './presentation/controllers/exchan
     GetWhatsappTemplateUseCase,
     UpdateWhatsappTemplateUseCase,
     PreviewWhatsappTemplateUseCase,
-    GetExchangeRateConfigUseCase,
-    UpdateExchangeRateConfigUseCase,
     GetStoreHoursUseCase,
     UpdateStoreHoursUseCase,
 
