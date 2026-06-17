@@ -113,6 +113,8 @@ import { StoreDomainController } from './presentation/controllers/store-domain.c
     PrismaStoreRepository,
     WhatsappTemplateEngine,
     StoreHoursService,
+    // BE-127: needed by UsersModule -> CreateAdditionalStoreUseCase.
+    CreateStoreUseCase,
   ],
 })
 export class StoresModule {}

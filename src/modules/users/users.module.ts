@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { DatabaseModule } from '@/infrastructure/database/database.module';
+import { StoresModule } from '@/modules/stores/stores.module';
 
 // Application
 import { GetUserUseCase } from './application/use-cases/get-user.use-case';
@@ -8,6 +9,8 @@ import { CreateUserUseCase } from './application/use-cases/create-user.use-case'
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case';
 import { ListMyStoresUseCase } from './application/use-cases/list-my-stores.use-case';
 import { ActivateUserStoreUseCase } from './application/use-cases/activate-user-store.use-case';
+import { SwitchActiveStoreUseCase } from './application/use-cases/switch-active-store.use-case';
+import { CreateAdditionalStoreUseCase } from './application/use-cases/create-additional-store.use-case';
 
 // Infrastructure
 import { PrismaUserRepository } from './infrastructure/persistence/prisma-user.repository';
@@ -19,7 +22,7 @@ import { UsersController } from './presentation/controllers/users.controller';
 import { PasswordService } from '@/modules/auth/domain/services/password.service';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, StoresModule],
   controllers: [UsersController],
   providers: [
     // Use Cases
@@ -28,6 +31,8 @@ import { PasswordService } from '@/modules/auth/domain/services/password.service
     UpdateUserUseCase,
     ListMyStoresUseCase,
     ActivateUserStoreUseCase,
+    SwitchActiveStoreUseCase,
+    CreateAdditionalStoreUseCase,
 
     // Domain services
     PasswordService,
