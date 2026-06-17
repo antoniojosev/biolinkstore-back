@@ -23,6 +23,18 @@ import {
   ListStoreEventsQueryDto,
   ListStoreEventsResponseDto,
 } from '../../application/dto/list-store-events.dto';
+import { GetAnalyticsSummaryUseCase } from '../../application/use-cases/get-analytics-summary.use-case';
+import { GetTopProductsUseCase } from '../../application/use-cases/get-top-products.use-case';
+import { GetFunnelUseCase } from '../../application/use-cases/get-funnel.use-case';
+import { GetSourcesUseCase } from '../../application/use-cases/get-sources.use-case';
+import {
+  FunnelResponseDto,
+  PeriodQueryDto,
+  SourcesResponseDto,
+  SummaryResponseDto,
+  TopProductsQueryDto,
+  TopProductsResponseDto,
+} from '../../application/dto/dashboard-analytics.dto';
 import { PaginationDto } from '@/common/interfaces/pagination.interface';
 
 @ApiTags('Analytics')
@@ -36,6 +48,10 @@ export class AnalyticsController {
     private readonly getStoreAnalyticsUseCase: GetStoreAnalyticsUseCase,
     private readonly trackStoreEventUseCase: TrackStoreEventUseCase,
     private readonly listStoreEventsUseCase: ListStoreEventsUseCase,
+    private readonly getAnalyticsSummaryUseCase: GetAnalyticsSummaryUseCase,
+    private readonly getTopProductsUseCase: GetTopProductsUseCase,
+    private readonly getFunnelUseCase: GetFunnelUseCase,
+    private readonly getSourcesUseCase: GetSourcesUseCase,
   ) {}
 
   @Public()
@@ -171,5 +187,73 @@ export class AnalyticsController {
     @Query() query: ListStoreEventsQueryDto,
   ): Promise<ListStoreEventsResponseDto> {
     return this.listStoreEventsUseCase.execute(storeId, query);
+  }
+
+  // ===========================================================================
+  // BE-126: dashboard aggregations (LRU-cached, plan-gated)
+  // ===========================================================================
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, StoreOwnerGuard)
+  @Get('stores/:storeId/analytics/summary')
+  @ApiOperation({
+    summary:
+      'Aggregated dashboard summary for a period (BE-126). Includes views, event counts, conversionRate, prevPeriod and trend deltas.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: SummaryResponseDto })
+  async getAnalyticsSummary(
+    @Param('storeId') storeId: string,
+    @Query() query: PeriodQueryDto,
+  ): Promise<SummaryResponseDto> {
+    return this.getAnalyticsSummaryUseCase.execute(storeId, query.period);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, StoreOwnerGuard)
+  @Get('stores/:storeId/analytics/top-products')
+  @ApiOperation({
+    summary:
+      'Top products by weighted score (BE-126): views*1 + addToCarts*3 + whatsappClicks*5.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: TopProductsResponseDto })
+  async getTopProducts(
+    @Param('storeId') storeId: string,
+    @Query() query: TopProductsQueryDto,
+  ): Promise<TopProductsResponseDto> {
+    return this.getTopProductsUseCase.execute(storeId, query.period, query.limit);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, StoreOwnerGuard)
+  @Get('stores/:storeId/analytics/funnel')
+  @ApiOperation({
+    summary:
+      'Conversion funnel store_view -> product_view -> add_to_cart -> whatsapp_click (BE-126). PRO/BUSINESS only.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: FunnelResponseDto })
+  async getFunnel(
+    @Param('storeId') storeId: string,
+    @Query() query: PeriodQueryDto,
+  ): Promise<FunnelResponseDto> {
+    return this.getFunnelUseCase.execute(storeId, query.period);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, StoreOwnerGuard)
+  @Get('stores/:storeId/analytics/sources')
+  @ApiOperation({
+    summary:
+      'Traffic source breakdown by referrer host (BE-126). Hosts collapsed into canonical buckets (instagram.com, direct, ...). PRO/BUSINESS only.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: SourcesResponseDto })
+  async getSources(
+    @Param('storeId') storeId: string,
+    @Query() query: PeriodQueryDto,
+  ): Promise<SourcesResponseDto> {
+    return this.getSourcesUseCase.execute(storeId, query.period);
   }
 }
