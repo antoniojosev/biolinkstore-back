@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/infrastructure/database/prisma/prisma.service';
 import {
   IStoreRepository,
@@ -70,9 +71,17 @@ export class PrismaStoreRepository implements IStoreRepository {
   }
 
   async update(id: string, data: UpdateStoreData): Promise<Store> {
+    const { socialLinks, ...rest } = data;
+    const prismaData: Prisma.StoreUpdateInput = { ...rest };
+
+    if (socialLinks !== undefined) {
+      prismaData.socialLinks =
+        socialLinks === null ? Prisma.JsonNull : (socialLinks as Prisma.InputJsonValue);
+    }
+
     const store = await this.prisma.store.update({
       where: { id },
-      data,
+      data: prismaData,
       include: { subscription: true },
     });
     return StoreMapper.toDomain(store);

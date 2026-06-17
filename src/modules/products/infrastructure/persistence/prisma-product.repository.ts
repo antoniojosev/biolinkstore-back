@@ -24,6 +24,8 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -44,6 +46,8 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -94,6 +98,44 @@ export class PrismaProductRepository implements IProductRepository {
       ];
     }
 
+    // Real estate niche filter — implies realEstateData IS NOT NULL
+    const { bedrooms, bathrooms, area_min, area_max, listingType } = params;
+    const hasRealEstateFilter =
+      bedrooms !== undefined ||
+      bathrooms !== undefined ||
+      area_min !== undefined ||
+      area_max !== undefined ||
+      listingType !== undefined;
+
+    if (hasRealEstateFilter) {
+      const realEstateWhere: any = {};
+      if (bedrooms !== undefined) realEstateWhere.bedrooms = bedrooms;
+      if (bathrooms !== undefined) realEstateWhere.bathrooms = bathrooms;
+      if (area_min !== undefined || area_max !== undefined) {
+        realEstateWhere.area = {};
+        if (area_min !== undefined) realEstateWhere.area.gte = area_min;
+        if (area_max !== undefined) realEstateWhere.area.lte = area_max;
+      }
+      if (listingType !== undefined) realEstateWhere.listingType = listingType;
+      where.realEstateData = { is: realEstateWhere };
+    }
+
+    // Services niche filter — implies serviceData IS NOT NULL
+    const { modality, duration_min, duration_max } = params;
+    const hasServiceFilter =
+      modality !== undefined || duration_min !== undefined || duration_max !== undefined;
+
+    if (hasServiceFilter) {
+      const serviceWhere: any = {};
+      if (modality !== undefined) serviceWhere.modality = modality;
+      if (duration_min !== undefined || duration_max !== undefined) {
+        serviceWhere.duration = {};
+        if (duration_min !== undefined) serviceWhere.duration.gte = duration_min;
+        if (duration_max !== undefined) serviceWhere.duration.lte = duration_max;
+      }
+      where.serviceData = { is: serviceWhere };
+    }
+
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -103,6 +145,8 @@ export class PrismaProductRepository implements IProductRepository {
           },
           variants: true,
           categories: true,
+          realEstateData: true,
+          serviceData: true,
         },
         skip: calculateSkip(page, limit),
         take: limit,
@@ -122,10 +166,11 @@ export class PrismaProductRepository implements IProductRepository {
         storeId: data.storeId,
         name: data.name,
         slug: data.slug,
+        tagline: data.tagline,
         description: data.description,
         basePrice: data.basePrice,
         compareAtPrice: data.compareAtPrice,
-        prices: data.prices,
+        priceCurrency: data.priceCurrency ?? 'USD',
         images: data.images || [],
         videos: data.videos || [],
         stock: data.stock,
@@ -146,6 +191,25 @@ export class PrismaProductRepository implements IProductRepository {
               })),
             }
           : undefined,
+        realEstateData: data.realEstateData
+          ? {
+              create: {
+                bedrooms: data.realEstateData.bedrooms ?? null,
+                bathrooms: data.realEstateData.bathrooms ?? null,
+                area: data.realEstateData.area ?? null,
+                listingType: data.realEstateData.listingType ?? null,
+              },
+            }
+          : undefined,
+        serviceData: data.serviceData
+          ? {
+              create: {
+                duration: data.serviceData.duration ?? null,
+                modality: data.serviceData.modality ?? null,
+                coverage: data.serviceData.coverage ?? null,
+              },
+            }
+          : undefined,
       },
       include: {
         attributes: {
@@ -153,6 +217,8 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -172,15 +238,56 @@ export class PrismaProductRepository implements IProductRepository {
         }
       : {};
 
+    const realEstateUpdate = data.realEstateData
+      ? {
+          realEstateData: {
+            upsert: {
+              create: {
+                bedrooms: data.realEstateData.bedrooms ?? null,
+                bathrooms: data.realEstateData.bathrooms ?? null,
+                area: data.realEstateData.area ?? null,
+                listingType: data.realEstateData.listingType ?? null,
+              },
+              update: {
+                bedrooms: data.realEstateData.bedrooms,
+                bathrooms: data.realEstateData.bathrooms,
+                area: data.realEstateData.area,
+                listingType: data.realEstateData.listingType,
+              },
+            },
+          },
+        }
+      : {};
+
+    const serviceUpdate = data.serviceData
+      ? {
+          serviceData: {
+            upsert: {
+              create: {
+                duration: data.serviceData.duration ?? null,
+                modality: data.serviceData.modality ?? null,
+                coverage: data.serviceData.coverage ?? null,
+              },
+              update: {
+                duration: data.serviceData.duration,
+                modality: data.serviceData.modality,
+                coverage: data.serviceData.coverage,
+              },
+            },
+          },
+        }
+      : {};
+
     const product = await this.prisma.product.update({
       where: { id },
       data: {
         name: data.name,
         slug: data.slug,
+        tagline: data.tagline,
         description: data.description,
         basePrice: data.basePrice,
         compareAtPrice: data.compareAtPrice,
-        prices: data.prices,
+        priceCurrency: data.priceCurrency,
         images: data.images,
         videos: data.videos,
         stock: data.stock,
@@ -190,6 +297,8 @@ export class PrismaProductRepository implements IProductRepository {
         isOnSale: data.isOnSale,
         sortOrder: data.sortOrder,
         ...categoryUpdate,
+        ...realEstateUpdate,
+        ...serviceUpdate,
       },
       include: {
         attributes: {
@@ -197,6 +306,8 @@ export class PrismaProductRepository implements IProductRepository {
         },
         variants: true,
         categories: true,
+        realEstateData: true,
+        serviceData: true,
       },
     });
 
@@ -217,5 +328,9 @@ export class PrismaProductRepository implements IProductRepository {
       },
     });
     return count > 0;
+  }
+
+  async countByStoreId(storeId: string): Promise<number> {
+    return this.prisma.product.count({ where: { storeId } });
   }
 }

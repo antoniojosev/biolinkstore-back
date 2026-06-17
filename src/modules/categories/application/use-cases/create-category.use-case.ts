@@ -5,6 +5,7 @@ import { generateSlug } from '@/common/utils/slug.util';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { CategoryResponseDto } from '../dto/category-response.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
+import { validateParent } from '../validate-parent.util';
 
 @Injectable()
 export class CreateCategoryUseCase {
@@ -14,6 +15,8 @@ export class CreateCategoryUseCase {
   ) {}
 
   async execute(storeId: string, dto: CreateCategoryDto): Promise<CategoryResponseDto> {
+    await validateParent(this.categoryRepository, storeId, dto.parentId);
+
     // Generate unique slug
     const baseSlug = generateSlug(dto.name);
     let slug = baseSlug;
@@ -32,6 +35,7 @@ export class CreateCategoryUseCase {
       image: dto.image,
       isVisible: dto.isVisible ?? true,
       sortOrder: dto.sortOrder ?? 0,
+      parentId: dto.parentId ?? null,
     });
 
     return CategoryMapper.toResponse(category);

@@ -1,13 +1,17 @@
+import { ProductRealEstateData } from './product-real-estate-data.entity';
+import { ProductServiceData } from './product-service-data.entity';
+
 export class Product {
   id: string;
   storeId: string;
   name: string;
   slug: string;
+  tagline: string | null;
   description: string | null;
   tagline: string | null;
   basePrice: number;
   compareAtPrice: number | null;
-  prices: any;
+  priceCurrency: string;
   images: string[];
   videos: string[];
   stock: number | null;
@@ -19,6 +23,8 @@ export class Product {
   attributes?: ProductAttribute[];
   variants?: ProductVariant[];
   categoryIds?: string[];
+  realEstateData?: ProductRealEstateData | null;
+  serviceData?: ProductServiceData | null;
   createdAt: Date;
   updatedAt: Date;
 

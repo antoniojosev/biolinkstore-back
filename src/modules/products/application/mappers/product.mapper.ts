@@ -2,15 +2,27 @@ import {
   Product as PrismaProduct,
   ProductAttribute as PrismaAttribute,
   ProductVariant as PrismaVariant,
+  ProductRealEstateData as PrismaRealEstateData,
+  ProductServiceData as PrismaServiceData,
   CategoriesOnProducts,
 } from '@prisma/client';
 import { Product, ProductAttribute, ProductVariant } from '../../domain/entities/product.entity';
+import {
+  ProductRealEstateData,
+  RealEstateListingType,
+} from '../../domain/entities/product-real-estate-data.entity';
+import {
+  ProductServiceData,
+  ServiceModality,
+} from '../../domain/entities/product-service-data.entity';
 import { ProductResponseDto, ProductAttributeResponseDto, ProductVariantResponseDto } from '../dto/product-response.dto';
 
 type ProductWithRelations = PrismaProduct & {
   attributes?: PrismaAttribute[];
   variants?: PrismaVariant[];
   categories?: CategoriesOnProducts[];
+  realEstateData?: PrismaRealEstateData | null;
+  serviceData?: PrismaServiceData | null;
 };
 
 export class ProductMapper {
@@ -20,11 +32,12 @@ export class ProductMapper {
       storeId: prismaProduct.storeId,
       name: prismaProduct.name,
       slug: prismaProduct.slug,
+      tagline: prismaProduct.tagline,
       description: prismaProduct.description,
       tagline: prismaProduct.tagline ?? null,
       basePrice: Number(prismaProduct.basePrice),
       compareAtPrice: prismaProduct.compareAtPrice ? Number(prismaProduct.compareAtPrice) : null,
-      prices: prismaProduct.prices,
+      priceCurrency: prismaProduct.priceCurrency,
       images: prismaProduct.images,
       videos: prismaProduct.videos,
       stock: prismaProduct.stock,
@@ -54,6 +67,35 @@ export class ProductMapper {
         isAvailable: variant.isAvailable,
       })),
       categoryIds: prismaProduct.categories?.map((cat) => cat.categoryId),
+      realEstateData: prismaProduct.realEstateData
+        ? new ProductRealEstateData({
+            id: prismaProduct.realEstateData.id,
+            productId: prismaProduct.realEstateData.productId,
+            bedrooms: prismaProduct.realEstateData.bedrooms,
+            bathrooms: prismaProduct.realEstateData.bathrooms,
+            area: prismaProduct.realEstateData.area
+              ? Number(prismaProduct.realEstateData.area)
+              : null,
+            listingType: prismaProduct.realEstateData.listingType as RealEstateListingType | null,
+            createdAt: prismaProduct.realEstateData.createdAt,
+            updatedAt: prismaProduct.realEstateData.updatedAt,
+          })
+        : prismaProduct.realEstateData === null
+          ? null
+          : undefined,
+      serviceData: prismaProduct.serviceData
+        ? new ProductServiceData({
+            id: prismaProduct.serviceData.id,
+            productId: prismaProduct.serviceData.productId,
+            duration: prismaProduct.serviceData.duration,
+            modality: prismaProduct.serviceData.modality as ServiceModality | null,
+            coverage: prismaProduct.serviceData.coverage,
+            createdAt: prismaProduct.serviceData.createdAt,
+            updatedAt: prismaProduct.serviceData.updatedAt,
+          })
+        : prismaProduct.serviceData === null
+          ? null
+          : undefined,
       createdAt: prismaProduct.createdAt,
       updatedAt: prismaProduct.updatedAt,
     });
@@ -65,11 +107,12 @@ export class ProductMapper {
       storeId: product.storeId,
       name: product.name,
       slug: product.slug,
+      tagline: product.tagline,
       description: product.description,
       tagline: product.tagline,
       basePrice: product.basePrice,
       compareAtPrice: product.compareAtPrice,
-      prices: product.prices,
+      priceCurrency: product.priceCurrency,
       images: product.images,
       videos: product.videos,
       stock: product.stock,
@@ -97,6 +140,27 @@ export class ProductMapper {
         isAvailable: variant.isAvailable,
       })),
       categoryIds: product.categoryIds,
+      realEstateData: product.realEstateData
+        ? {
+            id: product.realEstateData.id,
+            bedrooms: product.realEstateData.bedrooms,
+            bathrooms: product.realEstateData.bathrooms,
+            area: product.realEstateData.area,
+            listingType: product.realEstateData.listingType,
+          }
+        : product.realEstateData === null
+          ? null
+          : undefined,
+      serviceData: product.serviceData
+        ? {
+            id: product.serviceData.id,
+            duration: product.serviceData.duration,
+            modality: product.serviceData.modality,
+            coverage: product.serviceData.coverage,
+          }
+        : product.serviceData === null
+          ? null
+          : undefined,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     };

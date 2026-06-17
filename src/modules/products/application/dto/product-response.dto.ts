@@ -1,6 +1,37 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Decimal } from '@prisma/client/runtime/library';
 
+export class ProductRealEstateDataResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ nullable: true })
+  bedrooms: number | null;
+
+  @ApiProperty({ nullable: true })
+  bathrooms: number | null;
+
+  @ApiProperty({ nullable: true })
+  area: number | null;
+
+  @ApiProperty({ nullable: true, enum: ['SALE', 'RENT'] })
+  listingType: 'SALE' | 'RENT' | null;
+}
+
+export class ProductServiceDataResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ nullable: true })
+  duration: number | null;
+
+  @ApiProperty({ nullable: true, enum: ['IN_PERSON', 'ONLINE', 'HYBRID'] })
+  modality: 'IN_PERSON' | 'ONLINE' | 'HYBRID' | null;
+
+  @ApiProperty({ nullable: true })
+  coverage: string | null;
+}
+
 export class ProductAttributeResponseDto {
   @ApiProperty()
   id: string;
@@ -14,7 +45,7 @@ export class ProductAttributeResponseDto {
   @ApiProperty()
   type: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'variant' })
   role: string;
 
   @ApiProperty({ required: false })
@@ -60,6 +91,9 @@ export class ProductResponseDto {
   @ApiProperty()
   slug: string;
 
+  @ApiProperty({ required: false, nullable: true })
+  tagline: string | null;
+
   @ApiProperty()
   description: string | null;
 
@@ -72,8 +106,8 @@ export class ProductResponseDto {
   @ApiProperty()
   compareAtPrice: number | null;
 
-  @ApiProperty()
-  prices: any;
+  @ApiProperty({ example: 'USD', enum: ['USD', 'EUR', 'VES'] })
+  priceCurrency: string;
 
   @ApiProperty({ type: [String] })
   images: string[];
@@ -107,6 +141,12 @@ export class ProductResponseDto {
 
   @ApiProperty({ type: [String], required: false })
   categoryIds?: string[];
+
+  @ApiProperty({ type: ProductRealEstateDataResponseDto, required: false, nullable: true })
+  realEstateData?: ProductRealEstateDataResponseDto | null;
+
+  @ApiProperty({ type: ProductServiceDataResponseDto, required: false, nullable: true })
+  serviceData?: ProductServiceDataResponseDto | null;
 
   @ApiProperty()
   createdAt: Date;

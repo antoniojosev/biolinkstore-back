@@ -52,8 +52,20 @@ export class PublicStoreResponseDto {
   @ApiProperty()
   email: string | null;
 
+  @ApiProperty({ required: false, nullable: true })
+  phone: string | null;
+
   @ApiProperty()
   address: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  socialLinks: {
+    instagram?: string;
+    tiktok?: string;
+    facebook?: string;
+    whatsapp?: string;
+    twitter?: string;
+  } | null;
 
   @ApiProperty()
   businessHours: any;
@@ -61,6 +73,27 @@ export class PublicStoreResponseDto {
   @ApiProperty()
   showBranding: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    description: 'Configuracion de moneda. Para tasas resueltas, consultar GET /public/:slug/rates.',
+  })
   currencyConfig: any;
+
+  @ApiProperty({
+    description: '7-day operating hours (0=Sunday, 6=Saturday)',
+    required: false,
+    nullable: true,
+    example: [
+      { dayOfWeek: 0, openTime: '09:00', closeTime: '18:00', closed: true },
+    ],
+  })
+  hours: Array<{
+    dayOfWeek: number;
+    openTime: string;
+    closeTime: string;
+    closed: boolean;
+  }> | null;
+
+  @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
+  isOpenNow: boolean;
 }

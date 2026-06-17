@@ -41,6 +41,7 @@ export class GetPublicProductsUseCase {
       tagline: product.tagline,
       basePrice: product.basePrice,
       compareAtPrice: product.compareAtPrice,
+      priceCurrency: product.priceCurrency,
       images: product.images,
       videos: product.videos,
       stock: store.stockEnabled ? product.stock : null, // Hide stock if disabled
@@ -69,6 +70,21 @@ export class GetPublicProductsUseCase {
         name: '', // Would need to fetch category names if needed
         slug: '',
       })),
+      realEstateData: product.realEstateData
+        ? {
+            bedrooms: product.realEstateData.bedrooms,
+            bathrooms: product.realEstateData.bathrooms,
+            area: product.realEstateData.area,
+            listingType: product.realEstateData.listingType,
+          }
+        : null,
+      serviceData: product.serviceData
+        ? {
+            duration: product.serviceData.duration,
+            modality: product.serviceData.modality,
+            coverage: product.serviceData.coverage,
+          }
+        : null,
     }));
 
     return {

@@ -79,4 +79,13 @@ export class CreateOrderDto {
   @IsOptional()
   @IsString()
   visitorId?: string;
+
+  @ApiProperty({
+    example: 'payment-method-id',
+    required: false,
+    description: 'Id del StorePaymentMethod seleccionado por el cliente',
+  })
+  @IsOptional()
+  @IsString()
+  paymentMethodId?: string;
 }

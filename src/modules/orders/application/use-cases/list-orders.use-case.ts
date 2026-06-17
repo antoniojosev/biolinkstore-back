@@ -53,6 +53,8 @@ export class ListOrdersUseCase {
         whatsappNumber: order.whatsappNumber,
         messageGenerated: order.messageGenerated,
         whatsappUrl,
+        paymentMethodId: order.paymentMethodId,
+        payment: order.payment,
         createdAt: order.createdAt,
       };
     });

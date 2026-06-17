@@ -26,4 +26,13 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsNumber()
   sortOrder?: number;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description: 'Id de la categoria padre. Null para mover a raiz.',
+  })
+  @IsOptional()
+  @IsString()
+  parentId?: string | null;
 }

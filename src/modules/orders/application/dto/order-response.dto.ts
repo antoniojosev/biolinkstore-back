@@ -72,6 +72,18 @@ export class OrderResponseDto {
   @ApiProperty()
   whatsappUrl: string | null;
 
+  @ApiProperty({ required: false, nullable: true })
+  paymentMethodId: string | null;
+
+  @ApiProperty({ required: false, nullable: true, type: 'object', additionalProperties: true })
+  payment: {
+    id: string;
+    label: string;
+    type: string;
+    details: Record<string, unknown>;
+    instructions: string | null;
+  } | null;
+
   @ApiProperty()
   createdAt: Date;
 }

@@ -4,15 +4,27 @@ import {
   IsOptional,
   IsBoolean,
   IsArray,
+  IsIn,
+  MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { UpdateProductRealEstateDataDto } from './update-product-real-estate-data.dto';
+import { UpdateProductServiceDataDto } from './update-product-service-data.dto';
 
 export class UpdateProductDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   name?: string;
+
+  @ApiProperty({ required: false, maxLength: 80, nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  tagline?: string | null;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -30,6 +42,16 @@ export class UpdateProductDto {
   @IsNumber()
   @Min(0)
   compareAtPrice?: number;
+
+  @ApiProperty({
+    required: false,
+    enum: ['USD', 'EUR', 'VES'],
+    description: 'Moneda en la que el vendedor define el basePrice.',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['USD', 'EUR', 'VES'])
+  priceCurrency?: string;
 
   @ApiProperty({ required: false, type: [String] })
   @IsOptional()
@@ -74,4 +96,16 @@ export class UpdateProductDto {
   @IsArray()
   @IsString({ each: true })
   categoryIds?: string[];
+
+  @ApiProperty({ type: UpdateProductRealEstateDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateProductRealEstateDataDto)
+  realEstateData?: UpdateProductRealEstateDataDto;
+
+  @ApiProperty({ type: UpdateProductServiceDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateProductServiceDataDto)
+  serviceData?: UpdateProductServiceDataDto;
 }

@@ -33,9 +33,26 @@ export class UpdateProductUseCase {
       slug = undefined;
     }
 
+    const { realEstateData, serviceData, ...rest } = dto;
+
     const product = await this.productRepository.update(productId, {
-      ...dto,
+      ...rest,
       slug,
+      realEstateData: realEstateData
+        ? {
+            bedrooms: realEstateData.bedrooms ?? null,
+            bathrooms: realEstateData.bathrooms ?? null,
+            area: realEstateData.area ?? null,
+            listingType: realEstateData.listingType ?? null,
+          }
+        : undefined,
+      serviceData: serviceData
+        ? {
+            duration: serviceData.duration ?? null,
+            modality: serviceData.modality ?? null,
+            coverage: serviceData.coverage ?? null,
+          }
+        : undefined,
     });
 
     return ProductMapper.toResponse(product);

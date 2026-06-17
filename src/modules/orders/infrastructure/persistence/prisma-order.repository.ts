@@ -28,6 +28,9 @@ export class PrismaOrderRepository implements IOrderRepository {
       subtotal: Number(order.subtotal),
       total: Number(order.total),
       currency: order.currency,
+      rateCodeSnapshot: order.rateCodeSnapshot ?? null,
+      valueVesSnapshot:
+        order.valueVesSnapshot != null ? Number(order.valueVesSnapshot) : null,
       customerName: order.customerName,
       customerPhone: order.customerPhone,
       customerEmail: order.customerEmail,
@@ -37,6 +40,16 @@ export class PrismaOrderRepository implements IOrderRepository {
       channel: order.channel,
       whatsappNumber: order.whatsappNumber,
       messageGenerated: order.messageGenerated,
+      paymentMethodId: order.paymentMethodId ?? null,
+      payment: order.paymentMethod
+        ? {
+            id: order.paymentMethod.id,
+            label: order.paymentMethod.label,
+            type: order.paymentMethod.type,
+            details: (order.paymentMethod.details ?? {}) as Record<string, unknown>,
+            instructions: order.paymentMethod.instructions,
+          }
+        : null,
       createdAt: order.createdAt,
     });
   }
@@ -44,7 +57,7 @@ export class PrismaOrderRepository implements IOrderRepository {
   async findById(id: string): Promise<OrderIntent | null> {
     const order = await this.prisma.orderIntent.findUnique({
       where: { id },
-      include: { items: true },
+      include: { items: true, paymentMethod: true },
     });
 
     if (!order) return null;
@@ -63,7 +76,7 @@ export class PrismaOrderRepository implements IOrderRepository {
     const [orders, total] = await Promise.all([
       this.prisma.orderIntent.findMany({
         where,
-        include: { items: true },
+        include: { items: true, paymentMethod: true },
         skip: calculateSkip(page, limit),
         take: limit,
         orderBy: { [sortBy]: sortOrder },
@@ -90,11 +103,14 @@ export class PrismaOrderRepository implements IOrderRepository {
         channel: data.channel,
         whatsappNumber: data.whatsappNumber,
         messageGenerated: data.messageGenerated,
+        paymentMethodId: data.paymentMethodId,
+        rateCodeSnapshot: data.rateCodeSnapshot ?? null,
+        valueVesSnapshot: data.valueVesSnapshot ?? null,
         items: {
           create: data.items,
         },
       },
-      include: { items: true },
+      include: { items: true, paymentMethod: true },
     });
 
     return this.mapToEntity(order);
@@ -104,7 +120,7 @@ export class PrismaOrderRepository implements IOrderRepository {
     const order = await this.prisma.orderIntent.update({
       where: { id },
       data: { status },
-      include: { items: true },
+      include: { items: true, paymentMethod: true },
     });
 
     return this.mapToEntity(order);

@@ -16,6 +16,16 @@ export class PublicCategoryResponseDto {
   @ApiProperty()
   image: string | null;
 
+  @ApiProperty({ required: false, nullable: true })
+  parentId: string | null;
+
   @ApiProperty()
   productCount: number;
+
+  @ApiProperty({
+    required: false,
+    type: () => [PublicCategoryResponseDto],
+    description: 'Child categories (only populated when ?tree=true)',
+  })
+  children?: PublicCategoryResponseDto[];
 }

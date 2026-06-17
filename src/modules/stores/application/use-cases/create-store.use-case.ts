@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '../../domain/repositories/store.repository.interface';
@@ -17,6 +17,9 @@ export class CreateStoreUseCase {
   ) {}
 
   async execute(userId: string, dto: CreateStoreDto): Promise<StoreResponseDto> {
+    // BE-118: Plan gate — FREE/PRO allowed a single store; BUSINESS unlimited.
+    await this.enforceStoreLimit(userId);
+
     // Use username as slug if provided, otherwise a random temp value
     const slug = dto.username ?? randomUUID().replace(/-/g, '').slice(0, 16);
 
@@ -58,5 +61,24 @@ export class CreateStoreUseCase {
 
     const store = StoreMapper.toDomain(result);
     return StoreMapper.toResponse(store);
+  }
+
+  private async enforceStoreLimit(userId: string): Promise<void> {
+    const existingStores = await this.prisma.store.findMany({
+      where: { ownerId: userId },
+      include: { subscription: true },
+    });
+
+    if (existingStores.length === 0) return;
+
+    const hasBusinessPlan = existingStores.some(
+      (s) => s.subscription?.plan === Plan.BUSINESS,
+    );
+
+    if (!hasBusinessPlan) {
+      throw new ForbiddenException(
+        'Your current plan only allows a single store. Upgrade to BUSINESS for multiple stores.',
+      );
+    }
   }
 }

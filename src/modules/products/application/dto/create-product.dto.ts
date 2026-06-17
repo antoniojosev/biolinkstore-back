@@ -5,12 +5,28 @@ import {
   IsBoolean,
   IsArray,
   IsObject,
+  IsIn,
+  MaxLength,
   ValidateNested,
+  Validate,
   Min,
   ArrayMinSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductAttributeOptionsMetaConstraint } from './validators/attribute-options-meta.validator';
+import { CreateProductRealEstateDataDto } from './create-product-real-estate-data.dto';
+import { CreateProductServiceDataDto } from './create-product-service-data.dto';
+
+export const ATTRIBUTE_TYPES = ['text', 'color', 'size', 'multi-select', 'number'] as const;
+export const ATTRIBUTE_ROLES = [
+  'variant',
+  'ingredient-included',
+  'ingredient-extra',
+  'spec',
+  'dietary',
+  'availability',
+] as const;
 
 export class ProductAttributeDto {
   @ApiProperty({ example: 'Talla' })
@@ -23,14 +39,24 @@ export class ProductAttributeDto {
   @ArrayMinSize(1)
   options: string[];
 
-  @ApiProperty({ example: 'text', required: false })
+  @ApiProperty({ example: 'text', enum: ATTRIBUTE_TYPES, required: false })
   @IsOptional()
-  @IsString()
+  @IsIn(ATTRIBUTE_TYPES as unknown as string[])
   type?: string;
 
-  @ApiProperty({ example: { Rojo: { hex: '#FF0000', images: [] } }, required: false })
+  @ApiProperty({ example: 'variant', enum: ATTRIBUTE_ROLES, required: false })
+  @IsOptional()
+  @IsIn(ATTRIBUTE_ROLES as unknown as string[])
+  role?: string;
+
+  @ApiProperty({
+    description:
+      'Variant: { [option]: { hex, images } }. Multi-select/ingredients: { [option]: { priceDelta: number, default?: boolean } }',
+    required: false,
+  })
   @IsOptional()
   @IsObject()
+  @Validate(ProductAttributeOptionsMetaConstraint)
   optionsMeta?: Record<string, any>;
 
   @ApiProperty({ example: 1, required: false })
@@ -43,6 +69,12 @@ export class CreateProductDto {
   @ApiProperty({ example: 'Camiseta Básica' })
   @IsString()
   name: string;
+
+  @ApiProperty({ example: 'Doble carne · cheddar', required: false, maxLength: 80 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  tagline?: string;
 
   @ApiProperty({ example: 'Camiseta de algodón 100%', required: false })
   @IsOptional()
@@ -59,6 +91,17 @@ export class CreateProductDto {
   @IsNumber()
   @Min(0)
   compareAtPrice?: number;
+
+  @ApiProperty({
+    example: 'USD',
+    enum: ['USD', 'EUR', 'VES'],
+    required: false,
+    description: 'Moneda en la que el vendedor define el basePrice. Default USD.',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['USD', 'EUR', 'VES'])
+  priceCurrency?: string;
 
   @ApiProperty({ example: ['https://example.com/image1.jpg'], required: false, type: [String] })
   @IsOptional()
@@ -110,4 +153,16 @@ export class CreateProductDto {
   @IsArray()
   @IsString({ each: true })
   categoryIds?: string[];
+
+  @ApiProperty({ type: CreateProductRealEstateDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateProductRealEstateDataDto)
+  realEstateData?: CreateProductRealEstateDataDto;
+
+  @ApiProperty({ type: CreateProductServiceDataDto, required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateProductServiceDataDto)
+  serviceData?: CreateProductServiceDataDto;
 }

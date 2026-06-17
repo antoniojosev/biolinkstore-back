@@ -1,5 +1,13 @@
 import { Plan, SubscriptionStatus } from '@prisma/client';
 
+export interface StoreSocialLinks {
+  instagram?: string;
+  tiktok?: string;
+  facebook?: string;
+  whatsapp?: string;
+  twitter?: string;
+}
+
 export class Store {
   id: string;
   slug: string;
@@ -23,11 +31,14 @@ export class Store {
   facebookUrl: string | null;
   tiktokUrl: string | null;
   email: string | null;
+  phone: string | null;
   address: string | null;
+  socialLinks: StoreSocialLinks | null;
   businessHours: any;
 
   checkoutConfig: any;
   currencyConfig: any;
+  whatsappTemplate: string | null;
   stockEnabled: boolean;
   showBranding: boolean;
 
