@@ -28,7 +28,7 @@ export class WatermarkService {
           dominant-baseline="middle"
           transform="rotate(-30, ${width / 2}, ${height / 2})"
           class="wm"
-        >Bio Link Store</text>
+        >ByLink</text>
       </svg>
     `);
 

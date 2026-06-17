@@ -13,6 +13,9 @@ export class PublicProductAttributeDto {
   @ApiProperty()
   type: string;
 
+  @ApiProperty()
+  role: string;
+
   @ApiProperty({ required: false })
   optionsMeta: any;
 
@@ -66,6 +69,9 @@ export class PublicProductResponseDto {
 
   @ApiProperty()
   description: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  tagline: string | null;
 
   @ApiProperty()
   basePrice: number;

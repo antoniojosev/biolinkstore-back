@@ -50,8 +50,8 @@ export class ContactUseCase {
 <body style="margin:0;padding:0;background:#0d1218;font-family:system-ui,sans-serif;color:#e5e7eb;">
   <div style="max-width:560px;margin:32px auto;background:#131920;border:1px solid #ffffff18;border-radius:16px;overflow:hidden;">
 
-    <div style="background:linear-gradient(135deg,#33b38020,#327be215);border-bottom:1px solid #ffffff12;padding:28px 32px;">
-      <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:0.08em;color:#33b380;text-transform:uppercase;">Bio Link Store</p>
+    <div style="background:linear-gradient(135deg,#0F6BA820,#327be215);border-bottom:1px solid #ffffff12;padding:28px 32px;">
+      <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:0.08em;color:#0F6BA8;text-transform:uppercase;">ByLink</p>
       <h1 style="margin:0;font-size:22px;font-weight:700;color:#fff;">Nueva solicitud — ${typeLabel}</h1>
       <p style="margin:6px 0 0;font-size:13px;color:#9ca3af;">${dto.storeName}</p>
     </div>
@@ -68,7 +68,7 @@ export class ContactUseCase {
     </div>
 
     <div style="padding:16px 32px;border-top:1px solid #ffffff0a;text-align:center;">
-      <p style="margin:0;font-size:11px;color:#374151;">Bio Link Store · ${new Date().toLocaleString('es-VE')}</p>
+      <p style="margin:0;font-size:11px;color:#374151;">ByLink · ${new Date().toLocaleString('es-VE')}</p>
     </div>
 
   </div>
@@ -97,11 +97,11 @@ export class ContactUseCase {
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0f14; color: #ffffff; line-height: 1.6; }
     .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
     .card { background: linear-gradient(145deg, #111920 0%, #0a0f14 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 40px; }
-    h1 { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #33b380; }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #0F6BA8; }
     .field { margin-bottom: 16px; }
     .label { font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
     .value { font-size: 16px; color: #ffffff; }
-    .badge { display: inline-block; background: linear-gradient(135deg, #33b380 0%, #2a9669 100%); color: #ffffff; padding: 4px 12px; border-radius: 4px; font-size: 14px; font-weight: 600; }
+    .badge { display: inline-block; background: linear-gradient(135deg, #0F6BA8 0%, #0b5486 100%); color: #ffffff; padding: 4px 12px; border-radius: 4px; font-size: 14px; font-weight: 600; }
   </style>
 </head>
 <body>

@@ -44,7 +44,7 @@ export class ForgotPasswordUseCase {
 
     const html = this.getResetPasswordEmailHtml(user.name || 'Usuario', resetUrl);
 
-    await this.emailService.sendEmail(dto.email, 'Recupera tu contraseña - Bio Link Store', html);
+    await this.emailService.sendEmail(dto.email, 'Recupera tu contraseña - ByLink', html);
 
     return { message: 'Si el email existe, recibirás instrucciones para recuperar tu contraseña' };
   }
@@ -55,7 +55,7 @@ export class ForgotPasswordUseCase {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera tu contraseña — Bio Link Store</title>
+  <title>Recupera tu contraseña — ByLink</title>
 </head>
 <body style="margin:0;padding:0;background-color:#111318;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#111318;min-height:100%;">
@@ -69,8 +69,8 @@ export class ForgotPasswordUseCase {
             <td align="center" style="padding:0 0 32px 0;">
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td align="center" style="font-size:22px;font-weight:700;color:#33b380;letter-spacing:-0.3px;">
-                    Bio Link Store
+                  <td align="center" style="font-size:22px;font-weight:700;color:#0F6BA8;letter-spacing:-0.3px;">
+                    ByLink
                   </td>
                 </tr>
               </table>
@@ -135,7 +135,7 @@ export class ForgotPasswordUseCase {
                   <td align="center" style="padding:32px 40px;">
                     <table cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td align="center" style="background-color:#33b380;border-radius:8px;">
+                        <td align="center" style="background-color:#0F6BA8;border-radius:8px;">
                           <a href="${resetUrl}" target="_blank" style="display:inline-block;padding:14px 40px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.2px;">
                             Restablecer contraseña
                           </a>
@@ -194,7 +194,7 @@ export class ForgotPasswordUseCase {
                 Si no solicitaste este cambio, podés ignorar este email.
               </p>
               <p style="margin:0;font-size:12px;color:#52555e;">
-                &copy; 2026 Bio Link Store
+                &copy; 2026 ByLink
               </p>
             </td>
           </tr>
