@@ -71,9 +71,21 @@ export class PrismaStoreRepository implements IStoreRepository {
   }
 
   async create(data: CreateStoreData): Promise<Store> {
-    const store = await this.prisma.store.create({
-      data,
-      include: { subscription: true },
+    // Crea Store + StoreMember(role=OWNER) en la misma transaction.
+    // Garantiza que el creador siempre quede como OWNER en la tabla de miembros.
+    const store = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.store.create({
+        data,
+        include: { subscription: true },
+      });
+      await tx.storeMember.create({
+        data: {
+          storeId: created.id,
+          userId: created.ownerId,
+          role: 'OWNER',
+        },
+      });
+      return created;
     });
     return StoreMapper.toDomain(store);
   }

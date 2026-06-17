@@ -26,10 +26,12 @@ model User {
   resetToken        String?
   resetTokenExpires DateTime?
 
-  accounts       Account[]
-  stores         Store[]
-  refreshTokens  RefreshToken[]
-  landingVisitor LandingVisitor?
+  accounts         Account[]
+  stores           Store[]
+  refreshTokens    RefreshToken[]
+  landingVisitor   LandingVisitor?
+  storeMemberships StoreMember[]
+  invitationsSent  StoreInvitation[] @relation("InvitationsSentByUser")
 
   // BE-118: multi-catalog support. Points to the store the user last activated.
   activeStoreId String?
@@ -160,6 +162,9 @@ model Store {
   domain         StoreDomain?
   events         StoreEvent[]
   themes         StoreTheme?
+  members        StoreMember[]
+  invitations    StoreInvitation[]
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -661,7 +666,6 @@ model DomainAddon {
   id      String @id @default(cuid())
   storeId String @unique
 
-<<<<<<< HEAD
   domain    String       @unique
   status    DomainStatus @default(PENDING_VERIFICATION)
   sslStatus SSLStatus    @default(PENDING)
@@ -674,27 +678,19 @@ model DomainAddon {
   stripeSubscriptionId String?
 
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-=======
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("domain_addons")
+}
+
 // BE-121: kind of primary CTA the storefront shows
 enum StoreCtaType {
   WHATSAPP
   EXTERNAL_LINK
   CALL
   NONE
-}
-
-model ExchangeRate {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  rate      Decimal  @db.Decimal(18, 8)
-  source    String
-  fetchedAt DateTime
->>>>>>> feat/store-cta-config
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("domain_addons")
 }
 
 enum DomainStatus {
@@ -852,8 +848,6 @@ enum PaymentMethodType {
   OTHER
 }
 
-// ==========================================
-<<<<<<< HEAD
 // TASAS DE CAMBIO
 // ==========================================
 
@@ -917,7 +911,9 @@ enum CustomRateMode {
   MANUAL
   FORMULA
   API
-=======
+}
+
+// ==========================================
 // PAGE BUILDER (BE-120a) — templates, paletas, theme por store
 // ==========================================
 
@@ -983,5 +979,60 @@ model StoreTheme {
   updatedAt   DateTime  @updatedAt
 
   @@map("store_themes")
->>>>>>> feat/page-builder-tests-e2e
+}
+
+// ==========================================
+// TEAM MEMBERS (multi-miembro por tienda con roles fijos)
+// ==========================================
+
+model StoreMember {
+  id      String @id @default(cuid())
+  storeId String
+  userId  String
+
+  role StoreMemberRole
+
+  invitedBy String?
+  joinedAt  DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, userId])
+  @@index([storeId, role])
+  @@index([userId])
+  @@map("store_members")
+}
+
+model StoreInvitation {
+  id      String          @id @default(cuid())
+  storeId String
+  email   String
+  role    StoreMemberRole
+  token   String          @unique
+
+  invitedBy String
+  inviter   User   @relation("InvitationsSentByUser", fields: [invitedBy], references: [id])
+
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  declinedAt DateTime?
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([email])
+  @@map("store_invitations")
+}
+
+enum StoreMemberRole {
+  OWNER
+  ADMIN
+  STAFF
 }
