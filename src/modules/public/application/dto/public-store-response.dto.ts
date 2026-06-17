@@ -1,5 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { StoreCtaType } from '@prisma/client';
+import { SocialPlatform, StoreCtaType } from '@prisma/client';
 
 export class PublicStoreCtaDto {
   @ApiProperty({ enum: StoreCtaType, example: 'WHATSAPP' })
@@ -10,6 +9,23 @@ export class PublicStoreCtaDto {
 
   @ApiProperty({ required: false, nullable: true })
   url: string | null;
+}
+
+export class PublicStoreSocialDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ enum: SocialPlatform })
+  platform: SocialPlatform;
+
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  label: string | null;
+
+  @ApiProperty()
+  sortOrder: number;
 }
 
 export class PublicStoreResponseDto {
@@ -109,13 +125,12 @@ export class PublicStoreResponseDto {
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
 
-<<<<<<< HEAD
   @ApiProperty({
     type: PublicStoreCtaDto,
     description: 'Configurable primary CTA (BE-121). Storefront resolves URL based on type.',
   })
   cta: PublicStoreCtaDto;
-=======
+
   // BE-123: structured info
   @ApiProperty({ required: false, nullable: true, maxLength: 120 })
   aboutShort: string | null;
@@ -131,5 +146,10 @@ export class PublicStoreResponseDto {
 
   @ApiProperty({ required: false, nullable: true, maxLength: 120 })
   locationLabel: string | null;
->>>>>>> feat/store-info-extended
+
+  @ApiProperty({
+    type: [PublicStoreSocialDto],
+    description: 'BE-124: visible social links sorted by sortOrder. Lazy-migrated from legacy JSON on first read.',
+  })
+  socials: PublicStoreSocialDto[];
 }

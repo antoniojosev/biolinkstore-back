@@ -156,6 +156,7 @@ model Store {
   hours          StoreHours[]
   views          StoreView[]
   customRates    StoreCustomRate[]
+  socialLinkRows StoreSocialLink[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -164,6 +165,38 @@ model Store {
   @@index([slug])
   @@index([customDomain])
   @@map("stores")
+}
+
+// BE-124: per-store social links as a relational table.
+// Replaces (long-term) the legacy `Store.socialLinks` JSON. We keep both:
+// reads do a lazy hydration from JSON when no rows exist; writes go to this table.
+model StoreSocialLink {
+  id        String           @id @default(cuid())
+  storeId   String
+  platform  SocialPlatform
+  url       String
+  label     String?          @db.VarChar(60)
+  sortOrder Int              @default(0)
+  visible   Boolean          @default(true)
+
+  store     Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([storeId, sortOrder])
+  @@index([storeId, visible, sortOrder])
+  @@map("store_social_links")
+}
+
+enum SocialPlatform {
+  IG
+  TIKTOK
+  FACEBOOK
+  TWITTER
+  YOUTUBE
+  THREADS
+  WHATSAPP
 }
 
 model StoreHours {
