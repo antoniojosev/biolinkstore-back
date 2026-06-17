@@ -4,6 +4,7 @@ import { IStoreRepository } from '@/modules/stores/domain/repositories/store.rep
 import { IProductRepository, ProductFilterParams } from '@/modules/products/domain/repositories/product.repository.interface';
 import { PaginatedResult } from '@/common/interfaces/pagination.interface';
 import { PublicProductResponseDto } from '../dto/public-product-response.dto';
+import { resolvePublicStore } from '../services/resolve-public-store.helper';
 
 @Injectable()
 export class GetPublicProductsUseCase {
@@ -18,8 +19,8 @@ export class GetPublicProductsUseCase {
     slug: string,
     params: ProductFilterParams,
   ): Promise<PaginatedResult<PublicProductResponseDto>> {
-    // Verify store exists
-    const store = await this.storeRepository.findBySlug(slug);
+    // BE-122: resolve via slug or verified custom domain
+    const store = await resolvePublicStore(this.storeRepository, slug);
     if (!store) {
       throw new NotFoundException('Store not found');
     }

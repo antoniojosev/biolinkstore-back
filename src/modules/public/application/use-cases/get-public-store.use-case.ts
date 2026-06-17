@@ -6,6 +6,7 @@ import { IStoreSocialLinkRepository } from '@/modules/stores/domain/repositories
 import { StoreHoursService } from '@/modules/stores/domain/services/store-hours.service';
 import { buildSocialLinkRowsFromLegacyJson } from '@/modules/stores/domain/services/social-link-migration.service';
 import { PublicStoreResponseDto } from '../dto/public-store-response.dto';
+import { resolvePublicStore } from '../services/resolve-public-store.helper';
 
 @Injectable()
 export class GetPublicStoreUseCase {
@@ -19,8 +20,9 @@ export class GetPublicStoreUseCase {
     private readonly hoursService: StoreHoursService,
   ) {}
 
-  async execute(slug: string): Promise<PublicStoreResponseDto> {
-    const store = await this.storeRepository.findBySlug(slug);
+  async execute(slugOrDomain: string): Promise<PublicStoreResponseDto> {
+    // BE-122: try slug first, then verified custom domain.
+    const store = await resolvePublicStore(this.storeRepository, slugOrDomain);
 
     if (!store) {
       throw new NotFoundException('Store not found');

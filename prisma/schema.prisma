@@ -157,6 +157,7 @@ model Store {
   views          StoreView[]
   customRates    StoreCustomRate[]
   socialLinkRows StoreSocialLink[]
+  domain         StoreDomain?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -171,18 +172,18 @@ model Store {
 // Replaces (long-term) the legacy `Store.socialLinks` JSON. We keep both:
 // reads do a lazy hydration from JSON when no rows exist; writes go to this table.
 model StoreSocialLink {
-  id        String           @id @default(cuid())
+  id        String         @id @default(cuid())
   storeId   String
   platform  SocialPlatform
   url       String
-  label     String?          @db.VarChar(60)
-  sortOrder Int              @default(0)
-  visible   Boolean          @default(true)
+  label     String?        @db.VarChar(60)
+  sortOrder Int            @default(0)
+  visible   Boolean        @default(true)
 
-  store     Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([storeId, sortOrder])
   @@index([storeId, visible, sortOrder])
@@ -197,6 +198,31 @@ enum SocialPlatform {
   YOUTUBE
   THREADS
   WHATSAPP
+}
+
+// BE-122: custom domain hosted by the store. Verified lazily via DNS TXT.
+model StoreDomain {
+  id                String            @id @default(cuid())
+  storeId           String            @unique
+  domain            String            @unique
+  verificationToken String            @unique
+  status            StoreDomainStatus @default(PENDING)
+  verifiedAt        DateTime?
+  lastCheckedAt     DateTime?
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("store_domains")
+}
+
+enum StoreDomainStatus {
+  PENDING
+  VERIFIED
+  FAILED
 }
 
 model StoreHours {

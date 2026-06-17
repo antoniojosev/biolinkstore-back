@@ -24,17 +24,24 @@ import { ListSocialLinksUseCase } from './application/use-cases/social-links/lis
 import { UpdateSocialLinkUseCase } from './application/use-cases/social-links/update-social-link.use-case';
 import { DeleteSocialLinkUseCase } from './application/use-cases/social-links/delete-social-link.use-case';
 import { ReorderSocialLinksUseCase } from './application/use-cases/social-links/reorder-social-links.use-case';
+import { RegisterDomainUseCase } from './application/use-cases/domain/register-domain.use-case';
+import { GetDomainUseCase } from './application/use-cases/domain/get-domain.use-case';
+import { VerifyDomainUseCase } from './application/use-cases/domain/verify-domain.use-case';
+import { DeleteDomainUseCase } from './application/use-cases/domain/delete-domain.use-case';
 
 // Infrastructure
 import { PrismaStoreRepository } from './infrastructure/persistence/prisma-store.repository';
 import { PrismaStoreHoursRepository } from './infrastructure/persistence/prisma-store-hours.repository';
 import { PrismaStoreSocialLinkRepository } from './infrastructure/persistence/prisma-store-social-link.repository';
+import { PrismaStoreDomainRepository } from './infrastructure/persistence/prisma-store-domain.repository';
+import { NodeDnsTxtResolver } from './infrastructure/dns/node-dns-txt-resolver';
 
 // Presentation
 import { StoresController } from './presentation/controllers/stores.controller';
 import { WhatsappTemplateController } from './presentation/controllers/whatsapp-template.controller';
 import { StoreHoursController } from './presentation/controllers/store-hours.controller';
 import { StoreSocialLinksController } from './presentation/controllers/store-social-links.controller';
+import { StoreDomainController } from './presentation/controllers/store-domain.controller';
 
 @Module({
   imports: [DatabaseModule],
@@ -43,6 +50,7 @@ import { StoreSocialLinksController } from './presentation/controllers/store-soc
     WhatsappTemplateController,
     StoreHoursController,
     StoreSocialLinksController,
+    StoreDomainController,
   ],
   providers: [
     // Domain Services
@@ -67,6 +75,10 @@ import { StoreSocialLinksController } from './presentation/controllers/store-soc
     UpdateSocialLinkUseCase,
     DeleteSocialLinkUseCase,
     ReorderSocialLinksUseCase,
+    RegisterDomainUseCase,
+    GetDomainUseCase,
+    VerifyDomainUseCase,
+    DeleteDomainUseCase,
 
     // Repository bindings
     {
@@ -81,6 +93,14 @@ import { StoreSocialLinksController } from './presentation/controllers/store-soc
       provide: INJECTION_TOKENS.STORE_SOCIAL_LINK_REPOSITORY,
       useClass: PrismaStoreSocialLinkRepository,
     },
+    {
+      provide: INJECTION_TOKENS.STORE_DOMAIN_REPOSITORY,
+      useClass: PrismaStoreDomainRepository,
+    },
+    {
+      provide: INJECTION_TOKENS.DNS_TXT_RESOLVER,
+      useClass: NodeDnsTxtResolver,
+    },
 
     // Direct repository for controller
     PrismaStoreRepository,
@@ -89,6 +109,7 @@ import { StoreSocialLinksController } from './presentation/controllers/store-soc
     INJECTION_TOKENS.STORE_REPOSITORY,
     INJECTION_TOKENS.STORE_HOURS_REPOSITORY,
     INJECTION_TOKENS.STORE_SOCIAL_LINK_REPOSITORY,
+    INJECTION_TOKENS.STORE_DOMAIN_REPOSITORY,
     PrismaStoreRepository,
     WhatsappTemplateEngine,
     StoreHoursService,

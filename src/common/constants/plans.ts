@@ -19,7 +19,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxProducts: 20,
     maxImages: 5,
     maxCategories: 5,
-    customDomain: true,
+    customDomain: false,
     analytics: 'basic',
     removeBranding: false,
     proTemplates: false,

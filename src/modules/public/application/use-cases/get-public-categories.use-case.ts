@@ -3,6 +3,7 @@ import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
 import { ICategoryRepository } from '@/modules/categories/domain/repositories/category.repository.interface';
 import { PublicCategoryResponseDto } from '../dto/public-category-response.dto';
+import { resolvePublicStore } from '../services/resolve-public-store.helper';
 
 @Injectable()
 export class GetPublicCategoriesUseCase {
@@ -14,8 +15,8 @@ export class GetPublicCategoriesUseCase {
   ) {}
 
   async execute(slug: string, tree = false): Promise<PublicCategoryResponseDto[]> {
-    // Verify store exists
-    const store = await this.storeRepository.findBySlug(slug);
+    // BE-122: resolve via slug or verified custom domain
+    const store = await resolvePublicStore(this.storeRepository, slug);
     if (!store) {
       throw new NotFoundException('Store not found');
     }

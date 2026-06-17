@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as QRCode from 'qrcode';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
+import { resolvePublicStore } from '../services/resolve-public-store.helper';
 
 export interface StoreQrResult {
   buffer: Buffer;
@@ -20,7 +21,8 @@ export class GenerateStoreQrUseCase {
   ) {}
 
   async execute(slug: string): Promise<StoreQrResult> {
-    const store = await this.storeRepository.findBySlug(slug);
+    // BE-122: resolve via slug or verified custom domain
+    const store = await resolvePublicStore(this.storeRepository, slug);
 
     if (!store) {
       throw new NotFoundException('Store not found');

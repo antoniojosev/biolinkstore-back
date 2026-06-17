@@ -3,6 +3,7 @@ import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
 import { IProductRepository } from '@/modules/products/domain/repositories/product.repository.interface';
 import { PublicProductResponseDto } from '../dto/public-product-response.dto';
+import { resolvePublicStore } from '../services/resolve-public-store.helper';
 
 @Injectable()
 export class GetPublicProductUseCase {
@@ -14,8 +15,8 @@ export class GetPublicProductUseCase {
   ) {}
 
   async execute(storeSlug: string, productSlug: string): Promise<PublicProductResponseDto> {
-    // Verify store exists
-    const store = await this.storeRepository.findBySlug(storeSlug);
+    // BE-122: resolve via slug or verified custom domain
+    const store = await resolvePublicStore(this.storeRepository, storeSlug);
     if (!store) {
       throw new NotFoundException('Store not found');
     }
