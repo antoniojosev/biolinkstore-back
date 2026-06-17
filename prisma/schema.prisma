@@ -158,6 +158,7 @@ model Store {
   customRates    StoreCustomRate[]
   socialLinkRows StoreSocialLink[]
   domain         StoreDomain?
+  events         StoreEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -259,6 +260,36 @@ model StoreView {
 
   @@index([storeId, createdAt])
   @@map("store_views")
+}
+
+// BE-125: granular storefront events. Complement to StoreView (page-level)
+// with finer-grained signals used by the dashboard funnels and product scoring.
+model StoreEvent {
+  id          String          @id @default(cuid())
+  storeId     String
+  type        StoreEventType
+  targetId    String?
+  metadata    Json?
+  sessionId   String?
+  referrer    String?
+  userAgent   String?
+  timestamp   DateTime        @default(now())
+
+  store       Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, timestamp])
+  @@index([storeId, type, timestamp])
+  @@index([storeId, type, targetId])
+  @@map("store_events")
+}
+
+enum StoreEventType {
+  PRODUCT_VIEW
+  ADD_TO_CART
+  WHATSAPP_CLICK
+  SOCIAL_CLICK
+  CATEGORY_CLICK
+  SECTION_VIEW
 }
 
 model SlugMiss {

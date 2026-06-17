@@ -10,9 +10,19 @@ import { GetStoreStatsUseCase } from '../../application/use-cases/get-store-stat
 import { GetAnalyticsUseCase } from '../../application/use-cases/get-analytics.use-case';
 import { TrackStoreViewUseCase } from '../../application/use-cases/track-store-view.use-case';
 import { GetStoreAnalyticsUseCase } from '../../application/use-cases/get-store-analytics.use-case';
+import { TrackStoreEventUseCase } from '../../application/use-cases/track-store-event.use-case';
+import { ListStoreEventsUseCase } from '../../application/use-cases/list-store-events.use-case';
 import { TrackEventDto } from '../../application/dto/track-event.dto';
 import { StoreStatsResponseDto } from '../../application/dto/store-stats-response.dto';
 import { TrackViewDto, StoreAnalyticsResponseDto } from '../../application/dto/track-view.dto';
+import {
+  TrackStoreEventDto,
+  TrackStoreEventResponseDto,
+} from '../../application/dto/track-store-event.dto';
+import {
+  ListStoreEventsQueryDto,
+  ListStoreEventsResponseDto,
+} from '../../application/dto/list-store-events.dto';
 import { PaginationDto } from '@/common/interfaces/pagination.interface';
 
 @ApiTags('Analytics')
@@ -24,6 +34,8 @@ export class AnalyticsController {
     private readonly getAnalyticsUseCase: GetAnalyticsUseCase,
     private readonly trackStoreViewUseCase: TrackStoreViewUseCase,
     private readonly getStoreAnalyticsUseCase: GetStoreAnalyticsUseCase,
+    private readonly trackStoreEventUseCase: TrackStoreEventUseCase,
+    private readonly listStoreEventsUseCase: ListStoreEventsUseCase,
   ) {}
 
   @Public()
@@ -63,13 +75,16 @@ export class AnalyticsController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, StoreOwnerGuard)
-  @Get('stores/:storeId/analytics/events')
-  @ApiOperation({ summary: 'Get analytics events (paginated)' })
+  @Get('stores/:storeId/analytics/legacy-events')
+  @ApiOperation({
+    summary:
+      'List legacy AnalyticsEvent rows (visitor-bound). Renamed in BE-125 to free /analytics/events for the new StoreEvent table.',
+  })
   @ApiParam({ name: 'storeId', type: 'string' })
   @ApiQuery({ name: 'type', required: false, enum: EventType })
   @ApiQuery({ name: 'from', required: false, type: String })
   @ApiQuery({ name: 'to', required: false, type: String })
-  async getEvents(
+  async getLegacyEvents(
     @Param('storeId') storeId: string,
     @Query() pagination: PaginationDto,
     @Query('type') type?: EventType,
@@ -113,5 +128,48 @@ export class AnalyticsController {
     const fromDate = from ? new Date(from) : undefined;
     const toDate = to ? new Date(to) : undefined;
     return this.getStoreAnalyticsUseCase.execute(storeId, fromDate, toDate);
+  }
+
+  // ===========================================================================
+  // BE-125: granular events ingest + dashboard listing
+  // ===========================================================================
+
+  @Public()
+  @Throttle({ default: { ttl: 60000, limit: 60 } })
+  @Post('public/:slug/event')
+  @ApiOperation({
+    summary:
+      'Ingest a granular storefront event (BE-125, rate-limited 60/min). FREE plans accept only PRODUCT_VIEW + WHATSAPP_CLICK; other types return ok+ignored.',
+  })
+  @ApiParam({ name: 'slug', type: 'string' })
+  @ApiResponse({ status: 201, type: TrackStoreEventResponseDto })
+  async trackStoreEvent(
+    @Param('slug') slug: string,
+    @Body() dto: TrackStoreEventDto,
+    @Headers('referer') refererHeader?: string,
+    @Headers('referrer') referrerHeader?: string,
+    @Headers('user-agent') userAgent?: string,
+  ): Promise<TrackStoreEventResponseDto> {
+    return this.trackStoreEventUseCase.execute(slug, dto, {
+      // browsers send `Referer` (typo), some clients also send `Referrer` — accept both.
+      referrer: referrerHeader ?? refererHeader ?? null,
+      userAgent: userAgent ?? null,
+    });
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, StoreOwnerGuard)
+  @Get('stores/:storeId/analytics/events')
+  @ApiOperation({
+    summary:
+      'List granular events for the dashboard (BE-125). Cursor-paginated by (timestamp,id) DESC. Defaults: from=now-30d, to=now, limit=50.',
+  })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: ListStoreEventsResponseDto })
+  async listStoreEvents(
+    @Param('storeId') storeId: string,
+    @Query() query: ListStoreEventsQueryDto,
+  ): Promise<ListStoreEventsResponseDto> {
+    return this.listStoreEventsUseCase.execute(storeId, query);
   }
 }
