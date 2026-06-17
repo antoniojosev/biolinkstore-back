@@ -66,6 +66,11 @@ export class GetPublicStoreUseCase {
         label: store.ctaLabel,
         url: store.ctaUrl,
       },
+      aboutShort: store.aboutShort,
+      aboutLong: store.aboutLong,
+      locationLat: store.locationLat,
+      locationLng: store.locationLng,
+      locationLabel: store.locationLabel,
     };
   }
 }

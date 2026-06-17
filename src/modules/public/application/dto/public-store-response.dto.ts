@@ -109,9 +109,27 @@ export class PublicStoreResponseDto {
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
 
+<<<<<<< HEAD
   @ApiProperty({
     type: PublicStoreCtaDto,
     description: 'Configurable primary CTA (BE-121). Storefront resolves URL based on type.',
   })
   cta: PublicStoreCtaDto;
+=======
+  // BE-123: structured info
+  @ApiProperty({ required: false, nullable: true, maxLength: 120 })
+  aboutShort: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  aboutLong: string | null;
+
+  @ApiProperty({ required: false, nullable: true, example: 10.213 })
+  locationLat: number | null;
+
+  @ApiProperty({ required: false, nullable: true, example: -64.682 })
+  locationLng: number | null;
+
+  @ApiProperty({ required: false, nullable: true, maxLength: 120 })
+  locationLabel: string | null;
+>>>>>>> feat/store-info-extended
 }

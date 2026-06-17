@@ -71,7 +71,7 @@ export class PrismaStoreRepository implements IStoreRepository {
   }
 
   async update(id: string, data: UpdateStoreData): Promise<Store> {
-    const { socialLinks, ...rest } = data;
+    const { socialLinks, locationLat, locationLng, ...rest } = data;
     const prismaData: Prisma.StoreUpdateInput = { ...rest };
 
     if (socialLinks !== undefined) {
@@ -84,6 +84,14 @@ export class PrismaStoreRepository implements IStoreRepository {
       if (data.ctaUrl === undefined) {
         prismaData.ctaUrl = null;
       }
+    }
+
+    // BE-123: Decimal fields accept number or null directly
+    if (locationLat !== undefined) {
+      prismaData.locationLat = locationLat === null ? null : locationLat;
+    }
+    if (locationLng !== undefined) {
+      prismaData.locationLng = locationLng === null ? null : locationLng;
     }
 
     const store = await this.prisma.store.update({

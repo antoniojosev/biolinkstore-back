@@ -55,4 +55,9 @@ export interface UpdateStoreData {
   ctaType?: StoreCtaType;
   ctaLabel?: string | null;
   ctaUrl?: string | null;
+  aboutShort?: string | null;
+  aboutLong?: string | null;
+  locationLat?: number | null;
+  locationLng?: number | null;
+  locationLabel?: string | null;
 }

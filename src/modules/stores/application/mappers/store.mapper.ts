@@ -40,6 +40,11 @@ export class StoreMapper {
       ctaType: prismaStore.ctaType,
       ctaLabel: prismaStore.ctaLabel,
       ctaUrl: prismaStore.ctaUrl,
+      aboutShort: prismaStore.aboutShort,
+      aboutLong: prismaStore.aboutLong,
+      locationLat: prismaStore.locationLat ? Number(prismaStore.locationLat) : null,
+      locationLng: prismaStore.locationLng ? Number(prismaStore.locationLng) : null,
+      locationLabel: prismaStore.locationLabel,
       ownerId: prismaStore.ownerId,
       subscription: prismaStore.subscription
         ? {
@@ -89,6 +94,11 @@ export class StoreMapper {
         label: store.ctaLabel,
         url: store.ctaUrl,
       },
+      aboutShort: store.aboutShort,
+      aboutLong: store.aboutLong,
+      locationLat: store.locationLat,
+      locationLng: store.locationLng,
+      locationLabel: store.locationLabel,
       ownerId: store.ownerId,
       subscription: store.subscription,
       createdAt: store.createdAt,

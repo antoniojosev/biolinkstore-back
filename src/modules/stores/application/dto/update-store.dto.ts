@@ -6,12 +6,15 @@ import {
   IsHexColor,
   IsEmail,
   IsEnum,
+  IsNumber,
   Matches,
-  MinLength,
+  Max,
   MaxLength,
-  ValidateNested,
-  ValidateIf,
+  Min,
+  MinLength,
   Validate,
+  ValidateIf,
+  ValidateNested,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   ValidationArguments,
@@ -194,4 +197,42 @@ export class UpdateStoreDto {
   @IsOptional()
   @Validate(CtaUrlConsistencyValidator)
   ctaUrl?: string | null;
+
+  // BE-123: structured about + location
+  @ApiProperty({ required: false, nullable: true, maxLength: 120 })
+  @IsOptional()
+  @ValidateIf((_o, value) => value !== null)
+  @IsString()
+  @MaxLength(120)
+  aboutShort?: string | null;
+
+  @ApiProperty({ required: false, nullable: true, maxLength: 2000 })
+  @IsOptional()
+  @ValidateIf((_o, value) => value !== null)
+  @IsString()
+  @MaxLength(2000)
+  aboutLong?: string | null;
+
+  @ApiProperty({ required: false, nullable: true, example: 10.213, minimum: -90, maximum: 90 })
+  @IsOptional()
+  @ValidateIf((_o, value) => value !== null)
+  @IsNumber({ maxDecimalPlaces: 7 }, { message: 'locationLat must be a number with ≤7 decimals' })
+  @Min(-90)
+  @Max(90)
+  locationLat?: number | null;
+
+  @ApiProperty({ required: false, nullable: true, example: -64.682, minimum: -180, maximum: 180 })
+  @IsOptional()
+  @ValidateIf((_o, value) => value !== null)
+  @IsNumber({ maxDecimalPlaces: 7 }, { message: 'locationLng must be a number with ≤7 decimals' })
+  @Min(-180)
+  @Max(180)
+  locationLng?: number | null;
+
+  @ApiProperty({ required: false, nullable: true, maxLength: 120 })
+  @IsOptional()
+  @ValidateIf((_o, value) => value !== null)
+  @IsString()
+  @MaxLength(120)
+  locationLabel?: string | null;
 }
