@@ -125,7 +125,6 @@ export class PublicStoreResponseDto {
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
 
-  @ApiProperty({
     type: PublicStoreCtaDto,
     description: 'Configurable primary CTA (BE-121). Storefront resolves URL based on type.',
   })
@@ -152,4 +151,11 @@ export class PublicStoreResponseDto {
     description: 'BE-124: visible social links sorted by sortOrder. Lazy-migrated from legacy JSON on first read.',
   })
   socials: PublicStoreSocialDto[];
+
+  @ApiProperty({
+    enum: ['FREE', 'PRO', 'BUSINESS'],
+    default: 'FREE',
+    description: 'Plan de la tienda. Util para que el storefront ajuste branding/features client-side.',
+  })
+  plan: 'FREE' | 'PRO' | 'BUSINESS';
 }

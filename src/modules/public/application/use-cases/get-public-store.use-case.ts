@@ -101,6 +101,7 @@ export class GetPublicStoreUseCase {
       locationLng: store.locationLng,
       locationLabel: store.locationLabel,
       socials: visibleSocials,
+      plan: (store.subscription?.plan ?? 'FREE') as 'FREE' | 'PRO' | 'BUSINESS',
     };
   }
 }
