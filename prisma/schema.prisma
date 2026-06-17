@@ -159,6 +159,7 @@ model Store {
   socialLinkRows StoreSocialLink[]
   domain         StoreDomain?
   events         StoreEvent[]
+  themes         StoreTheme?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -852,6 +853,7 @@ enum PaymentMethodType {
 }
 
 // ==========================================
+<<<<<<< HEAD
 // TASAS DE CAMBIO
 // ==========================================
 
@@ -915,4 +917,71 @@ enum CustomRateMode {
   MANUAL
   FORMULA
   API
+=======
+// PAGE BUILDER (BE-120a) — templates, paletas, theme por store
+// ==========================================
+
+enum TemplateNiche {
+  FASHION
+  RESTAURANT
+  REAL_ESTATE
+  SERVICES
+  GENERAL
+}
+
+model Template {
+  id            String        @id @default(cuid())
+  key           String        @unique
+  name          String
+  niche         TemplateNiche
+  planRequired  Plan          @default(FREE)
+  previewImage  String?
+  demoDataJson  Json
+  sectionSchema Json
+  defaultTokens Json
+  version       Int           @default(1)
+  isActive      Boolean       @default(true)
+  sortOrder     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([niche, isActive])
+  @@map("templates")
+}
+
+model PalettePreset {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  name       String
+  colorsJson Json
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("palette_presets")
+}
+
+model StoreTheme {
+  id      String @id @default(cuid())
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  activeTemplate    String  // key del template en edicion
+  publishedTemplate String? // key del live
+  rollbackTemplate  String? // key del snapshot
+
+  draftsByTemplate Json  @default("{}")
+  publishedTree    Json?
+  publishedTokens  Json?
+  rollbackTree     Json?
+  rollbackTokens   Json?
+
+  version     Int       @default(1)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("store_themes")
+>>>>>>> feat/page-builder-tests-e2e
 }
