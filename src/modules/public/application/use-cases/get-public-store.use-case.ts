@@ -61,6 +61,11 @@ export class GetPublicStoreUseCase {
       currencyConfig: store.currencyConfig,
       hours: hoursPayload,
       isOpenNow,
+      cta: {
+        type: store.ctaType,
+        label: store.ctaLabel,
+        url: store.ctaUrl,
+      },
     };
   }
 }

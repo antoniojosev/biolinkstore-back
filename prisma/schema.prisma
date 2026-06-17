@@ -127,6 +127,11 @@ model Store {
   customDomain   String? @unique
   domainVerified Boolean @default(false)
 
+  // BE-121: configurable CTA per store
+  ctaType StoreCtaType @default(WHATSAPP)
+  ctaLabel String? @db.VarChar(60)
+  ctaUrl String?
+
   ownerId        String
   owner          User   @relation(fields: [ownerId], references: [id])
   activeForUsers User[] @relation("UserActiveStore")
@@ -558,6 +563,7 @@ model DomainAddon {
   id      String @id @default(cuid())
   storeId String @unique
 
+<<<<<<< HEAD
   domain    String       @unique
   status    DomainStatus @default(PENDING_VERIFICATION)
   sslStatus SSLStatus    @default(PENDING)
@@ -570,6 +576,22 @@ model DomainAddon {
   stripeSubscriptionId String?
 
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+=======
+// BE-121: kind of primary CTA the storefront shows
+enum StoreCtaType {
+  WHATSAPP
+  EXTERNAL_LINK
+  CALL
+  NONE
+}
+
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  rate      Decimal  @db.Decimal(18, 8)
+  source    String
+  fetchedAt DateTime
+>>>>>>> feat/store-cta-config
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

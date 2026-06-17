@@ -1,3 +1,4 @@
+import { ExchangeRateMode, StoreCtaType } from '@prisma/client';
 import { Store, StoreSocialLinks } from '../entities/store.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
@@ -51,4 +52,7 @@ export interface UpdateStoreData {
   whatsappTemplate?: string | null;
   stockEnabled?: boolean;
   showBranding?: boolean;
+  ctaType?: StoreCtaType;
+  ctaLabel?: string | null;
+  ctaUrl?: string | null;
 }

@@ -37,6 +37,9 @@ export class StoreMapper {
       showBranding: prismaStore.showBranding,
       customDomain: prismaStore.customDomain,
       domainVerified: prismaStore.domainVerified,
+      ctaType: prismaStore.ctaType,
+      ctaLabel: prismaStore.ctaLabel,
+      ctaUrl: prismaStore.ctaUrl,
       ownerId: prismaStore.ownerId,
       subscription: prismaStore.subscription
         ? {
@@ -81,6 +84,11 @@ export class StoreMapper {
       showBranding: store.showBranding,
       customDomain: store.customDomain,
       domainVerified: store.domainVerified,
+      cta: {
+        type: store.ctaType,
+        label: store.ctaLabel,
+        url: store.ctaUrl,
+      },
       ownerId: store.ownerId,
       subscription: store.subscription,
       createdAt: store.createdAt,

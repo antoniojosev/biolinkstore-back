@@ -1,4 +1,4 @@
-import { Plan, SubscriptionStatus } from '@prisma/client';
+import { ExchangeRateMode, Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
 
 export interface StoreSocialLinks {
   instagram?: string;
@@ -6,6 +6,12 @@ export interface StoreSocialLinks {
   facebook?: string;
   whatsapp?: string;
   twitter?: string;
+}
+
+export interface StoreCta {
+  type: StoreCtaType;
+  label: string | null;
+  url: string | null;
 }
 
 export class Store {
@@ -44,6 +50,10 @@ export class Store {
 
   customDomain: string | null;
   domainVerified: boolean;
+
+  ctaType: StoreCtaType;
+  ctaLabel: string | null;
+  ctaUrl: string | null;
 
   ownerId: string;
 
