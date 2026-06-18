@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { SocialPlatform, StoreCtaType } from '@prisma/client';
 
 export class PublicStoreCtaDto {
@@ -125,6 +126,7 @@ export class PublicStoreResponseDto {
   @ApiProperty({ description: 'Whether store is currently open (America/Caracas)', example: true })
   isOpenNow: boolean;
 
+  @ApiProperty({
     type: PublicStoreCtaDto,
     description: 'Configurable primary CTA (BE-121). Storefront resolves URL based on type.',
   })

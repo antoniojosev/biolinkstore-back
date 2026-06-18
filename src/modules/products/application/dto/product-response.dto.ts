@@ -97,9 +97,6 @@ export class ProductResponseDto {
   @ApiProperty()
   description: string | null;
 
-  @ApiProperty({ required: false, nullable: true })
-  tagline: string | null;
-
   @ApiProperty()
   basePrice: number;
 

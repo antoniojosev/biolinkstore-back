@@ -1,4 +1,4 @@
-import { ExchangeRateMode, Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
+import { Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
 
 export interface StoreSocialLinks {
   instagram?: string;

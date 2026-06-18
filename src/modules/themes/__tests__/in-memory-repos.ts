@@ -7,7 +7,7 @@
  * para detectar regresiones cuando se agregan nuevas dependencias.
  */
 
-import { Plan, TemplateNiche, ExchangeRateMode } from '@prisma/client';
+import { Plan, TemplateNiche } from '@prisma/client';
 
 import { Template } from '../domain/entities/template.entity';
 import { PalettePreset } from '../domain/entities/palette-preset.entity';
@@ -335,10 +335,6 @@ export class InMemoryStoreRepository implements IStoreRepository {
       checkoutConfig: existing?.checkoutConfig ?? null,
       currencyConfig: existing?.currencyConfig ?? null,
       whatsappTemplate: existing?.whatsappTemplate ?? null,
-      exchangeRateMode:
-        existing?.exchangeRateMode ?? ExchangeRateMode.AUTO,
-      exchangeRateCode: existing?.exchangeRateCode ?? 'USD',
-      customRate: existing?.customRate ?? null,
       stockEnabled: existing?.stockEnabled ?? false,
       showBranding: existing?.showBranding ?? true,
       customDomain: existing?.customDomain ?? null,
@@ -362,6 +358,10 @@ export class InMemoryStoreRepository implements IStoreRepository {
 
   async findBySlug(slug: string): Promise<Store | null> {
     return this.bySlug.get(slug) ?? null;
+  }
+
+  async findByVerifiedCustomDomain(_domain: string): Promise<Store | null> {
+    return null;
   }
 
   async findByOwnerId(): Promise<PaginatedResult<Store>> {

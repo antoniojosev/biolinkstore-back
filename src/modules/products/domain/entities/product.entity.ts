@@ -8,7 +8,6 @@ export class Product {
   slug: string;
   tagline: string | null;
   description: string | null;
-  tagline: string | null;
   basePrice: number;
   compareAtPrice: number | null;
   priceCurrency: string;

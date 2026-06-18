@@ -1,5 +1,4 @@
 import { NotFoundException } from '@nestjs/common';
-import { ExchangeRateMode } from '@prisma/client';
 import { Store } from '@/modules/stores/domain/entities/store.entity';
 import { Product } from '@/modules/products/domain/entities/product.entity';
 import { Category } from '@/modules/categories/domain/entities/category.entity';
@@ -36,9 +35,6 @@ function buildStore(overrides: Partial<Store> = {}): Store {
     checkoutConfig: null,
     currencyConfig: null,
     whatsappTemplate: null,
-    exchangeRateMode: ExchangeRateMode.AUTO,
-    exchangeRateCode: 'USD',
-    customRate: null,
     stockEnabled: true,
     showBranding: true,
     customDomain: null,
@@ -60,7 +56,6 @@ function buildProduct(id: string, overrides: Partial<Product> = {}): Product {
     description: null,
     basePrice: 10,
     compareAtPrice: null,
-    prices: null,
     images: [],
     videos: [],
     stock: null,
@@ -109,6 +104,7 @@ function buildMocks(setup: MockSetup) {
     findById: jest.fn(async () => setup.store),
     findByIdWithSubscription: jest.fn(),
     findBySlug: jest.fn(),
+    findByVerifiedCustomDomain: jest.fn(),
     findByOwnerId: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),

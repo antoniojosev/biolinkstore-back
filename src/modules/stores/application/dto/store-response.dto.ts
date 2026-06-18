@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ExchangeRateMode, Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
+import { Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
 
 export class StoreCtaDto {
   @ApiProperty({ enum: StoreCtaType, example: 'WHATSAPP' })

@@ -122,30 +122,12 @@ export async function createInMemoryThemesEnv(): Promise<TestEnv> {
    * y los repos secundarios que CurrencyModule consume vía Prisma para
    * evitar cualquier intento de conexión a Postgres en los tests.
    */
-  const fakeRateRepo = {
-    findCurrent: async () => null,
-    findByCode: async () => null,
-    upsertRate: async () => null,
-  };
-  const fakeRateHistoryRepo = {
-    findByStoreId: async () => [],
-    countByStoreId: async () => 0,
-  };
-
   @Global()
   @Module({
     providers: [
       { provide: INJECTION_TOKENS.STORE_REPOSITORY, useValue: storeRepo },
       { provide: INJECTION_TOKENS.PRODUCT_REPOSITORY, useValue: productRepo },
       { provide: INJECTION_TOKENS.CATEGORY_REPOSITORY, useValue: categoryRepo },
-      {
-        provide: INJECTION_TOKENS.EXCHANGE_RATE_REPOSITORY,
-        useValue: fakeRateRepo,
-      },
-      {
-        provide: INJECTION_TOKENS.EXCHANGE_RATE_HISTORY_REPOSITORY,
-        useValue: fakeRateHistoryRepo,
-      },
       {
         provide: INJECTION_TOKENS.TEMPLATE_REPOSITORY,
         useValue: templateRepo,
@@ -164,8 +146,6 @@ export async function createInMemoryThemesEnv(): Promise<TestEnv> {
       INJECTION_TOKENS.STORE_REPOSITORY,
       INJECTION_TOKENS.PRODUCT_REPOSITORY,
       INJECTION_TOKENS.CATEGORY_REPOSITORY,
-      INJECTION_TOKENS.EXCHANGE_RATE_REPOSITORY,
-      INJECTION_TOKENS.EXCHANGE_RATE_HISTORY_REPOSITORY,
       INJECTION_TOKENS.TEMPLATE_REPOSITORY,
       INJECTION_TOKENS.PALETTE_PRESET_REPOSITORY,
       INJECTION_TOKENS.STORE_THEME_REPOSITORY,

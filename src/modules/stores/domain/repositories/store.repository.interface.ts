@@ -1,4 +1,4 @@
-import { ExchangeRateMode, StoreCtaType } from '@prisma/client';
+import { StoreCtaType } from '@prisma/client';
 import { Store, StoreSocialLinks } from '../entities/store.entity';
 import { PaginatedResult, PaginationParams } from '@/common/interfaces/pagination.interface';
 
