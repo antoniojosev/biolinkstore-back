@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Header } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { OrderStatus } from '@prisma/client';
+import { IsEnum, IsOptional } from 'class-validator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { StoreOwnerGuard } from '@/common/guards/store-owner.guard';
 import { Public } from '@/common/decorators/public.decorator';
@@ -12,6 +13,12 @@ import { CreateOrderDto } from '../../application/dto/create-order.dto';
 import { UpdateOrderStatusDto } from '../../application/dto/update-order-status.dto';
 import { OrderResponseDto } from '../../application/dto/order-response.dto';
 import { PaginatedResult, PaginationDto } from '@/common/interfaces/pagination.interface';
+
+class ListOrdersQueryDto extends PaginationDto {
+  @IsOptional()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
+}
 
 @ApiTags('Orders')
 @Controller()
@@ -48,10 +55,9 @@ export class OrdersController {
   @ApiResponse({ status: 200, description: 'Orders retrieved' })
   async listOrders(
     @Param('storeId') storeId: string,
-    @Query() pagination: PaginationDto,
-    @Query('status') status?: OrderStatus,
+    @Query() query: ListOrdersQueryDto,
   ): Promise<PaginatedResult<OrderResponseDto>> {
-    return this.listOrdersUseCase.execute(storeId, { ...pagination, status });
+    return this.listOrdersUseCase.execute(storeId, query);
   }
 
   @ApiBearerAuth()
