@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'node:crypto';
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IStoreRepository } from '@/modules/stores/domain/repositories/store.repository.interface';
 import { Store } from '@/modules/stores/domain/entities/store.entity';
