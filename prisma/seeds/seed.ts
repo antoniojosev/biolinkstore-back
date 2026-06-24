@@ -2,6 +2,7 @@ import {
   PrismaClient,
   Plan,
   SubscriptionStatus,
+  StoreMemberRole,
   EventType,
   OrderStatus,
   OrderChannel,
@@ -648,6 +649,17 @@ async function main() {
     },
   });
   console.log(`✅ Store: "${store.name}" (/${store.slug}) — template: luxora`);
+
+  // BE-131: register the owner as the first StoreMember (role OWNER).
+  // Without this row the team-members guard rejects the creator (403).
+  await prisma.storeMember.create({
+    data: {
+      storeId: store.id,
+      userId: user.id,
+      role: StoreMemberRole.OWNER,
+      invitedBy: null,
+    },
+  });
 
   // ─── 3. Subscription (PRO so dashboard has analytics) ─────
   await prisma.subscription.create({

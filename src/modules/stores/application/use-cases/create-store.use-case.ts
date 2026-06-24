@@ -6,7 +6,7 @@ import { CreateStoreDto } from '../dto/create-store.dto';
 import { StoreResponseDto } from '../dto/store-response.dto';
 import { StoreMapper } from '../mappers/store.mapper';
 import { PrismaService } from '@/infrastructure/database/prisma/prisma.service';
-import { Plan, SubscriptionStatus } from '@prisma/client';
+import { Plan, StoreMemberRole, SubscriptionStatus } from '@prisma/client';
 import { resolveEffectivePlan, validateStoreLimit } from './store-limit.helper';
 
 @Injectable()
@@ -48,6 +48,17 @@ export class CreateStoreUseCase {
           storeId: store.id,
           plan: Plan.FREE,
           status: SubscriptionStatus.ACTIVE,
+        },
+      });
+
+      // BE-131: owner is also the first StoreMember with OWNER role.
+      // Without this row the store-members guard rejects the creator (403).
+      await tx.storeMember.create({
+        data: {
+          storeId: store.id,
+          userId,
+          role: StoreMemberRole.OWNER,
+          invitedBy: null,
         },
       });
 
