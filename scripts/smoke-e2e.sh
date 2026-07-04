@@ -116,6 +116,18 @@ check "GET /public/:slug/products" "200" "$(http_code "$API_URL/api/public/demo-
 check "GET /public/:slug/categories?tree=true" "200" "$(http_code "$API_URL/api/public/demo-store/categories?tree=true")"
 check "GET /public/:slug/rates (BE-129)" "200" "$(http_code "$API_URL/api/public/demo-store/rates")"
 check "GET /public/:slug/qr.png (BE-109f)" "200" "$(http_code "$API_URL/api/public/demo-store/qr.png")"
+# P0 fix #18: sharp ESM import must return a real PNG, not 500
+check "GET /public/:slug/og.png (fix #18)" "200" "$(http_code "$API_URL/api/public/demo-store/og.png")"
+# Renderer #21: the /public/:slug/theme endpoint should exist (200 or 404, never 500)
+THEME_CODE=$(http_code "$API_URL/api/public/demo-store/theme")
+if [[ "$THEME_CODE" == "200" || "$THEME_CODE" == "404" ]]; then
+  printf "  %s %-44s %s\n" "$(green "✓")" "GET /public/:slug/theme (renderer #21)" "$(gray "→ $THEME_CODE")"
+  PASS=$((PASS + 1))
+else
+  printf "  %s %-44s %s\n" "$(red "✗")" "GET /public/:slug/theme (renderer #21)" "$(red "→ $THEME_CODE")"
+  FAIL=$((FAIL + 1))
+  FAIL_LINES+=("public theme: got $THEME_CODE, expected 200 or 404")
+fi
 
 # Page builder global ---------------------------------------------------------
 section "Page builder global (BE-120)"
@@ -146,16 +158,61 @@ if [[ -n "$TOKEN" && -n "$STORE_ID" ]]; then
   check "GET /stores/:id/theme (BE-120)"                 "200" "$(http_code_with_token "$API_URL/api/stores/$STORE_ID/theme")"
   check "GET /stores/:id/whatsapp-template"              "200" "$(http_code_with_token "$API_URL/api/stores/$STORE_ID/whatsapp-template")"
 
-  # Slice 18 pagination shape
+  # P0 fix #19: the OWNER StoreMember row must exist for the store creator
+  # (before the fix this returned 403 "No eres miembro de esta tienda")
+  MEMBERS_CODE=$(http_code_with_token "$API_URL/api/stores/$STORE_ID/members")
+  check "GET /stores/:id/members (fix #19 OWNER row)" "200" "$MEMBERS_CODE"
+  if [[ "$MEMBERS_CODE" == "200" ]]; then
+    OWNER_IN_MEMBERS=$(http_body -H "Authorization: Bearer $TOKEN" "$API_URL/api/stores/$STORE_ID/members" \
+      | python3 -c 'import sys,json; d=json.load(sys.stdin); print("yes" if any(m.get("role")=="OWNER" for m in d) else "no")' 2>/dev/null || echo "no")
+    check "Members list contains an OWNER" "yes" "$OWNER_IN_MEMBERS"
+  fi
+
+  # BE-122: no custom domain configured for the demo store — 404 is the
+  # expected happy path (not an error).
+  DOMAIN_CODE=$(http_code_with_token "$API_URL/api/stores/$STORE_ID/domain")
+  if [[ "$DOMAIN_CODE" == "404" || "$DOMAIN_CODE" == "200" ]]; then
+    printf "  %s %-44s %s\n" "$(green "✓")" "GET /stores/:id/domain (BE-122, 200 or 404)" "$(gray "→ $DOMAIN_CODE")"
+    PASS=$((PASS + 1))
+  else
+    printf "  %s %-44s %s\n" "$(red "✗")" "GET /stores/:id/domain (BE-122)" "$(red "→ $DOMAIN_CODE")"
+    FAIL=$((FAIL + 1))
+    FAIL_LINES+=("domain: got $DOMAIN_CODE, expected 200 or 404")
+  fi
+
+  # BE-128 backend (Apify) is still pending — the UI expects a 404 on
+  # the poll endpoint so it can render the "en construcción" state.
+  # If the endpoint returns 200/500 without the backend being ready
+  # something else is answering and the UI will misbehave.
+  IG_CODE=$(http_code_with_token -X POST "$API_URL/api/stores/$STORE_ID/instagram-import/jobs" \
+    -H "Content-Type: application/json" \
+    -d '{"profileUrl":"https://instagram.com/smoketest"}')
+  if [[ "$IG_CODE" == "404" || "$IG_CODE" == "201" || "$IG_CODE" == "200" ]]; then
+    printf "  %s %-44s %s\n" "$(green "✓")" "IG import endpoint (#26, 404 until backend lands)" "$(gray "→ $IG_CODE")"
+    PASS=$((PASS + 1))
+  else
+    printf "  %s %-44s %s\n" "$(red "✗")" "IG import endpoint" "$(red "→ $IG_CODE")"
+    FAIL=$((FAIL + 1))
+    FAIL_LINES+=("ig-import: got $IG_CODE, expected 404 (or 200/201 once BE-128 lands)")
+  fi
+
+  # BE-GAP-4 WhatsApp template shape: the frontend editor relies on
+  # supportedVariables.root/item being arrays.
+  WA_BODY=$(http_body -H "Authorization: Bearer $TOKEN" "$API_URL/api/stores/$STORE_ID/whatsapp-template")
+  WA_SHAPE=$(printf '%s' "$WA_BODY" | python3 -c 'import sys,json; d=json.load(sys.stdin); sv=d.get("supportedVariables") or {}; print("yes" if isinstance(sv.get("root"), list) and isinstance(sv.get("item"), list) else "no")' 2>/dev/null || echo "no")
+  check "WhatsApp response has supportedVariables shape" "yes" "$WA_SHAPE"
+
+  # Slice 18 pagination shape — meta.total must exist (0 is OK for
+  # stores with no orders yet; we only fail on missing/undefined).
   ORDERS_BODY=$(http_body -H "Authorization: Bearer $TOKEN" "$API_URL/api/stores/$STORE_ID/orders?page=1&limit=5")
-  META_TOTAL=$(printf '%s' "$ORDERS_BODY" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("meta",{}).get("total",""))' 2>/dev/null || echo "")
-  if [[ -n "$META_TOTAL" && "$META_TOTAL" != "0" ]]; then
+  META_TOTAL=$(printf '%s' "$ORDERS_BODY" | python3 -c 'import sys,json; d=json.load(sys.stdin); t=d.get("meta",{}).get("total"); print(t if t is not None else "")' 2>/dev/null || echo "")
+  if [[ -n "$META_TOTAL" ]]; then
     printf "  %s %-44s %s\n" "$(green "✓")" "Orders response has meta.total" "$(gray "→ $META_TOTAL")"
     PASS=$((PASS + 1))
   else
     printf "  %s %s (slice 18 fix verifies res.meta.total)\n" "$(red "✗")" "Orders response missing meta.total"
     FAIL=$((FAIL + 1))
-    FAIL_LINES+=("orders meta.total: '$META_TOTAL'")
+    FAIL_LINES+=("orders meta.total missing")
   fi
 fi
 
@@ -187,10 +244,14 @@ if [[ -n "$TOKEN" && -n "$STORE_ID" ]]; then
   ACTIVE_TEMPLATE=$(printf '%s' "$THEME_RESP" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("activeTemplate",""))' 2>/dev/null || echo "")
   check "POST /theme/switch-template (BE-120b)" "poster" "$ACTIVE_TEMPLATE"
 
-  # Track storefront event (BE-125) and verify it shows up in analytics (BE-126)
+  # Track storefront event (BE-125): pull a real product id so the
+  # backend validator doesn't reject the targetId.
+  FIRST_PRODUCT_ID=$(http_body "$API_URL/api/public/demo-store/products?limit=1" \
+    | python3 -c 'import sys,json; d=json.load(sys.stdin); items=d.get("data") or d.get("products") or (d if isinstance(d,list) else []); print(items[0]["id"] if items else "")' 2>/dev/null || echo "")
+  TRACK_TARGET="${FIRST_PRODUCT_ID:-smoke-product}"
   TRACK_CODE=$(http_code -X POST "$API_URL/api/public/demo-store/event" \
     -H "Content-Type: application/json" \
-    -d '{"type":"PRODUCT_VIEW","sessionId":"smoke-script-session","targetId":"any-product"}')
+    -d "{\"type\":\"PRODUCT_VIEW\",\"sessionId\":\"smoke-script-session\",\"targetId\":\"$TRACK_TARGET\"}")
   check "POST storefront event (BE-125)" "201" "$TRACK_CODE"
 
   # Change order status (slice 18 PATCH)
@@ -214,6 +275,22 @@ check "GET /registro"        "200" "$(http_code "$FE_URL/registro")"
 check "GET /v2/demo-store"   "200" "$(http_code "$FE_URL/v2/demo-store")"
 # legacy /dashboard/cotizaciones should redirect (307) to /dashboard?view=orders (slice 18)
 check "GET legacy /dashboard/cotizaciones (slice 18 redirect)" "307" "$(http_code "$FE_URL/dashboard/cotizaciones")"
+# /invite/[token] page (BE-131 #23): must render 200 even without a valid
+# token (page shows "needs-login" / "no encontramos esta invitación" states).
+check "GET /invite/smoke-token (#23 needs-login state)" "200" "$(http_code "$FE_URL/invite/smoke-token")"
+
+# Storefront renderer decision (#21): when the demo store has a published
+# theme the response body should include the powered-by-bylink footer that
+# the TemplateRenderer emits. If it falls back to the legacy StorefrontDemo
+# this check will just note it — the page still works, just not through
+# the new renderer.
+SF_BODY=$(http_body "$FE_URL/v2/demo-store")
+if printf '%s' "$SF_BODY" | grep -q 'powered by'; then
+  printf "  %s %-44s %s\n" "$(green "✓")" "/v2/demo-store uses TemplateRenderer (#21)" "$(gray "→ footer present")"
+  PASS=$((PASS + 1))
+else
+  printf "  %s %-44s %s\n" "$(yellow "○")" "/v2/demo-store on legacy StorefrontDemo (#21 not active)" "$(gray "→ theme not published yet, using fallback")"
+fi
 
 # Frontend BFF wire (frontend → /api/proxy/api/... → backend) -----------------
 if [[ -n "$TOKEN" && -n "$STORE_ID" ]]; then
@@ -230,6 +307,12 @@ if [[ -n "$TOKEN" && -n "$STORE_ID" ]]; then
     check "BFF proxy /api/users/me/stores"      "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/users/me/stores")"
     check "BFF proxy /api/stores/:id/orders"    "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/orders?limit=3")"
     check "BFF proxy /api/stores/:id/analytics" "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/analytics/summary?period=30d")"
+    # Config-tab endpoints wired via BFF in this session (#22 #23 #24 #25)
+    check "BFF proxy /api/stores/:id/theme (#20)"        "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/theme")"
+    check "BFF proxy /api/stores/:id/socials (#22)"      "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/socials")"
+    check "BFF proxy /api/stores/:id/members (#23)"      "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/members")"
+    check "BFF proxy /api/stores/:id/whatsapp-template (#24)" "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/whatsapp-template")"
+    check "BFF proxy /api/stores/:id/custom-rates (#25)" "200" "$(curl -s -b "$COOKIE_JAR" -o /dev/null -w "%{http_code}" "$FE_URL/api/proxy/api/stores/$STORE_ID/custom-rates")"
   else
     printf "  %s %s (got %s)\n" "$(red "✗")" "BFF login failed" "$BFF_LOGIN"
     FAIL=$((FAIL + 1))
