@@ -14,6 +14,7 @@ import { InviteMemberUseCase } from './application/use-cases/invite-member.use-c
 import { UpdateMemberRoleUseCase } from './application/use-cases/update-member-role.use-case';
 import { RemoveMemberUseCase } from './application/use-cases/remove-member.use-case';
 import { ListMyInvitationsUseCase } from './application/use-cases/list-my-invitations.use-case';
+import { GetInvitationByTokenUseCase } from './application/use-cases/get-invitation-by-token.use-case';
 import { AcceptInvitationUseCase } from './application/use-cases/accept-invitation.use-case';
 import { DeclineInvitationUseCase } from './application/use-cases/decline-invitation.use-case';
 
@@ -39,6 +40,7 @@ import { StoreMemberGuard } from './presentation/guards/store-member.guard';
     UpdateMemberRoleUseCase,
     RemoveMemberUseCase,
     ListMyInvitationsUseCase,
+    GetInvitationByTokenUseCase,
     AcceptInvitationUseCase,
     DeclineInvitationUseCase,
 

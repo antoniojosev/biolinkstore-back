@@ -20,6 +20,7 @@ import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { INJECTION_TOKENS } from '@/common/constants/injection-tokens';
 import { IUserRepository } from '@/modules/users/domain/repositories/user.repository.interface';
 import { ListMyInvitationsUseCase } from '../../application/use-cases/list-my-invitations.use-case';
+import { GetInvitationByTokenUseCase } from '../../application/use-cases/get-invitation-by-token.use-case';
 import { AcceptInvitationUseCase } from '../../application/use-cases/accept-invitation.use-case';
 import { DeclineInvitationUseCase } from '../../application/use-cases/decline-invitation.use-case';
 import {
@@ -34,6 +35,7 @@ import {
 export class InvitationsController {
   constructor(
     private readonly listMine: ListMyInvitationsUseCase,
+    private readonly getByToken: GetInvitationByTokenUseCase,
     private readonly accept: AcceptInvitationUseCase,
     private readonly decline: DeclineInvitationUseCase,
     @Inject(INJECTION_TOKENS.USER_REPOSITORY)
@@ -47,6 +49,17 @@ export class InvitationsController {
     const user = await this.userRepo.findById(req.user.userId);
     if (!user) return [];
     return this.listMine.execute(user.email);
+  }
+
+  @Get(':token')
+  @ApiOperation({ summary: 'Obtiene una invitacion por su token (requiere email match)' })
+  @ApiParam({ name: 'token', type: 'string' })
+  @ApiResponse({ status: 200, type: StoreInvitationResponseDto })
+  async getInvitation(
+    @Param('token') token: string,
+    @Req() req: any,
+  ): Promise<StoreInvitationResponseDto> {
+    return this.getByToken.execute(token, req.user.userId);
   }
 
   @Post(':token/accept')
