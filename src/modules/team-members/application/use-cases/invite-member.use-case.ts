@@ -40,13 +40,16 @@ export class InviteMemberUseCase {
     const normalizedEmail = dto.email.toLowerCase().trim();
 
     const plan = store.subscription?.plan ?? 'FREE';
-    const currentCount = await this.memberRepo.countByStoreId(storeId);
-    validateTeamLimit(plan, currentCount);
+    const [acceptedCount, pendingInvitations] = await Promise.all([
+      this.memberRepo.countByStoreId(storeId),
+      this.invitationRepo.findPendingByStoreId(storeId),
+    ]);
+    // El limite del plan cuenta miembros aceptados + invitaciones pendientes:
+    // si no se contaran las pendientes, se podrian mandar N invitaciones sin
+    // limite mientras ninguna se acepte todavia.
+    validateTeamLimit(plan, acceptedCount + pendingInvitations.length);
 
-    const existingPending = await this.invitationRepo.findPendingByStoreAndEmail(
-      storeId,
-      normalizedEmail,
-    );
+    const existingPending = pendingInvitations.find((inv) => inv.email === normalizedEmail);
     if (existingPending) {
       throw new ConflictException('Ya existe una invitacion pendiente para este email');
     }

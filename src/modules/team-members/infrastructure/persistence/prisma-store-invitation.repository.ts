@@ -69,6 +69,23 @@ export class PrismaStoreInvitationRepository implements IStoreInvitationReposito
     return row ? this.toDomain(row) : null;
   }
 
+  async findPendingByStoreId(storeId: string): Promise<StoreInvitation[]> {
+    const rows = await this.prisma.storeInvitation.findMany({
+      where: {
+        storeId,
+        acceptedAt: null,
+        declinedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      include: {
+        store: { select: { id: true, name: true, slug: true, logo: true } },
+        inviter: { select: { id: true, name: true, email: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return rows.map((r) => this.toDomain(r));
+  }
+
   async create(data: CreateStoreInvitationData): Promise<StoreInvitation> {
     const row = await this.prisma.storeInvitation.create({
       data,

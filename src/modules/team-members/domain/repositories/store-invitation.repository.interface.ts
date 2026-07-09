@@ -6,6 +6,7 @@ export interface IStoreInvitationRepository {
   findById(id: string): Promise<StoreInvitation | null>;
   findPendingByEmail(email: string): Promise<StoreInvitation[]>;
   findPendingByStoreAndEmail(storeId: string, email: string): Promise<StoreInvitation | null>;
+  findPendingByStoreId(storeId: string): Promise<StoreInvitation[]>;
   create(data: CreateStoreInvitationData): Promise<StoreInvitation>;
   markAccepted(id: string): Promise<StoreInvitation>;
   markDeclined(id: string): Promise<StoreInvitation>;

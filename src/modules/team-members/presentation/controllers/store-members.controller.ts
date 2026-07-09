@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ListStoreMembersUseCase } from '../../application/use-cases/list-store-members.use-case';
+import { ListPendingInvitationsUseCase } from '../../application/use-cases/list-pending-invitations.use-case';
 import { InviteMemberUseCase } from '../../application/use-cases/invite-member.use-case';
 import { UpdateMemberRoleUseCase } from '../../application/use-cases/update-member-role.use-case';
 import { RemoveMemberUseCase } from '../../application/use-cases/remove-member.use-case';
@@ -39,6 +40,7 @@ import { MinRole, StoreMemberGuard } from '../guards/store-member.guard';
 export class StoreMembersController {
   constructor(
     private readonly listMembers: ListStoreMembersUseCase,
+    private readonly listPendingInvitations: ListPendingInvitationsUseCase,
     private readonly inviteMember: InviteMemberUseCase,
     private readonly updateRole: UpdateMemberRoleUseCase,
     private readonly removeMember: RemoveMemberUseCase,
@@ -52,6 +54,17 @@ export class StoreMembersController {
   @ApiResponse({ status: 200, type: [StoreMemberResponseDto] })
   async list(@Param('storeId') storeId: string): Promise<StoreMemberResponseDto[]> {
     return this.listMembers.execute(storeId);
+  }
+
+  @Get('invitations')
+  @MinRole('OWNER')
+  @ApiOperation({ summary: 'Lista invitaciones pendientes del store (solo OWNER)' })
+  @ApiParam({ name: 'storeId', type: 'string' })
+  @ApiResponse({ status: 200, type: [StoreInvitationResponseDto] })
+  async listInvitations(
+    @Param('storeId') storeId: string,
+  ): Promise<StoreInvitationResponseDto[]> {
+    return this.listPendingInvitations.execute(storeId);
   }
 
   @Post('invite')

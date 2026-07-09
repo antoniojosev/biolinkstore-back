@@ -10,6 +10,7 @@ import { StoreMemberPermissionService } from './domain/services/store-member-per
 
 // Application
 import { ListStoreMembersUseCase } from './application/use-cases/list-store-members.use-case';
+import { ListPendingInvitationsUseCase } from './application/use-cases/list-pending-invitations.use-case';
 import { InviteMemberUseCase } from './application/use-cases/invite-member.use-case';
 import { UpdateMemberRoleUseCase } from './application/use-cases/update-member-role.use-case';
 import { RemoveMemberUseCase } from './application/use-cases/remove-member.use-case';
@@ -36,6 +37,7 @@ import { StoreMemberGuard } from './presentation/guards/store-member.guard';
 
     // Use Cases
     ListStoreMembersUseCase,
+    ListPendingInvitationsUseCase,
     InviteMemberUseCase,
     UpdateMemberRoleUseCase,
     RemoveMemberUseCase,
