@@ -33,11 +33,19 @@ export class UpdateProductUseCase {
       slug = undefined;
     }
 
-    const { realEstateData, serviceData, ...rest } = dto;
+    const { realEstateData, serviceData, attributes, ...rest } = dto;
 
     const product = await this.productRepository.update(productId, {
       ...rest,
       slug,
+      attributes: attributes?.map((attr, index) => ({
+        name: attr.name,
+        options: attr.options,
+        type: attr.type ?? 'text',
+        role: attr.role ?? 'variant',
+        optionsMeta: attr.optionsMeta ?? null,
+        sortOrder: attr.sortOrder ?? index,
+      })),
       realEstateData: realEstateData
         ? {
             bedrooms: realEstateData.bedrooms ?? null,

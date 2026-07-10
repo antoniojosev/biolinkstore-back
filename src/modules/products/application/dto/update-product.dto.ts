@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductAttributeDto } from './create-product.dto';
 import { UpdateProductRealEstateDataDto } from './update-product-real-estate-data.dto';
 import { UpdateProductServiceDataDto } from './update-product-service-data.dto';
 
@@ -96,6 +97,17 @@ export class UpdateProductDto {
   @IsArray()
   @IsString({ each: true })
   categoryIds?: string[];
+
+  @ApiProperty({
+    type: [ProductAttributeDto],
+    required: false,
+    description: 'Reemplaza todos los atributos existentes (mismo patron que categoryIds).',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductAttributeDto)
+  attributes?: ProductAttributeDto[];
 
   @ApiProperty({ type: UpdateProductRealEstateDataDto, required: false })
   @IsOptional()

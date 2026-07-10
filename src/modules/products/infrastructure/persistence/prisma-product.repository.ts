@@ -238,6 +238,18 @@ export class PrismaProductRepository implements IProductRepository {
         }
       : {};
 
+    // Same replace-all pattern as categories: attributes have no stable id from
+    // the client (options/optionsMeta can change shape), so re-create is simpler
+    // and safer than diffing. Variants (separate model) are untouched here.
+    const attributeUpdate = data.attributes
+      ? {
+          attributes: {
+            deleteMany: {},
+            create: data.attributes,
+          },
+        }
+      : {};
+
     const realEstateUpdate = data.realEstateData
       ? {
           realEstateData: {
@@ -297,6 +309,7 @@ export class PrismaProductRepository implements IProductRepository {
         isOnSale: data.isOnSale,
         sortOrder: data.sortOrder,
         ...categoryUpdate,
+        ...attributeUpdate,
         ...realEstateUpdate,
         ...serviceUpdate,
       },

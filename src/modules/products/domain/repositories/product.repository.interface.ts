@@ -78,6 +78,14 @@ export interface UpdateProductData {
   isFeatured?: boolean;
   isOnSale?: boolean;
   sortOrder?: number;
+  attributes?: Array<{
+    name: string;
+    options: string[];
+    type: string;
+    role?: string;
+    optionsMeta?: any;
+    sortOrder: number;
+  }>;
   categoryIds?: string[];
   realEstateData?: RealEstateDataInput;
   serviceData?: ServiceDataInput;
