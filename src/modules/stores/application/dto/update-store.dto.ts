@@ -130,6 +130,14 @@ export class UpdateStoreDto {
   @IsString()
   instagramHandle?: string;
 
+  @ApiProperty({
+    required: false,
+    description: 'true = marca que el owner pidio importar su catalogo desde Instagram (guarda la fecha); false = limpia el pedido.',
+  })
+  @IsOptional()
+  @IsBoolean()
+  requestInstagramImport?: boolean;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()

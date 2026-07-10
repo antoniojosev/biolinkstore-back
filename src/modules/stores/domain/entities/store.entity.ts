@@ -34,6 +34,7 @@ export class Store {
 
   whatsappNumbers: string[];
   instagramHandle: string | null;
+  instagramImportRequestedAt: Date | null;
   facebookUrl: string | null;
   tiktokUrl: string | null;
   email: string | null;

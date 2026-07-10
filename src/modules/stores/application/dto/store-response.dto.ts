@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Plan, StoreCtaType, SubscriptionStatus } from '@prisma/client';
 
 export class StoreCtaDto {
@@ -68,6 +68,12 @@ export class StoreResponseDto {
 
   @ApiProperty()
   instagramHandle: string | null;
+
+  @ApiPropertyOptional({
+    nullable: true,
+    description: 'Seteado cuando el owner pidio importar su catalogo desde Instagram en el onboarding. No implica que el scraping real ya corrio.',
+  })
+  instagramImportRequestedAt: Date | null;
 
   @ApiProperty()
   facebookUrl: string | null;

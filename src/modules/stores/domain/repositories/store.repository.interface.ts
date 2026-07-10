@@ -41,6 +41,7 @@ export interface UpdateStoreData {
   template?: string;
   whatsappNumbers?: string[];
   instagramHandle?: string;
+  instagramImportRequestedAt?: Date | null;
   facebookUrl?: string;
   tiktokUrl?: string;
   email?: string;

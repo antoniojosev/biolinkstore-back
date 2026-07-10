@@ -112,6 +112,11 @@ model Store {
 
   whatsappNumbers String[]
   instagramHandle String?
+  // Seteado cuando el owner elige "importar de Instagram" en el onboarding.
+  // No dispara ningun scraping todavia (eso es otra sesion) - solo marca el
+  // pedido para que el dashboard muestre el pill de "importando" y, cuando el
+  // scraping real exista, para saber que stores tienen una importacion pendiente.
+  instagramImportRequestedAt DateTime?
   facebookUrl     String?
   tiktokUrl       String?
   email           String?

@@ -19,7 +19,14 @@ export class UpdateStoreUseCase {
     }
 
     // Slug always equals username — update both together
-    const data: UpdateStoreDto & { slug?: string } = { ...dto };
+    const { requestInstagramImport, ...rest } = dto;
+    const data: Omit<UpdateStoreDto, 'requestInstagramImport'> & {
+      slug?: string;
+      instagramImportRequestedAt?: Date | null;
+    } = { ...rest };
+    if (requestInstagramImport !== undefined) {
+      data.instagramImportRequestedAt = requestInstagramImport ? new Date() : null;
+    }
     if (dto.username && dto.username !== existingStore.username) {
       const usernameExists = await this.storeRepository.checkUsernameExists(dto.username);
       if (usernameExists) {
