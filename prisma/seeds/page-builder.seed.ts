@@ -394,6 +394,11 @@ function gallerySection(key = 'gallery_main', removable = true): SectionDef {
     variants: ['grid', 'masonry', 'carousel'],
     props: {
       title: { type: 'text', max: 80, label: 'Título' },
+      layout: {
+        type: 'enum',
+        options: ['grid', 'masonry', 'carousel'],
+        label: 'Layout',
+      },
       items: {
         type: 'list',
         max: 24,
@@ -474,6 +479,11 @@ function testimonialsSection(): SectionDef {
     variants: ['cards', 'carousel'],
     props: {
       title: { type: 'text', max: 80, label: 'Título' },
+      layout: {
+        type: 'enum',
+        options: ['cards', 'carousel'],
+        label: 'Layout',
+      },
       items: {
         type: 'list',
         max: 12,
@@ -497,6 +507,11 @@ function categoriesSection(removable = true): SectionDef {
     variants: ['pills', 'cards', 'sidebar'],
     props: {
       title: { type: 'text', max: 60, label: 'Título' },
+      layout: {
+        type: 'enum',
+        options: ['pills', 'cards', 'sidebar'],
+        label: 'Layout',
+      },
       showCount: { type: 'boolean', label: 'Mostrar conteo' },
     },
   };
@@ -1030,6 +1045,11 @@ const vitrinaTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1107,9 +1127,14 @@ const luxoraTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['full-screen', 'editorial', 'split'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1126,9 +1151,14 @@ const luxoraTemplate: TemplateSeed = {
         type: 'featured_products',
         key: 'featured_main',
         removable: true,
-        variants: ['carousel', 'grid-2'],
+        variants: ['grid', 'carousel', 'spotlight'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
+          layout: {
+            type: 'enum',
+            options: ['grid', 'carousel', 'spotlight'],
+            label: 'Layout',
+          },
           productIds: {
             type: 'list',
             max: 6,
@@ -1204,9 +1234,14 @@ const noirTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['cinematic', 'full-screen'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1223,9 +1258,14 @@ const noirTemplate: TemplateSeed = {
         type: 'featured_products',
         key: 'featured_main',
         removable: true,
-        variants: ['editorial-pair', 'spotlight-single'],
+        variants: ['grid', 'carousel', 'spotlight'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
+          layout: {
+            type: 'enum',
+            options: ['grid', 'carousel', 'spotlight'],
+            label: 'Layout',
+          },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           productIds: {
             type: 'list',
@@ -1301,9 +1341,14 @@ const menuTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['banner', 'split'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1318,7 +1363,7 @@ const menuTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['grouped-by-category', 'list'],
+        variants: ['category', 'none'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
           groupBy: {
@@ -1381,9 +1426,14 @@ const serviciosTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['split', 'banner'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1398,12 +1448,12 @@ const serviciosTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['services-cards', 'list'],
+        variants: ['grid-2', 'list'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
           layout: {
             type: 'enum',
-            options: ['services-cards', 'list'],
+            options: ['grid-2', 'list'],
             label: 'Layout',
           },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
@@ -1461,9 +1511,14 @@ const inmueblesTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['split', 'banner', 'with-search'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1478,12 +1533,12 @@ const inmueblesTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['cards-real-estate', 'list-detailed'],
+        variants: ['grid-2', 'list'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
           layout: {
             type: 'enum',
-            options: ['cards-real-estate', 'list-detailed'],
+            options: ['grid-2', 'list'],
             label: 'Layout',
           },
           showFilters: { type: 'boolean', label: 'Mostrar filtros' },
@@ -1542,9 +1597,14 @@ const posterTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['full-screen-cta', 'cinematic'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
@@ -1562,7 +1622,7 @@ const posterTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['grouped-by-category', 'showcase-poster'],
+        variants: ['category', 'none'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
           groupBy: {
@@ -1626,9 +1686,14 @@ const atelierTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['editorial', 'full-screen'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
@@ -1644,9 +1709,14 @@ const atelierTemplate: TemplateSeed = {
         type: 'featured_products',
         key: 'featured_main',
         removable: true,
-        variants: ['editorial-pair', 'collection-strip'],
+        variants: ['grid', 'carousel', 'spotlight'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
+          layout: {
+            type: 'enum',
+            options: ['grid', 'carousel', 'spotlight'],
+            label: 'Layout',
+          },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           productIds: {
             type: 'list',
@@ -1662,11 +1732,16 @@ const atelierTemplate: TemplateSeed = {
         type: 'text_block',
         key: 'editorial_block',
         removable: true,
-        variants: ['centered-quote', 'two-column'],
+        variants: ['editorial', 'centered-quote', 'two-column'],
         props: {
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 120, label: 'Título' },
           body: { type: 'text', max: 600, label: 'Texto' },
+          layout: {
+            type: 'enum',
+            options: ['editorial', 'centered-quote', 'two-column'],
+            label: 'Layout',
+          },
           align: {
             type: 'enum',
             options: ['left', 'center', 'right'],
@@ -1678,12 +1753,12 @@ const atelierTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['collections', 'grid-3'],
+        variants: ['grid-3', 'grid-4'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
           layout: {
             type: 'enum',
-            options: ['collections', 'grid-3', 'grid-4'],
+            options: ['grid-3', 'grid-4'],
             label: 'Layout',
           },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
@@ -1740,9 +1815,14 @@ const rosierTemplate: TemplateSeed = {
         type: 'hero',
         key: 'hero_main',
         removable: false,
-        variants: ['rose-bloom', 'full-screen'],
+        variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['split', 'compact', 'banner'],
+            label: 'Layout',
+          },
           headline: { type: 'text', max: 120, label: 'Título' },
           subheadline: { type: 'text', max: 200, label: 'Descripción' },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
@@ -1759,12 +1839,12 @@ const rosierTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['with-swatches', 'grid-2', 'grid-3'],
+        variants: ['grid-2', 'grid-3'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
           layout: {
             type: 'enum',
-            options: ['with-swatches', 'grid-2', 'grid-3'],
+            options: ['grid-2', 'grid-3'],
             label: 'Layout',
           },
           showSwatches: { type: 'boolean', label: 'Mostrar variantes color' },
@@ -1775,9 +1855,14 @@ const rosierTemplate: TemplateSeed = {
         type: 'featured_products',
         key: 'featured_main',
         removable: true,
-        variants: ['hero-card', 'split-pair'],
+        variants: ['grid', 'carousel', 'spotlight'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
+          layout: {
+            type: 'enum',
+            options: ['grid', 'carousel', 'spotlight'],
+            label: 'Layout',
+          },
           productIds: {
             type: 'list',
             max: 4,
