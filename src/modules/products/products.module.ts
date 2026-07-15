@@ -57,6 +57,8 @@ import { VariantsController } from './presentation/controllers/variants.controll
     INJECTION_TOKENS.PRODUCT_REPOSITORY,
     INJECTION_TOKENS.VARIANT_REPOSITORY,
     VariantGeneratorService,
+    // Needed by InstagramImportModule -> ProcessInstagramPostUseCase.
+    CreateProductUseCase,
   ],
 })
 export class ProductsModule {}

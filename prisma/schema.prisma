@@ -110,20 +110,20 @@ model Store {
   font            String @default("Inter")
   template        String @default("minimal")
 
-  whatsappNumbers String[]
-  instagramHandle String?
+  whatsappNumbers            String[]
+  instagramHandle            String?
   // Seteado cuando el owner elige "importar de Instagram" en el onboarding.
   // No dispara ningun scraping todavia (eso es otra sesion) - solo marca el
   // pedido para que el dashboard muestre el pill de "importando" y, cuando el
   // scraping real exista, para saber que stores tienen una importacion pendiente.
   instagramImportRequestedAt DateTime?
-  facebookUrl     String?
-  tiktokUrl       String?
-  email           String?
-  phone           String?
-  address         String?
-  socialLinks     Json?
-  businessHours   Json?
+  facebookUrl                String?
+  tiktokUrl                  String?
+  email                      String?
+  phone                      String?
+  address                    String?
+  socialLinks                Json?
+  businessHours              Json?
 
   checkoutConfig   Json?
   currencyConfig   Json?
@@ -150,26 +150,26 @@ model Store {
   owner          User   @relation(fields: [ownerId], references: [id])
   activeForUsers User[] @relation("UserActiveStore")
 
-  products       Product[]
-  categories     Category[]
-  orders         OrderIntent[]
-  visitors       Visitor[]
-  analytics      AnalyticsEvent[]
-  subscription   Subscription?
-  domainAddon    DomainAddon?
-  paymentReports PaymentReport[]
-  inquiries      Inquiry[]
-  paymentMethods StorePaymentMethod[]
-  hours          StoreHours[]
-  views          StoreView[]
-  customRates    StoreCustomRate[]
-  socialLinkRows StoreSocialLink[]
-  domain         StoreDomain?
-  events         StoreEvent[]
-  themes         StoreTheme?
-  members        StoreMember[]
-  invitations    StoreInvitation[]
-
+  products         Product[]
+  categories       Category[]
+  orders           OrderIntent[]
+  visitors         Visitor[]
+  analytics        AnalyticsEvent[]
+  subscription     Subscription?
+  domainAddon      DomainAddon?
+  paymentReports   PaymentReport[]
+  inquiries        Inquiry[]
+  paymentMethods   StorePaymentMethod[]
+  hours            StoreHours[]
+  views            StoreView[]
+  customRates      StoreCustomRate[]
+  socialLinkRows   StoreSocialLink[]
+  domain           StoreDomain?
+  events           StoreEvent[]
+  themes           StoreTheme?
+  members          StoreMember[]
+  invitations      StoreInvitation[]
+  instagramImports InstagramImport[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -276,17 +276,17 @@ model StoreView {
 // BE-125: granular storefront events. Complement to StoreView (page-level)
 // with finer-grained signals used by the dashboard funnels and product scoring.
 model StoreEvent {
-  id          String          @id @default(cuid())
-  storeId     String
-  type        StoreEventType
-  targetId    String?
-  metadata    Json?
-  sessionId   String?
-  referrer    String?
-  userAgent   String?
-  timestamp   DateTime        @default(now())
+  id        String         @id @default(cuid())
+  storeId   String
+  type      StoreEventType
+  targetId  String?
+  metadata  Json?
+  sessionId String?
+  referrer  String?
+  userAgent String?
+  timestamp DateTime       @default(now())
 
-  store       Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   @@index([storeId, timestamp])
   @@index([storeId, type, timestamp])
@@ -344,6 +344,11 @@ model Product {
 
   sortOrder Int @default(0)
 
+  // BE-IG-IMPORT: set when the product was created by the Instagram import
+  // pipeline (nulled on delete of the import row, product itself is kept).
+  instagramImportId String?
+  instagramImport   InstagramImport? @relation(fields: [instagramImportId], references: [id], onDelete: SetNull)
+
   store          Store                  @relation(fields: [storeId], references: [id], onDelete: Cascade)
   categories     CategoriesOnProducts[]
   attributes     ProductAttribute[]
@@ -360,7 +365,52 @@ model Product {
   @@unique([storeId, slug])
   @@index([storeId])
   @@index([storeId, isVisible])
+  @@index([instagramImportId])
   @@map("products")
+}
+
+// BE-IG-IMPORT: un registro por corrida de import (Apify + clasificacion IA).
+// El progreso (posts encontrados/procesados/saltados, productos creados) se
+// actualiza post por post para que el polling del frontend muestre avance
+// real, no un resultado final de una sola vez.
+model InstagramImport {
+  id      String @id @default(cuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  handle String
+  status InstagramImportStatus @default(RUNNING)
+
+  apifyRunId     String?
+  apifyDatasetId String?
+
+  postsFound      Int @default(0)
+  postsProcessed  Int @default(0)
+  postsSkipped    Int @default(0)
+  productsCreated Int @default(0)
+
+  profileName      String?
+  profileFollowers Int?
+
+  error String? @db.Text
+
+  products Product[]
+
+  requestedAt DateTime  @default(now())
+  finishedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId, requestedAt])
+  @@map("instagram_imports")
+}
+
+enum InstagramImportStatus {
+  RUNNING
+  PROCESSING
+  DONE
+  FAILED
 }
 
 model ProductRealEstateData {
@@ -968,7 +1018,7 @@ model StoreTheme {
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  activeTemplate    String  // key del template en edicion
+  activeTemplate    String // key del template en edicion
   publishedTemplate String? // key del live
   rollbackTemplate  String? // key del snapshot
 

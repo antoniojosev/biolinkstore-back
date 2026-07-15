@@ -32,6 +32,7 @@ import { PaymentMethodsModule } from './modules/payment-methods/payment-methods.
 import { RatesModule } from './modules/rates/rates.module';
 import { ThemesModule } from './modules/themes/themes.module';
 import { TeamMembersModule } from './modules/team-members/team-members.module';
+import { InstagramImportModule } from './modules/instagram-import/instagram-import.module';
 
 // Global Guards, Filters, Interceptors, Pipes
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -86,6 +87,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     RatesModule,
     ThemesModule,
     TeamMembersModule,
+    InstagramImportModule,
   ],
   providers: [
     // Global JWT Auth Guard (can be overridden with @Public decorator)

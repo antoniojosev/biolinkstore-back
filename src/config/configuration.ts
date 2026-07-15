@@ -49,4 +49,9 @@ export default () => ({
     from: process.env.EMAIL_FROM || 'noreply@bylink.app',
     adminEmail: process.env.ADMIN_EMAIL || 'antoniovila.dev@gmail.com',
   },
+  instagramImport: {
+    apifyToken: process.env.APIFY_TOKEN || '',
+    apifyActorId: process.env.APIFY_ACTOR_ID || 'apify~instagram-scraper',
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+  },
 });

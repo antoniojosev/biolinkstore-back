@@ -89,6 +89,7 @@ export interface UpdateProductData {
   categoryIds?: string[];
   realEstateData?: RealEstateDataInput;
   serviceData?: ServiceDataInput;
+  instagramImportId?: string;
 }
 
 export interface RealEstateDataInput {

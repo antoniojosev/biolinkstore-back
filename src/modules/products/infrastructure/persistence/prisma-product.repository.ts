@@ -308,6 +308,7 @@ export class PrismaProductRepository implements IProductRepository {
         isFeatured: data.isFeatured,
         isOnSale: data.isOnSale,
         sortOrder: data.sortOrder,
+        instagramImportId: data.instagramImportId,
         ...categoryUpdate,
         ...attributeUpdate,
         ...realEstateUpdate,
