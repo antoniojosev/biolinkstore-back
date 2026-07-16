@@ -919,6 +919,97 @@ function demoRealEstate(): DemoData {
   };
 }
 
+function demoPortfolio(): DemoData {
+  return {
+    store: {
+      name: 'Valentina Ríos Demo',
+      slug: 'portfolio-demo',
+      logo: img('200x200', '2d2d2d', 'ffffff', 'VR'),
+      banner: img('1600x600', '1a1a1a', 'e5e5e5', 'Valentina+Rios'),
+      phone: '+584145559911',
+      address: 'Caracas, Venezuela',
+      email: 'hola@valentinarios.com',
+      aboutShort: 'Fotógrafa y directora de arte — retratos, eventos y branding visual',
+      socials: [
+        { platform: 'IG', url: 'https://instagram.com/valentinarios' },
+        { platform: 'TIKTOK', url: 'https://tiktok.com/@valentinarios' },
+        { platform: 'WHATSAPP', url: 'https://wa.me/584145559911' },
+      ],
+    },
+    categories: [
+      { id: 'cat-retratos', name: 'Retratos', slug: 'retratos' },
+      { id: 'cat-eventos', name: 'Eventos', slug: 'eventos' },
+      { id: 'cat-branding', name: 'Branding', slug: 'branding' },
+    ],
+    products: [
+      {
+        id: 'p-1',
+        name: 'Sesión de retratos',
+        description:
+          'Sesión de 1 hora en estudio o locación. 15 fotografías editadas, entrega digital en 5 días.',
+        basePrice: 120,
+        images: [
+          img('600x600', '2d2d2d', 'ffffff', 'Retrato'),
+          img('600x600', '4a4a4a', 'ffffff', 'Retrato+2'),
+        ],
+        isVisible: true,
+        category: 'Retratos',
+      },
+      {
+        id: 'p-2',
+        name: 'Cobertura de evento',
+        description:
+          'Hasta 4 horas de cobertura. 80+ fotografías editadas, galería online privada.',
+        basePrice: 350,
+        images: [
+          img('600x600', '6b7280', 'ffffff', 'Evento'),
+          img('600x600', '9ca3af', '1a1a1a', 'Evento+2'),
+        ],
+        isVisible: true,
+        category: 'Eventos',
+      },
+      {
+        id: 'p-3',
+        name: 'Contenido para marcas',
+        description:
+          'Pack mensual: 12 fotografías de producto/lifestyle listas para redes, con dirección de arte.',
+        basePrice: 280,
+        images: [img('600x600', '1a1a1a', 'e5e5e5', 'Branding')],
+        isVisible: true,
+        category: 'Branding',
+      },
+      {
+        id: 'p-4',
+        name: 'Retrato corporativo',
+        description: 'Headshots profesionales para equipos, mínimo 3 personas. Fondo neutro.',
+        basePrice: 60,
+        images: [img('600x600', '4a4a4a', 'ffffff', 'Corporativo')],
+        isVisible: true,
+        category: 'Retratos',
+      },
+      {
+        id: 'p-5',
+        name: 'Mini sesión express',
+        description: '20 minutos, 5 fotografías editadas. Ideal para perfiles y CV.',
+        basePrice: 45,
+        images: [img('600x600', '9ca3af', '1a1a1a', 'Express')],
+        isVisible: true,
+        category: 'Retratos',
+      },
+      {
+        id: 'p-6',
+        name: 'Dirección de arte editorial',
+        description:
+          'Concepto, moodboard, producción y post para editoriales de moda o producto.',
+        basePrice: 500,
+        images: [img('600x600', '2d2d2d', 'e5e5e5', 'Editorial')],
+        isVisible: true,
+        category: 'Branding',
+      },
+    ],
+  };
+}
+
 function demoGeneral(): DemoData {
   return {
     store: {
@@ -1881,6 +1972,194 @@ const rosierTemplate: TemplateSeed = {
   demoDataJson: demoFashion('rosier', 'Rosier'),
 };
 
+// ESTATE — REAL_ESTATE premium (port del legacy components/templates/estate,
+// rama feat/multi-currency-rates): navy #1A3A52 + dorado #D4AF37, header de
+// asesor, chips de filtro, grid 2 col. Aproximación por secciones — la
+// versión pixel-fiel (specs hab/baños/m², guardados) llegará con su renderer
+// custom en una fase futura (ver docs/plan-temas-recetas.md Fase E).
+const estateTemplate: TemplateSeed = {
+  key: 'estate',
+  name: 'Estate',
+  niche: TemplateNiche.REAL_ESTATE,
+  planRequired: Plan.PRO,
+  sortOrder: 41,
+  defaultTokens: {
+    palette: {
+      preset: 'corporate',
+      primary: '#1A3A52',
+      secondary: '#4a6076',
+      accent: '#D4AF37',
+      bg: '#F8F9FA',
+      surface: '#ffffff',
+      text: '#1a2733',
+      muted: '#6b7684',
+      border: '#e5e8ec',
+    },
+    typography: {
+      headingFont: 'Manrope',
+      bodyFont: 'Inter',
+      scale: 'normal',
+    },
+    radius: 'lg',
+    spacing: 'normal',
+    buttonStyle: 'solid',
+  },
+  sectionSchema: {
+    defaultOrder: [
+      'hero_main',
+      'categories_strip',
+      'product_grid_main',
+      'about_main',
+      'testimonials_main',
+      'contact_main',
+      'map_main',
+      'socials_bar',
+      'footer_main',
+    ],
+    sections: [
+      {
+        type: 'hero',
+        key: 'hero_main',
+        removable: false,
+        variants: ['compact', 'split', 'banner'],
+        props: {
+          image: { type: 'image', label: 'Imagen hero' },
+          layout: {
+            type: 'enum',
+            options: ['compact', 'split', 'banner'],
+            label: 'Layout',
+          },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
+          headline: { type: 'text', max: 80, label: 'Título' },
+          subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
+          ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
+          ctaType: {
+            type: 'enum',
+            options: ['whatsapp', 'scroll', 'external'],
+            label: 'Tipo CTA',
+          },
+        },
+      },
+      categoriesSection(true),
+      {
+        type: 'product_grid',
+        key: 'product_grid_main',
+        removable: false,
+        variants: ['grid-2', 'grid-3', 'list'],
+        props: {
+          title: { type: 'text', max: 60, label: 'Título sección' },
+          layout: {
+            type: 'enum',
+            options: ['grid-2', 'grid-3', 'list'],
+            label: 'Layout',
+          },
+          filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
+          showPrice: { type: 'boolean', label: 'Mostrar precio' },
+        },
+      },
+      aboutSection(true),
+      testimonialsSection(),
+      contactSection(true),
+      mapSection(),
+      socialsSection(),
+      footerSection(),
+    ],
+  },
+  demoDataJson: demoRealEstate(),
+};
+
+// PERSONA — PORTFOLIO (port del legacy components/templates/persona, rama
+// feat/multi-currency-rates): perfil social minimal, acento casi negro,
+// servicios en lista + portfolio en grid. Aproximación por secciones — las
+// tabs Servicios/Portfolio del legacy las recupera el renderer custom
+// PersonaRenderer (Fase E, esta misma iteración).
+const personaTemplate: TemplateSeed = {
+  key: 'persona',
+  name: 'Persona',
+  niche: TemplateNiche.PORTFOLIO,
+  planRequired: Plan.FREE,
+  sortOrder: 50,
+  defaultTokens: {
+    palette: {
+      preset: 'monocromo',
+      primary: '#2d2d2d',
+      secondary: '#6b7280',
+      accent: '#2d2d2d',
+      bg: '#ffffff',
+      surface: '#f7f7f7',
+      text: '#1a1a1a',
+      muted: '#6b7280',
+      border: '#e5e7eb',
+    },
+    typography: {
+      headingFont: 'Manrope',
+      bodyFont: 'Inter',
+      scale: 'normal',
+    },
+    radius: 'lg',
+    spacing: 'normal',
+    buttonStyle: 'solid',
+  },
+  sectionSchema: {
+    defaultOrder: [
+      'hero_main',
+      'stats_main',
+      'product_grid_main',
+      'gallery_main',
+      'about_main',
+      'socials_bar',
+      'footer_main',
+    ],
+    sections: [
+      {
+        type: 'hero',
+        key: 'hero_main',
+        removable: false,
+        variants: ['compact', 'split', 'banner'],
+        props: {
+          image: { type: 'image', label: 'Foto de perfil / cover' },
+          layout: {
+            type: 'enum',
+            options: ['compact', 'split', 'banner'],
+            label: 'Layout',
+          },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
+          headline: { type: 'text', max: 80, label: 'Nombre / título' },
+          subheadline: { type: 'text', max: 140, label: 'Bio corta' },
+          ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
+          ctaType: {
+            type: 'enum',
+            options: ['whatsapp', 'scroll', 'external'],
+            label: 'Tipo CTA',
+          },
+        },
+      },
+      statsSection(),
+      {
+        type: 'product_grid',
+        key: 'product_grid_main',
+        removable: false,
+        variants: ['list', 'grid-2', 'grid-3'],
+        props: {
+          title: { type: 'text', max: 60, label: 'Título sección' },
+          layout: {
+            type: 'enum',
+            options: ['list', 'grid-2', 'grid-3'],
+            label: 'Layout',
+          },
+          filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
+          showPrice: { type: 'boolean', label: 'Mostrar precio' },
+        },
+      },
+      gallerySection('gallery_main', true),
+      aboutSection(true),
+      socialsSection(),
+      footerSection(),
+    ],
+  },
+  demoDataJson: demoPortfolio(),
+};
+
 const TEMPLATES: TemplateSeed[] = [
   vitrinaTemplate,
   luxoraTemplate,
@@ -1891,6 +2170,8 @@ const TEMPLATES: TemplateSeed[] = [
   posterTemplate,
   atelierTemplate,
   rosierTemplate,
+  estateTemplate,
+  personaTemplate,
 ];
 
 // ─── Seed runner ─────────────────────────────────────────────────

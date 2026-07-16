@@ -978,6 +978,7 @@ enum TemplateNiche {
   REAL_ESTATE
   SERVICES
   GENERAL
+  PORTFOLIO
 }
 
 model Template {
@@ -990,6 +991,11 @@ model Template {
   demoDataJson  Json
   sectionSchema Json
   defaultTokens Json
+  // Recetas alternativas curadas por el diseñador ("compartimientos del kit
+  // de pizza"): combos completos de tokens (+ overrides opcionales de
+  // seccion) que cambian la personalidad del tema sin romper su estetica.
+  // Shape: StylePreset[] — ver docs/theme-framework.md.
+  stylePresets  Json?
   version       Int           @default(1)
   isActive      Boolean       @default(true)
   sortOrder     Int           @default(0)
