@@ -1573,7 +1573,7 @@ const vitrinaTemplate: TemplateSeed = {
       border: '#e8e8e4',
     },
     typography: {
-      headingFont: 'Manrope',
+      headingFont: 'Inter',
       bodyFont: 'Inter',
       scale: 'normal',
     },
@@ -1688,17 +1688,17 @@ const luxoraTemplate: TemplateSeed = {
       bg: '#fafaf8',
       surface: '#F0F0EC',
       text: '#1A1A1A',
-      muted: '#737373',
+      muted: '#999999',
       border: '#EAEAE6',
     },
     typography: {
-      headingFont: 'Manrope',
+      headingFont: 'Inter',
       bodyFont: 'Inter',
       scale: 'normal',
     },
-    radius: 'sm',
+    radius: 'lg',
     spacing: 'comfortable',
-    buttonStyle: 'outline',
+    buttonStyle: 'solid',
   },
   sectionSchema: {
     defaultOrder: [
@@ -2084,18 +2084,18 @@ const serviciosTemplate: TemplateSeed = {
   sortOrder: 30,
   defaultTokens: {
     palette: {
-      preset: 'corporate',
-      primary: '#1e3a8a',
-      secondary: '#475569',
-      accent: '#0ea5e9',
+      preset: 'monocromo',
+      primary: '#2d2d2d',
+      secondary: '#6b7280',
+      accent: '#2d2d2d',
       bg: '#ffffff',
-      surface: '#f8fafc',
-      text: '#0f172a',
+      surface: '#f7f7f7',
+      text: '#1a1a1a',
       muted: '#64748b',
-      border: '#e2e8f0',
+      border: '#e5e7eb',
     },
     typography: {
-      headingFont: 'Manrope',
+      headingFont: 'Inter',
       bodyFont: 'Inter',
       scale: 'normal',
     },
@@ -2186,7 +2186,7 @@ const inmueblesTemplate: TemplateSeed = {
       preset: 'premium',
       primary: '#1a3550',
       secondary: '#0a0a0a',
-      accent: '#1a3550',
+      accent: '#d4a04f',
       bg: '#ffffff',
       surface: '#f6f5f3',
       text: '#0a0a0a',
@@ -2194,7 +2194,7 @@ const inmueblesTemplate: TemplateSeed = {
       border: '#e5e3df',
     },
     typography: {
-      headingFont: 'Manrope',
+      headingFont: 'Inter',
       bodyFont: 'Inter',
       scale: 'normal',
     },
@@ -2515,7 +2515,9 @@ const atelierTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoFashion(),
+  // Tienda demo canonica del atelier: el fotografo (seed-servicios usa
+  // template atelier y el HTML aprobado dice "Reservar sesion").
+  demoDataJson: demoServices(),
 };
 
 // ROSIER — FASHION luxury rose+cream: hero + product_grid (swatches) + featured + socials + footer
@@ -2766,7 +2768,7 @@ const personaTemplate: TemplateSeed = {
       border: '#e5e7eb',
     },
     typography: {
-      headingFont: 'Manrope',
+      headingFont: 'Inter',
       bodyFont: 'Inter',
       scale: 'normal',
     },
