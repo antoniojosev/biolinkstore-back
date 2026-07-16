@@ -252,15 +252,30 @@ interface DemoStore {
   socials: Array<{ platform: string; url: string }>;
 }
 
+interface DemoAttribute {
+  name: string;
+  type: 'text' | 'color';
+  // Sin role (o 'variant') = eje seleccionable en el detalle · 'spec'/'tag' =
+  // ficha de inmueble · 'ingredient-included'/'ingredient-extra' = flujo
+  // "arma tu…" del tema poster (mismos roles que los seeds verticales).
+  role?: string;
+  options: string[];
+  optionsMeta?: Record<string, { hex?: string; priceDelta?: number }>;
+}
+
 interface DemoProduct {
   id: string;
   name: string;
   description: string;
   basePrice: number;
+  compareAtPrice?: number;
   images: string[];
   isVisible: boolean;
+  featured?: boolean;
+  tagline?: string;
   category: string;
   sku?: string;
+  attributes?: DemoAttribute[];
 }
 
 interface DemoCategory {
@@ -564,565 +579,976 @@ function mapSection(): SectionDef {
 }
 
 // ─── Niche-specific demo data ────────────────────────────────────
+// Las tiendas demo son las MISMAS que se curaron para prod (ver
+// prisma/seeds/seed-ropa.ts, seed-restaurant.ts, seed-inmuebles.ts y
+// seed-servicios.ts): Noire Boutique, Brooklyn Burger House, Andrea Torres
+// Propiedades y Daniel Mendoza. Ese demo data es parte del diseño de cada
+// tema — si se toca un seed vertical hay que reflejarlo acá. Las fotos viven
+// en frontend/public/demo-assets/**.
 
-function demoFashion(brandKey: string, brandName: string): DemoData {
-  const slug = `${brandKey}-demo`;
+const ROPA = '/demo-assets/ropa';
+const REST = '/demo-assets/restaurant';
+const INMU = '/demo-assets/inmuebles';
+const SERV = '/demo-assets/servicios';
+
+/** Eje de color con hex por opción (swatches en el detalle de producto). */
+function colorAxis(name: string, opts: Record<string, string>): DemoAttribute {
+  return {
+    name,
+    type: 'color',
+    options: Object.keys(opts),
+    optionsMeta: Object.fromEntries(Object.entries(opts).map(([k, v]) => [k, { hex: v }])),
+  };
+}
+
+/** Eje de texto simple (tallas, sabores, estampas…). */
+function textAxis(name: string, options: string[]): DemoAttribute {
+  return { name, type: 'text', options };
+}
+
+interface FashionDef {
+  name: string;
+  desc: string;
+  price: number;
+  compare?: number;
+  cat: string;
+  images: string[];
+  featured?: boolean;
+  attrs?: DemoAttribute[];
+}
+
+// Noire Boutique — catálogo completo de seed-ropa.ts (22 piezas, 8 categorías).
+const FASHION_PRODUCTS: FashionDef[] = [
+  {
+    name: 'Vestido Midi Satín',
+    desc: 'Vestido midi en satín fluido con tirantes regulables. Corte sesgado que estiliza. Forrado. Ideal para eventos y cenas.',
+    price: 98,
+    compare: 130,
+    cat: 'Mujer',
+    featured: true,
+    images: ['vestidoSatin.jpg', 'vestidoSatinB.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L', 'XL']),
+      colorAxis('Color', { Negro: '#1A1413', Champagne: '#E8D4A8', 'Borgoña': '#6B1F2E' }),
+    ],
+  },
+  {
+    name: 'Blazer Oversize Estructurado',
+    desc: 'Blazer de corte oversize con hombros estructurados. Doble botonadura dorada. Forro de viscosa. Atemporal.',
+    price: 128,
+    cat: 'Mujer',
+    featured: true,
+    images: ['blazerMujer.jpg', 'blazerMujerB.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L']),
+      colorAxis('Color', { Negro: '#1A1413', Crema: '#F1E4CF', Camel: '#C49A6C' }),
+    ],
+  },
+  {
+    name: 'Blusa de Seda Cuello V',
+    desc: 'Blusa de seda natural con cuello en V y manga francesa. Caída impecable. Se combina tanto con jean como con traje.',
+    price: 72,
+    cat: 'Mujer',
+    images: ['blusaSeda.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L']),
+      colorAxis('Color', { Marfil: '#F1E4CF', Negro: '#1A1413', 'Rosa Seco': '#C89B9B' }),
+    ],
+  },
+  {
+    name: 'Pantalón Palazzo de Crepe',
+    desc: 'Pantalón palazzo de crepe con cintura alta y pinzas delanteras. Pierna ancha con caída fluida. Se ajusta con elástico interno.',
+    price: 88,
+    compare: 110,
+    cat: 'Mujer',
+    featured: true,
+    images: ['pantalonPalazzo.jpg', 'pantalonPalazzoB.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L', 'XL']),
+      colorAxis('Color', { Negro: '#1A1413', Beige: '#D4C5A9', Chocolate: '#5B3A29' }),
+    ],
+  },
+  {
+    name: 'Falda Midi Plisada',
+    desc: 'Falda midi plisada en satín con cintura elástica. Largo favorecedor. Movimiento elegante al caminar.',
+    price: 68,
+    cat: 'Mujer',
+    images: ['faldaMidi.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L']),
+      colorAxis('Color', { Esmeralda: '#2E4A3C', Negro: '#1A1413', Marfil: '#F1E4CF' }),
+    ],
+  },
+  {
+    name: 'Top Crop Punto Fino',
+    desc: 'Top crop en punto fino con escote cuadrado. Tejido elástico que se adapta al cuerpo. Pieza clave del guardarropa.',
+    price: 48,
+    cat: 'Mujer',
+    images: ['topCrop.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L']),
+      colorAxis('Color', { Negro: '#1A1413', Blanco: '#FAFAFA', Rojo: '#9B2237' }),
+    ],
+  },
+  {
+    name: 'Abrigo Largo de Lana',
+    desc: 'Abrigo largo 100% lana con solapa ancha y cinturón. Forrado completo. Invierno con estilo atemporal.',
+    price: 220,
+    compare: 280,
+    cat: 'Mujer',
+    featured: true,
+    images: ['abrigoLana.jpg', 'abrigoLanaB.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L', 'XL']),
+      colorAxis('Color', { Camel: '#C49A6C', Negro: '#1A1413', Gris: '#7A7A7A' }),
+    ],
+  },
+  {
+    name: 'Camisa de Lino Manga Larga',
+    desc: 'Camisa de lino puro con corte regular. Fresca y transpirable. Ideal para looks casuales o smart casual.',
+    price: 78,
+    cat: 'Hombre',
+    featured: true,
+    images: ['camisaLino.jpg', 'camisaLinoB.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L', 'XL', 'XXL']),
+      colorAxis('Color', { Blanco: '#FAFAFA', 'Azul Claro': '#A3C4D9', Arena: '#D4C5A9' }),
+    ],
+  },
+  {
+    name: 'Blazer Slim Fit',
+    desc: 'Blazer slim fit con mezcla de lana y cashmere. Dos botones, forro interior, bolsillos funcionales. Corte moderno.',
+    price: 195,
+    cat: 'Hombre',
+    images: ['blazerHombre.jpg', 'blazerHombreB.jpg'],
+    attrs: [
+      textAxis('Talla', ['46', '48', '50', '52', '54']),
+      colorAxis('Color', { 'Azul Marino': '#1E2F4A', Gris: '#4A4A4A', Negro: '#1A1413' }),
+    ],
+  },
+  {
+    name: 'Pantalón Chino Slim',
+    desc: 'Pantalón chino de algodón con elastano. Corte slim. Versátil para oficina o salida casual.',
+    price: 72,
+    compare: 92,
+    cat: 'Hombre',
+    featured: true,
+    images: ['pantalonChino.jpg'],
+    attrs: [
+      textAxis('Talla', ['30', '32', '34', '36', '38']),
+      colorAxis('Color', {
+        Beige: '#D4C5A9',
+        'Azul Marino': '#1E2F4A',
+        'Verde Oliva': '#556B2F',
+        Negro: '#1A1413',
+      }),
+    ],
+  },
+  {
+    name: 'Camiseta Premium Pima',
+    desc: 'Camiseta 100% algodón pima. Corte regular, costuras reforzadas. La base perfecta de cualquier look.',
+    price: 38,
+    cat: 'Hombre',
+    images: ['camisetaBasic.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L', 'XL', 'XXL']),
+      colorAxis('Color', {
+        Blanco: '#FAFAFA',
+        Negro: '#1A1413',
+        'Gris Melange': '#8A8A8A',
+        'Verde Botella': '#2E4A3C',
+      }),
+    ],
+  },
+  {
+    name: 'Suéter de Lana Cuello Redondo',
+    desc: 'Suéter de lana merino, cuello redondo. Tejido denso que abriga sin abultar. Corte clásico.',
+    price: 98,
+    cat: 'Hombre',
+    images: ['sueterLana.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L', 'XL']),
+      colorAxis('Color', {
+        Camel: '#C49A6C',
+        Negro: '#1A1413',
+        'Azul Marino': '#1E2F4A',
+        Gris: '#7A7A7A',
+      }),
+    ],
+  },
+  {
+    name: 'Bolso Hobo de Cuero',
+    desc: 'Bolso hobo en cuero genuino con forro de algodón. Bolsillo interior con cierre. Correa ajustable.',
+    price: 165,
+    compare: 210,
+    cat: 'Accesorios',
+    featured: true,
+    images: ['bolsoCuero.jpg', 'bolsoCueroB.jpg'],
+    attrs: [colorAxis('Color', { Negro: '#1A1413', Camel: '#C49A6C', Chocolate: '#5B3A29' })],
+  },
+  {
+    name: 'Cinturón de Cuero Trenzado',
+    desc: 'Cinturón de cuero trenzado con hebilla dorada. Ancho 3cm. Se adapta a cualquier atuendo.',
+    price: 54,
+    cat: 'Accesorios',
+    images: ['cinturonCuero.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L']),
+      colorAxis('Color', { Negro: '#1A1413', Miel: '#C8984B', 'Coñac': '#8B4513' }),
+    ],
+  },
+  {
+    name: 'Pañuelo de Seda Estampado',
+    desc: 'Pañuelo cuadrado 90x90cm en seda pura con estampa editorial. Múltiples formas de llevarlo.',
+    price: 62,
+    cat: 'Accesorios',
+    featured: true,
+    images: ['panueloSeda.jpg'],
+    attrs: [textAxis('Estampa', ['Clásico Floral', 'Geométrico', 'Marino'])],
+  },
+  {
+    name: 'Sombrero de Fieltro',
+    desc: 'Sombrero de fieltro de lana con banda grosgrain. Ala ancha. Complemento statement para cualquier look.',
+    price: 89,
+    cat: 'Accesorios',
+    images: ['sombreroFieltro.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L']),
+      colorAxis('Color', { Negro: '#1A1413', Camel: '#C49A6C', Gris: '#7A7A7A' }),
+    ],
+  },
+  {
+    name: 'Lentes de Sol Acetato',
+    desc: 'Lentes de sol con montura de acetato y protección UV400. Diseño atemporal con forma redonda. Incluye estuche rígido.',
+    price: 78,
+    cat: 'Accesorios',
+    images: ['lentesSol.jpg'],
+    attrs: [
+      colorAxis('Color', { 'Negro Mate': '#2D2D2D', Carey: '#8B6914', Transparente: '#E0E0E0' }),
+    ],
+  },
+  {
+    name: 'Botas de Cuero Altas',
+    desc: 'Botas altas en cuero genuino italiano con forro de piel sintética. Cremallera lateral y suela antideslizante. Hormadas para comodidad todo el día.',
+    price: 185,
+    compare: 240,
+    cat: 'Calzado',
+    featured: true,
+    images: ['botasCuero.jpg'],
+    attrs: [
+      textAxis('Talla', ['35', '36', '37', '38', '39', '40']),
+      colorAxis('Color', { Negro: '#1A1413', 'Coñac': '#8B4513', 'Borgoña': '#6B1F2E' }),
+    ],
+  },
+  {
+    name: 'Jeans Mom Fit Tiro Alto',
+    desc: 'Jeans mom fit en denim 100% algodón con tiro alto. Corte clásico que estiliza. Lavado medio con pequeños detalles vintage.',
+    price: 72,
+    cat: 'Denim',
+    images: ['jeansMom.jpg'],
+    attrs: [
+      textAxis('Talla', ['24', '26', '28', '30', '32']),
+      colorAxis('Lavado', { 'Azul Medio': '#5A7BA8', 'Azul Oscuro': '#1F3355', Negro: '#1A1413' }),
+    ],
+  },
+  {
+    name: 'Cárdigan Oversized',
+    desc: 'Cárdigan oversized tejido a mano en mezcla de lana y cashmere. Botones de nácar y puños acanalados. Pieza clave para entretiempo.',
+    price: 128,
+    cat: 'Tejidos',
+    featured: true,
+    images: ['cardiganTejido.jpg'],
+    attrs: [
+      textAxis('Talla', ['S', 'M', 'L']),
+      colorAxis('Color', { Crema: '#F0E6D2', Camel: '#C49A6C', 'Verde Musgo': '#4A5D23' }),
+    ],
+  },
+  {
+    name: 'Bikini Clásico Triángulo',
+    desc: 'Bikini de dos piezas en tejido premium con protección UV. Top triángulo ajustable y braga de tiro medio. Secado rápido.',
+    price: 68,
+    cat: 'Trajes de Baño',
+    images: ['bikiniClasico.jpg'],
+    attrs: [
+      textAxis('Talla', ['XS', 'S', 'M', 'L']),
+      colorAxis('Color', { Negro: '#1A1413', Marfil: '#F5EEDC', Rojo: '#A81E2C' }),
+    ],
+  },
+  {
+    name: 'Set de Anillos Minimalistas',
+    desc: 'Set de 3 anillos apilables en plata 925 con baño de oro 18k. Diseño minimalista que combina entre sí. Antialérgicos.',
+    price: 58,
+    compare: 78,
+    cat: 'Joyería',
+    images: ['anillosSet.jpg'],
+    attrs: [
+      textAxis('Talla', ['6', '7', '8', '9']),
+      colorAxis('Acabado', { Plata: '#C0C0C0', Oro: '#D4A84B', 'Oro Rosa': '#E8A79A' }),
+    ],
+  },
+];
+
+function demoFashion(): DemoData {
+  const cats = [
+    'Mujer',
+    'Hombre',
+    'Accesorios',
+    'Calzado',
+    'Denim',
+    'Tejidos',
+    'Trajes de Baño',
+    'Joyería',
+  ];
   return {
     store: {
-      name: `${brandName} Demo`,
-      slug,
-      logo: uns('1539109136881-3be0616acf4b', 200, 200),
-      banner: uns('1445205170230-053b83016050', 1600, 600),
-      phone: '+584121234567',
+      name: 'Noire Boutique',
+      slug: 'noire-boutique',
+      logo: `${ROPA}/logo.jpg`,
+      banner: `${ROPA}/banner.jpg`,
+      phone: '+584147654321',
       address: 'Av. Principal, Lechería, Anzoátegui',
-      email: `hola@${brandKey}.com`,
-      aboutShort: `${brandName} — diseño venezolano contemporáneo`,
+      email: 'hola@noireboutique.com',
+      aboutShort:
+        'Cápsulas editoriales en satín, lana y seda. Piezas pensadas para usarse, no para guardarse. Envíos a todo el país.',
       socials: [
-        { platform: 'IG', url: `https://instagram.com/${brandKey}` },
-        { platform: 'TIKTOK', url: `https://tiktok.com/@${brandKey}` },
+        { platform: 'IG', url: 'https://instagram.com/noire.boutique' },
+        { platform: 'WHATSAPP', url: 'https://wa.me/584147654321' },
+      ],
+    },
+    categories: cats.map((name, i) => ({
+      id: `cat-nb-${i + 1}`,
+      name,
+      slug: name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-'),
+    })),
+    products: FASHION_PRODUCTS.map((p, i) => ({
+      id: `nb-${String(i + 1).padStart(2, '0')}`,
+      name: p.name,
+      description: p.desc,
+      basePrice: p.price,
+      compareAtPrice: p.compare,
+      images: p.images.map((f) => `${ROPA}/${f}`),
+      isVisible: true,
+      featured: p.featured ?? false,
+      category: p.cat,
+      sku: `NB-${String(i + 1).padStart(3, '0')}`,
+      attributes: p.attrs,
+    })),
+  };
+}
+
+interface MenuDef {
+  name: string;
+  desc: string;
+  price: number; // USD (el seed vertical usa centavos; acá ya está /100)
+  compare?: number;
+  cat: string;
+  img: string;
+  featured?: boolean;
+  tagline?: string;
+  included?: string[];
+  extras?: Array<[string, number]>; // [nombre, priceDelta USD]
+}
+
+const BURGER_EXTRAS: Array<[string, number]> = [
+  ['Queso extra', 1],
+  ['Doble carne', 3],
+  ['Bacon', 2],
+  ['Aguacate', 1.5],
+  ['Jalapeños', 0.5],
+  ['Cebolla caramelizada', 0.8],
+  ['Huevo frito', 1.2],
+  ['Aros de cebolla', 1],
+];
+
+// Brooklyn Burger House — carta completa de seed-restaurant.ts (21 items).
+const MENU_PRODUCTS: MenuDef[] = [
+  {
+    name: 'Classic Cheeseburger',
+    desc: 'Carne angus 150g, queso americano, lechuga, tomate, pickles y nuestra house sauce. Con papas fritas.',
+    price: 11,
+    cat: 'Burgers',
+    img: 'classicBurger.jpg',
+    featured: true,
+    tagline: 'Como te gusta',
+    included: ['Lechuga', 'Tomate', 'Pickles', 'Cebolla', 'House sauce'],
+    extras: BURGER_EXTRAS,
+  },
+  {
+    name: 'Buffalo Wings (8 piezas)',
+    desc: 'Alitas de pollo bañadas en salsa buffalo clásica. Con blue cheese y bastones de apio.',
+    price: 8.5,
+    cat: 'Starters',
+    img: 'wings.jpg',
+    featured: true,
+  },
+  {
+    name: 'Onion Rings Crispy',
+    desc: 'Aros de cebolla empanizados con mezcla casera. Crujientes por fuera, tiernos por dentro. Con dip ranch.',
+    price: 5.5,
+    cat: 'Starters',
+    img: 'onionRings.jpg',
+  },
+  {
+    name: 'Loaded Nachos',
+    desc: 'Tortillas con cheddar fundido, pico de gallo, guacamole, jalapeños y sour cream. Para compartir.',
+    price: 7.5,
+    cat: 'Starters',
+    img: 'nachos.jpg',
+    tagline: 'A tu manera',
+    included: ['Cheddar fundido', 'Pico de gallo', 'Guacamole', 'Sour cream', 'Jalapeños'],
+    extras: [
+      ['Carne desmechada', 2.5],
+      ['Pollo BBQ', 2.2],
+      ['Extra queso', 1.2],
+      ['Extra guacamole', 1],
+      ['Chili beans', 0.8],
+    ],
+  },
+  {
+    name: 'Double Trouble Burger',
+    desc: 'Doble carne angus 300g, doble cheddar, cebolla caramelizada, tocineta y BBQ sauce. Con papas.',
+    price: 14.5,
+    compare: 17,
+    cat: 'Burgers',
+    img: 'doubleBurger.jpg',
+    featured: true,
+    tagline: 'Como te gusta',
+    included: ['Doble cheddar', 'Cebolla caramelizada', 'Tocineta', 'BBQ sauce', 'Pickles'],
+    extras: BURGER_EXTRAS,
+  },
+  {
+    name: 'Smokehouse Bacon Burger',
+    desc: 'Carne 180g, queso pepper jack, tocineta ahumada, aros de cebolla crispy y salsa chipotle. Con papas.',
+    price: 13.5,
+    cat: 'Burgers',
+    img: 'baconBurger.jpg',
+    tagline: 'Como te gusta',
+    included: ['Pepper jack', 'Tocineta ahumada', 'Aros de cebolla', 'Salsa chipotle', 'Lechuga'],
+    extras: BURGER_EXTRAS,
+  },
+  {
+    name: 'Smash Burger',
+    desc: 'Dos patties smasheadas estilo American diner, queso americano, pickles, cebolla y mostaza. Con papas.',
+    price: 12,
+    cat: 'Burgers',
+    img: 'smashBurger.jpg',
+    tagline: 'Como te gusta',
+    included: ['Queso americano', 'Pickles', 'Cebolla', 'Mostaza'],
+    extras: BURGER_EXTRAS,
+  },
+  {
+    name: 'Pulled Pork Sandwich',
+    desc: 'Cerdo cocinado 12 horas desmechado en BBQ sauce, coleslaw fresco en pan brioche. Con papas.',
+    price: 11.5,
+    cat: 'Burgers',
+    img: 'pulledPork.jpg',
+    tagline: 'A tu manera',
+    included: ['Coleslaw', 'Pan brioche', 'BBQ sauce'],
+    extras: [
+      ['Queso cheddar', 1],
+      ['Jalapeños', 0.5],
+      ['Aguacate', 1.5],
+      ['Doble porción', 4],
+    ],
+  },
+  {
+    name: 'Club Sandwich',
+    desc: 'Triple piso: pollo grillado, tocineta, lechuga, tomate, huevo y mayo. Con papas fritas.',
+    price: 9.5,
+    cat: 'Burgers',
+    img: 'clubSandwich.jpg',
+    tagline: 'A tu manera',
+    included: ['Lechuga', 'Tomate', 'Tocineta', 'Huevo', 'Mayo'],
+    extras: [
+      ['Queso extra', 1],
+      ['Aguacate', 1.5],
+      ['Doble pollo', 3],
+      ['Pan integral', 0],
+    ],
+  },
+  {
+    name: 'BBQ Ribs Rack',
+    desc: 'Costillas de cerdo baby back glaseadas en BBQ sauce ahumada. Cocción lenta 6 horas. Con papas y coleslaw.',
+    price: 18,
+    cat: 'Grill',
+    img: 'ribs.jpg',
+    featured: true,
+  },
+  {
+    name: 'BBQ Chicken Plate',
+    desc: 'Medio pollo marinado y glaseado en salsa BBQ de la casa. Con mazorca grillada y papas rústicas.',
+    price: 12.5,
+    cat: 'Grill',
+    img: 'chickenBBQ.jpg',
+  },
+  {
+    name: 'Papas Fritas Grandes',
+    desc: 'Porción grande de papas fritas crujientes. Opción con cheddar y tocineta (+$1.50).',
+    price: 4,
+    cat: 'Grill',
+    img: 'fries.jpg',
+  },
+  {
+    name: 'Homemade Lemonade',
+    desc: 'Limonada casera con hierbabuena fresca. Fría y refrescante. 500ml.',
+    price: 2.5,
+    cat: 'Drinks',
+    img: 'lemonade.jpg',
+  },
+  {
+    name: 'Soft Drink',
+    desc: 'Cola, limón, naranja o uva. Vaso de 400ml con hielo.',
+    price: 2,
+    cat: 'Drinks',
+    img: 'cola.jpg',
+  },
+  {
+    name: 'Craft Beer',
+    desc: 'Cerveza artesanal seleccionada. IPA, Lager o Stout. 330ml bien fría.',
+    price: 4.5,
+    cat: 'Drinks',
+    img: 'craftBeer.jpg',
+  },
+  {
+    name: 'Classic Milkshake',
+    desc: 'Malteada cremosa con helado artesanal. Sabores: chocolate, vainilla, fresa u Oreo. 400ml.',
+    price: 5.5,
+    cat: 'Drinks',
+    img: 'milkshake.jpg',
+  },
+  {
+    name: 'Drip Coffee',
+    desc: 'Café recién colado. Opción con leche o espresso shot. 250ml.',
+    price: 1.5,
+    cat: 'Drinks',
+    img: 'coffee.jpg',
+  },
+  {
+    name: 'Warm Brownie Sundae',
+    desc: 'Brownie tibio de chocolate belga con helado de vainilla, crema batida y salsa de chocolate.',
+    price: 6,
+    cat: 'Desserts',
+    img: 'brownie.jpg',
+    featured: true,
+  },
+  {
+    name: 'NY Cheesecake',
+    desc: 'Cheesecake estilo New York con coulis de frutos rojos. Base de galleta graham.',
+    price: 5.5,
+    cat: 'Desserts',
+    img: 'cheesecake.jpg',
+  },
+  {
+    name: 'Apple Pie',
+    desc: 'Pie de manzana caliente con canela y masa hojaldrada. Con bola de helado de vainilla.',
+    price: 5,
+    cat: 'Desserts',
+    img: 'applePie.jpg',
+  },
+  {
+    name: 'Ice Cream Sundae',
+    desc: 'Tres bolas de helado artesanal con topping: caramelo, chocolate o frutos rojos. Crema batida y cerezas.',
+    price: 5,
+    cat: 'Desserts',
+    img: 'iceCream.jpg',
+  },
+];
+
+function demoRestaurant(): DemoData {
+  const cats = ['Starters', 'Burgers', 'Grill', 'Drinks', 'Desserts'];
+  return {
+    store: {
+      name: 'Brooklyn Burger House',
+      slug: 'brooklyn-burger-house',
+      logo: `${REST}/logo.jpg`,
+      banner: `${REST}/banner.jpg`,
+      phone: '+584121234567',
+      address: 'C.C. Plaza Mayor local 12, Lechería',
+      email: 'pedidos@brooklynburger.com',
+      aboutShort:
+        'Hamburguesas smash, BBQ ribs, wings y milkshakes. American grill hecho en casa. Pedidos por WhatsApp.',
+      socials: [
+        { platform: 'IG', url: 'https://instagram.com/brooklynburgerhouse' },
         { platform: 'WHATSAPP', url: 'https://wa.me/584121234567' },
       ],
     },
-    categories: [
-      { id: 'cat-vestidos', name: 'Vestidos', slug: 'vestidos' },
-      { id: 'cat-tops', name: 'Tops', slug: 'tops' },
-      { id: 'cat-pantalones', name: 'Pantalones', slug: 'pantalones' },
-      { id: 'cat-accesorios', name: 'Accesorios', slug: 'accesorios' },
-    ],
-    products: [
-      {
-        id: 'p-1',
-        name: 'Vestido Lino Sahara',
-        description:
-          'Vestido midi en lino crudo, corte holgado, mangas francesas. Hecho en Caracas.',
-        basePrice: 89,
-        images: [
-          uns('1515886657613-9f3515b0c78f', 600, 800),
-          uns('1496747611176-843222e1e57c', 600, 800),
-        ],
+    categories: cats.map((name, i) => ({
+      id: `cat-bb-${i + 1}`,
+      name,
+      slug: name.toLowerCase(),
+    })),
+    products: MENU_PRODUCTS.map((m, i) => {
+      const attributes: DemoAttribute[] = [];
+      // Ejes de variante (sabor/punto/topping/tamaño) — mismos criterios que
+      // seed-restaurant.ts.
+      if (m.name.includes('Milkshake')) {
+        attributes.push(textAxis('Sabor', ['Chocolate', 'Vainilla', 'Fresa', 'Oreo']));
+      } else if (m.cat === 'Burgers' && /Burger|Cheeseburger/.test(m.name)) {
+        attributes.push(textAxis('Punto', ['Término medio', 'Tres cuartos', 'Bien cocida']));
+      } else if (m.name.includes('Ice Cream Sundae')) {
+        attributes.push(textAxis('Topping', ['Caramelo', 'Chocolate', 'Frutos rojos']));
+      } else if (m.name.includes('BBQ Ribs')) {
+        attributes.push(textAxis('Tamaño', ['Half Rack', 'Full Rack']));
+      }
+      // Flujo "arma tu…" del tema poster: ingredientes incluidos + extras con
+      // priceDelta.
+      if (m.included?.length) {
+        attributes.push({
+          name: 'Lleva incluido',
+          type: 'text',
+          role: 'ingredient-included',
+          options: m.included,
+        });
+      }
+      if (m.extras?.length) {
+        attributes.push({
+          name: 'Súmale extras',
+          type: 'text',
+          role: 'ingredient-extra',
+          options: m.extras.map(([n]) => n),
+          optionsMeta: Object.fromEntries(m.extras.map(([n, d]) => [n, { priceDelta: d }])),
+        });
+      }
+      return {
+        id: `bb-${String(i + 1).padStart(2, '0')}`,
+        name: m.name,
+        description: m.desc,
+        basePrice: m.price,
+        compareAtPrice: m.compare,
+        images: [`${REST}/${m.img}`],
         isVisible: true,
-        category: 'Vestidos',
-        sku: 'SH-001',
-      },
-      {
-        id: 'p-2',
-        name: 'Top Origami',
-        description: 'Blusa estructurada con drapeado asimétrico en seda lavada.',
-        basePrice: 64,
-        images: [uns('1434389677669-e08b4cac3105', 600, 800)],
-        isVisible: true,
-        category: 'Tops',
-        sku: 'TO-002',
-      },
-      {
-        id: 'p-3',
-        name: 'Jean Wide Leg',
-        description: 'Jean ancho de tiro alto, lavado índigo con caída.',
-        basePrice: 72,
-        images: [uns('1541099649105-f69ad21f3246', 600, 800)],
-        isVisible: true,
-        category: 'Pantalones',
-        sku: 'PW-003',
-      },
-      {
-        id: 'p-4',
-        name: 'Vestido Jardín',
-        description: 'Vestido midi con estampado floral, ideal para la temporada.',
-        basePrice: 145,
-        images: [uns('1623609163859-ca93c959b98a', 600, 800)],
-        isVisible: true,
-        category: 'Vestidos',
-        sku: 'NO-004',
-      },
-      {
-        id: 'p-5',
-        name: 'Collar Sena',
-        description: 'Collar de plata 925 con dije minimalista, hecho a mano.',
-        basePrice: 38,
-        images: [uns('1611591437281-460bfbe1220a', 600, 800)],
-        isVisible: true,
-        category: 'Accesorios',
-        sku: 'CB-005',
-      },
-      {
-        id: 'p-6',
-        name: 'Bolso Mini Atelier',
-        description: 'Bolso estructurado en piel grabada, asa removible.',
-        basePrice: 95,
-        images: [uns('1548036328-c9fa89d128fa', 600, 800)],
-        isVisible: true,
-        category: 'Accesorios',
-        sku: 'BO-006',
-      },
-      {
-        id: 'p-7',
-        name: 'Chaqueta Cuero Roma',
-        description: 'Chaqueta de cuero genuino, corte clásico y duradero.',
-        basePrice: 78,
-        images: [uns('1551028719-00167b16eac5', 600, 800)],
-        isVisible: true,
-        category: 'Tops',
-        sku: 'CE-007',
-      },
-      {
-        id: 'p-8',
-        name: 'Aretes Dorados Luna',
-        description: 'Aretes bañados en oro 18k, diseño artesanal.',
-        basePrice: 68,
-        images: [uns('1617038220319-276d3cfab638', 600, 800)],
-        isVisible: true,
-        category: 'Accesorios',
-        sku: 'FP-008',
-      },
-    ],
+        featured: m.featured ?? false,
+        tagline: m.tagline,
+        category: m.cat,
+        attributes: attributes.length ? attributes : undefined,
+      };
+    }),
   };
 }
 
-function demoRestaurant(brandKey: string, brandName: string): DemoData {
-  const slug = `${brandKey}-demo`;
-  return {
-    store: {
-      name: `${brandName} Demo`,
-      slug,
-      logo: uns('1414235077428-338989a2e8c0', 200, 200),
-      banner: uns('1517248135467-4c7edcad34c4', 1600, 600),
-      phone: '+584149998877',
-      address: 'C.C. Plaza Mayor local 12, Lechería',
-      email: `pedidos@${brandKey}.com`,
-      aboutShort: `${brandName} — sabores que enamoran`,
-      socials: [
-        { platform: 'IG', url: `https://instagram.com/${brandKey}` },
-        { platform: 'WHATSAPP', url: 'https://wa.me/584149998877' },
-      ],
-    },
-    categories: [
-      { id: 'cat-entrantes', name: 'Entrantes', slug: 'entrantes' },
-      { id: 'cat-principales', name: 'Principales', slug: 'principales' },
-      { id: 'cat-postres', name: 'Postres', slug: 'postres' },
-      { id: 'cat-bebidas', name: 'Bebidas', slug: 'bebidas' },
-    ],
-    products: [
-      {
-        id: 'm-1',
-        name: 'Bowl mediterráneo',
-        description:
-          'Quinoa, rúcula, tomates confitados, feta y aceite de oliva.',
-        basePrice: 12,
-        images: [uns('1546069901-ba9599a7e63c', 600, 600)],
-        isVisible: true,
-        category: 'Entrantes',
-      },
-      {
-        id: 'm-2',
-        name: 'Picada de la casa',
-        description: 'Selección de quesos, embutidos y panes para compartir.',
-        basePrice: 14,
-        images: [uns('1504674900247-0877df9cc836', 600, 600)],
-        isVisible: true,
-        category: 'Entrantes',
-      },
-      {
-        id: 'm-3',
-        name: 'Pasta al tartufo',
-        description: 'Pasta fresca artesanal, crema de trufa y parmesano.',
-        basePrice: 22,
-        images: [uns('1621996346565-e3dbc646d9a9', 600, 600)],
-        isVisible: true,
-        category: 'Principales',
-      },
-      {
-        id: 'm-4',
-        name: 'Costillas ahumadas',
-        description:
-          'Costillas ahumadas 8 horas, glaseado BBQ de la casa, papas rústicas.',
-        basePrice: 32,
-        images: [uns('1544025162-d76694265947', 600, 600)],
-        isVisible: true,
-        category: 'Principales',
-      },
-      {
-        id: 'm-5',
-        name: 'Pizza artesanal',
-        description: 'Masa madre, mozzarella fresca, albahaca y tomate San Marzano.',
-        basePrice: 18,
-        images: [uns('1565299624946-b28f40a0ae38', 600, 600)],
-        isVisible: true,
-        category: 'Principales',
-      },
-      {
-        id: 'm-6',
-        name: 'Torre de pancakes',
-        description: 'Pancakes esponjosos, frutos rojos y miel de maple.',
-        basePrice: 9,
-        images: [uns('1567620905732-2d1ec7ab7445', 600, 600)],
-        isVisible: true,
-        category: 'Postres',
-      },
-      {
-        id: 'm-7',
-        name: 'Sundae de la casa',
-        description: 'Helado artesanal, brownie tibio y salsa de chocolate.',
-        basePrice: 8,
-        images: [uns('1563805042-7684c019e1cb', 600, 600)],
-        isVisible: true,
-        category: 'Postres',
-      },
-      {
-        id: 'm-8',
-        name: 'Limonada de menta',
-        description: 'Limonada natural con hojas de menta y un toque de jengibre.',
-        basePrice: 5,
-        images: [uns('1513558161293-cdaf765ed2fd', 600, 600)],
-        isVisible: true,
-        category: 'Bebidas',
-      },
-    ],
-  };
+interface PropertyDef {
+  name: string;
+  desc: string;
+  price: number;
+  cat: string;
+  images: string[];
+  featured?: boolean;
+  specs: Partial<Record<'Habitaciones' | 'Baños' | 'm²' | 'Año' | 'Estacionamiento', string>>;
+  tags?: string[];
 }
 
-function demoServices(): DemoData {
-  return {
-    store: {
-      name: 'Estudio Norte Demo',
-      slug: 'servicios-demo',
-      logo: uns('1581291518857-4e27b48ff24e', 200, 200),
-      banner: uns('1497366216548-37526070297c', 1600, 600),
-      phone: '+584125557788',
-      address: 'Lechería, Anzoátegui',
-      email: 'hola@estudionorte.com',
-      aboutShort: 'Diseño y desarrollo digital — equipo de 4 con 8 años de experiencia',
-      socials: [
-        { platform: 'IG', url: 'https://instagram.com/estudionorte' },
-        { platform: 'WHATSAPP', url: 'https://wa.me/584125557788' },
-      ],
-    },
-    categories: [
-      { id: 'cat-branding', name: 'Branding', slug: 'branding' },
-      { id: 'cat-web', name: 'Web', slug: 'web' },
-      { id: 'cat-fotografia', name: 'Fotografía', slug: 'fotografia' },
-    ],
-    products: [
-      {
-        id: 's-1',
-        name: 'Identidad de marca',
-        description:
-          'Branding completo: logotipo, paleta, tipografía, manual y aplicaciones.',
-        basePrice: 480,
-        images: [uns('1499951360447-b19be8fe80f5', 600, 600)],
-        isVisible: true,
-        category: 'Branding',
-      },
-      {
-        id: 's-2',
-        name: 'Sitio web one-page',
-        description:
-          'Landing page responsive con copywriting y formularios. Entrega en 2 semanas.',
-        basePrice: 360,
-        images: [uns('1460925895917-afdab827c52f', 600, 600)],
-        isVisible: true,
-        category: 'Web',
-      },
-      {
-        id: 's-3',
-        name: 'E-commerce básico',
-        description: 'Tienda online lista para vender, hasta 50 productos cargados.',
-        basePrice: 720,
-        images: [uns('1497366754035-f200968a6e72', 600, 600)],
-        isVisible: true,
-        category: 'Web',
-      },
-      {
-        id: 's-4',
-        name: 'Sesión de producto',
-        description: 'Hasta 20 fotografías de producto en estudio, fondo blanco.',
-        basePrice: 220,
-        images: [uns('1526170375885-4d8ecf77b99f', 600, 600)],
-        isVisible: true,
-        category: 'Fotografía',
-      },
-      {
-        id: 's-5',
-        name: 'Sesión lifestyle',
-        description: 'Fotografía editorial en locación, hasta 30 imágenes finales.',
-        basePrice: 320,
-        images: [uns('1531746020798-e6953c6e8e04', 600, 600)],
-        isVisible: true,
-        category: 'Fotografía',
-      },
-      {
-        id: 's-6',
-        name: 'Auditoría UX',
-        description:
-          'Revisión heurística + recomendaciones priorizadas. Entrega en 1 semana.',
-        basePrice: 180,
-        images: [uns('1497366811353-6870744d04b2', 600, 600)],
-        isVisible: true,
-        category: 'Branding',
-      },
-    ],
-  };
-}
+// Andrea Torres Propiedades — cartera completa de seed-inmuebles.ts (12).
+const PROPERTY_PRODUCTS: PropertyDef[] = [
+  {
+    name: 'Casa con Piscina y Vista al Mar',
+    desc: 'Espectacular casa con vista panorámica al mar. Piscina privada, jardín amplio, cocina remodelada, pisos de porcelanato. Estacionamiento para 3 vehículos. Zona tranquila con vigilancia 24h.',
+    price: 185000,
+    cat: 'Casas',
+    images: ['casa1.jpg', 'casa1b.jpg', 'casa1c.jpg'],
+    featured: true,
+    specs: { Habitaciones: '4', 'Baños': '3', 'm²': '280', 'Año': '2018', Estacionamiento: '3' },
+    tags: ['Piscina', 'Vista al mar', 'Vigilancia 24h'],
+  },
+  {
+    name: 'Casa Moderna en Complejo Turístico',
+    desc: 'Casa moderna de líneas limpias en complejo turístico cerrado. Acabados de primera, cocina americana, balcón con vista al mar. Área de BBQ.',
+    price: 145000,
+    cat: 'Casas',
+    images: ['casa2.jpg', 'casa2b.jpg'],
+    featured: true,
+    specs: { Habitaciones: '3', 'Baños': '2', 'm²': '200', 'Año': '2020', Estacionamiento: '2' },
+    tags: ['Vista al mar', 'BBQ'],
+  },
+  {
+    name: 'Townhouse en Urbanización Privada',
+    desc: 'Townhouse esquinero en urbanización cerrada. Sala-comedor amplia, cocina equipada, cuarto de servicio. Patio trasero. Vigilancia privada, parque infantil.',
+    price: 95000,
+    cat: 'Casas',
+    images: ['casa3.jpg', 'casa3b.jpg'],
+    specs: { Habitaciones: '3', 'Baños': '2', 'm²': '180', 'Año': '2016', Estacionamiento: '2' },
+    tags: ['Urbanización cerrada', 'Parque infantil'],
+  },
+  {
+    name: 'Casa de Playa Frente al Mar',
+    desc: 'Lujosa casa frente al mar. Piscina infinity, terraza panorámica, suite principal con jacuzzi. Acabados importados. Personal de servicio.',
+    price: 320000,
+    cat: 'Casas',
+    images: ['casa4.jpg'],
+    featured: true,
+    specs: { Habitaciones: '5', 'Baños': '4', 'm²': '350', 'Año': '2019', Estacionamiento: '4' },
+    tags: ['Piscina', 'Frente al mar', 'Jacuzzi'],
+  },
+  {
+    name: 'Apartamento con Vista al Mar',
+    desc: 'Apartamento en piso alto con vista panorámica al mar. Balcón amplio, cocina empotrada, closets de madera. Piscina y gimnasio en el edificio.',
+    price: 65000,
+    cat: 'Apartamentos',
+    images: ['apto1.jpg', 'apto1b.jpg'],
+    featured: true,
+    specs: { Habitaciones: '2', 'Baños': '2', 'm²': '95', 'Año': '2017', Estacionamiento: '1' },
+    tags: ['Vista al mar', 'Piscina', 'Gimnasio'],
+  },
+  {
+    name: 'Estudio Amoblado Céntrico',
+    desc: 'Estudio completamente amoblado y equipado. Ideal para inversión o alquiler turístico. Cocina americana, AC split. Zona comercial.',
+    price: 35000,
+    cat: 'Apartamentos',
+    images: ['apto2.jpg', 'apto2b.jpg'],
+    specs: { Habitaciones: '1', 'Baños': '1', 'm²': '55', Estacionamiento: '1' },
+    tags: ['Amoblado', 'Inversión'],
+  },
+  {
+    name: 'Penthouse Duplex con Terraza',
+    desc: 'Penthouse dúplex con terraza privada de 60m². Vista 360° al mar y montaña. Jacuzzi en terraza, cocina de diseño. Edificio con seguridad y piscina.',
+    price: 195000,
+    cat: 'Apartamentos',
+    images: ['apto3.jpg'],
+    featured: true,
+    specs: { Habitaciones: '3', 'Baños': '3', 'm²': '180', 'Año': '2021', Estacionamiento: '2' },
+    tags: ['Penthouse', 'Terraza', 'Jacuzzi', 'Vista 360°'],
+  },
+  {
+    name: 'Apartamento Familiar en Zona Residencial',
+    desc: 'Apartamento amplio en zona residencial céntrica. Cerca de colegios, supermercados y transporte. Cocina remodelada, pisos nuevos. Pozo de agua propio.',
+    price: 42000,
+    cat: 'Apartamentos',
+    images: ['apto4.jpg'],
+    specs: { Habitaciones: '3', 'Baños': '2', 'm²': '120', Estacionamiento: '1' },
+    tags: ['Pozo de agua'],
+  },
+  {
+    name: 'Terreno 500m² con Vista al Mar',
+    desc: 'Terreno plano con todos los servicios (agua, luz, cloacas). Ubicación privilegiada con posibilidad de vista al mar. Documentos al día. Ideal para construir casa de playa.',
+    price: 75000,
+    cat: 'Terrenos',
+    images: ['terreno1.jpg'],
+    specs: { 'm²': '500' },
+    tags: ['Servicios completos', 'Vista al mar'],
+  },
+  {
+    name: 'Parcela 1200m² en Zona Industrial',
+    desc: 'Parcela en zona industrial. Acceso por vía principal, servicios básicos disponibles. Ideal para galpón, taller o comercio. Documentos completos.',
+    price: 55000,
+    cat: 'Terrenos',
+    images: ['terreno2.jpg'],
+    specs: { 'm²': '1200' },
+    tags: ['Zona industrial', 'Vía principal'],
+  },
+  {
+    name: 'Local Comercial en Centro Comercial',
+    desc: 'Local comercial en planta baja de centro comercial con alto tráfico peatonal. Ideal para tienda de ropa, restaurante o servicios. Baño propio. Disponible inmediatamente.',
+    price: 48000,
+    cat: 'Locales Comerciales',
+    images: ['local1.jpg'],
+    specs: { 'm²': '85' },
+    tags: ['Alto tráfico', 'Planta baja'],
+  },
+  {
+    name: 'Oficina Premium en Torre Empresarial',
+    desc: 'Oficina en torre empresarial con recepción, 3 privados, sala de reuniones y baño. Vista a la ciudad. AC central. Planta eléctrica y pozo de agua.',
+    price: 68000,
+    cat: 'Locales Comerciales',
+    images: ['local2.jpg'],
+    featured: true,
+    specs: { 'm²': '120', Estacionamiento: '2' },
+    tags: ['Planta eléctrica', 'Pozo de agua', 'AC central'],
+  },
+];
 
 function demoRealEstate(): DemoData {
+  const cats = ['Casas', 'Apartamentos', 'Terrenos', 'Locales Comerciales'];
   return {
     store: {
-      name: 'Norte Inmuebles Demo',
-      slug: 'inmuebles-demo',
-      logo: uns('1560518883-ce09059eeffa', 200, 200),
-      banner: uns('1512917774080-9991f1c4c750', 1600, 600),
-      phone: '+584145556677',
-      address: 'Av. Diego Bautista Urbaneja, Lechería',
-      email: 'ventas@norteinmuebles.com',
-      aboutShort:
-        'Inmobiliaria boutique en el oriente venezolano. 12 años conectando familias con sus hogares.',
-      socials: [
-        { platform: 'IG', url: 'https://instagram.com/norteinmuebles' },
-        { platform: 'WHATSAPP', url: 'https://wa.me/584145556677' },
-      ],
-    },
-    categories: [
-      { id: 'cat-apartamentos', name: 'Apartamentos', slug: 'apartamentos' },
-      { id: 'cat-casas', name: 'Casas', slug: 'casas' },
-      { id: 'cat-locales', name: 'Locales', slug: 'locales' },
-    ],
-    products: [
-      {
-        id: 'i-1',
-        name: 'Apartamento Lomas del Mar — 3hab',
-        description:
-          '120m², 3 habitaciones, 2 baños, vista al mar, edificio con piscina y conserje 24h.',
-        basePrice: 95000,
-        images: [
-          uns('1522708323590-d24dbb6b0267', 600, 400),
-          uns('1600607687939-ce8a6c25118c', 600, 400),
-        ],
-        isVisible: true,
-        category: 'Apartamentos',
-      },
-      {
-        id: 'i-2',
-        name: 'Casa El Morro — 4hab',
-        description:
-          '280m², jardín, piscina privada, 4 habitaciones suite, 3 estacionamientos.',
-        basePrice: 220000,
-        images: [
-          uns('1600596542815-ffad4c1539a9', 600, 400),
-          uns('1613490493576-7fde63acd811', 600, 400),
-        ],
-        isVisible: true,
-        category: 'Casas',
-      },
-      {
-        id: 'i-3',
-        name: 'Apartamento Pueblo Viejo — 2hab',
-        description: '85m², 2 habitaciones, balcón, edificio reciente con gym.',
-        basePrice: 68000,
-        images: [uns('1560448204-e02f11c3d0e2', 600, 400)],
-        isVisible: true,
-        category: 'Apartamentos',
-      },
-      {
-        id: 'i-4',
-        name: 'Local comercial CC Plaza Mayor',
-        description:
-          '60m² planta libre, alta circulación, ideal para tienda o oficina.',
-        basePrice: 45000,
-        images: [uns('1441986300917-64674bd600d8', 600, 400)],
-        isVisible: true,
-        category: 'Locales',
-      },
-      {
-        id: 'i-5',
-        name: 'Townhouse Costa Azul',
-        description:
-          '180m² en conjunto cerrado, 3 habitaciones, terraza, garaje techado.',
-        basePrice: 145000,
-        images: [uns('1600585154340-be6161a56a0c', 600, 400)],
-        isVisible: true,
-        category: 'Casas',
-      },
-      {
-        id: 'i-6',
-        name: 'Apartamento Centro Lechería',
-        description: '70m² recién remodelado, equipado, listo para habitar.',
-        basePrice: 52000,
-        images: [uns('1493809842364-78817add7ffb', 600, 400)],
-        isVisible: true,
-        category: 'Apartamentos',
-      },
-    ],
-  };
-}
-
-function demoPortfolio(): DemoData {
-  return {
-    store: {
-      name: 'Valentina Ríos Demo',
-      slug: 'portfolio-demo',
-      logo: uns('1494790108377-be9c29b29330', 200, 200),
-      banner: uns('1452587925148-ce544e77e70d', 1600, 600),
-      phone: '+584145559911',
-      address: 'Caracas, Venezuela',
-      email: 'hola@valentinarios.com',
-      aboutShort: 'Fotógrafa y directora de arte — retratos, eventos y branding visual',
-      socials: [
-        { platform: 'IG', url: 'https://instagram.com/valentinarios' },
-        { platform: 'TIKTOK', url: 'https://tiktok.com/@valentinarios' },
-        { platform: 'WHATSAPP', url: 'https://wa.me/584145559911' },
-      ],
-    },
-    categories: [
-      { id: 'cat-retratos', name: 'Retratos', slug: 'retratos' },
-      { id: 'cat-eventos', name: 'Eventos', slug: 'eventos' },
-      { id: 'cat-branding', name: 'Branding', slug: 'branding' },
-    ],
-    products: [
-      {
-        id: 'p-1',
-        name: 'Sesión de retratos',
-        description:
-          'Sesión de 1 hora en estudio o locación. 15 fotografías editadas, entrega digital en 5 días.',
-        basePrice: 120,
-        images: [
-          uns('1529626455594-4ff0802cfb7e', 600, 600),
-          uns('1531746020798-e6953c6e8e04', 600, 600),
-        ],
-        isVisible: true,
-        category: 'Retratos',
-      },
-      {
-        id: 'p-2',
-        name: 'Cobertura de evento',
-        description:
-          'Hasta 4 horas de cobertura. 80+ fotografías editadas, galería online privada.',
-        basePrice: 350,
-        images: [
-          uns('1511795409834-ef04bbd61622', 600, 600),
-          uns('1519741497674-611481863552', 600, 600),
-        ],
-        isVisible: true,
-        category: 'Eventos',
-      },
-      {
-        id: 'p-3',
-        name: 'Contenido para marcas',
-        description:
-          'Pack mensual: 12 fotografías de producto/lifestyle listas para redes, con dirección de arte.',
-        basePrice: 280,
-        images: [uns('1542038784456-1ea8e935640e', 600, 600)],
-        isVisible: true,
-        category: 'Branding',
-      },
-      {
-        id: 'p-4',
-        name: 'Retrato corporativo',
-        description: 'Headshots profesionales para equipos, mínimo 3 personas. Fondo neutro.',
-        basePrice: 60,
-        images: [uns('1507003211169-0a1dd7228f2d', 600, 600)],
-        isVisible: true,
-        category: 'Retratos',
-      },
-      {
-        id: 'p-5',
-        name: 'Mini sesión express',
-        description: '20 minutos, 5 fotografías editadas. Ideal para perfiles y CV.',
-        basePrice: 45,
-        images: [uns('1438761681033-6461ffad8d80', 600, 600)],
-        isVisible: true,
-        category: 'Retratos',
-      },
-      {
-        id: 'p-6',
-        name: 'Dirección de arte editorial',
-        description:
-          'Concepto, moodboard, producción y post para editoriales de moda o producto.',
-        basePrice: 500,
-        images: [uns('1539109136881-3be0616acf4b', 600, 600)],
-        isVisible: true,
-        category: 'Branding',
-      },
-    ],
-  };
-}
-
-function demoGeneral(): DemoData {
-  return {
-    store: {
-      name: 'Tienda Demo',
-      slug: 'vitrina-demo',
-      logo: uns('1560343090-f0409e92791a', 200, 200),
-      banner: uns('1441986300917-64674bd600d8', 1600, 600),
-      phone: '+584123334455',
+      name: 'Andrea Torres Propiedades',
+      slug: 'andrea-torres-propiedades',
+      logo: `${INMU}/logo.jpg`,
+      banner: `${INMU}/banner.jpg`,
+      phone: '+584141234567',
       address: 'Lechería, Anzoátegui',
-      email: 'hola@tienda.com',
-      aboutShort: 'Productos seleccionados con cariño',
+      email: 'andrea@torrespropiedades.com',
+      aboutShort:
+        'Agente inmobiliario certificado. Casas, apartamentos, terrenos y locales comerciales. +10 años asesorando compra y venta de inmuebles.',
       socials: [
-        { platform: 'IG', url: 'https://instagram.com/tienda' },
-        { platform: 'WHATSAPP', url: 'https://wa.me/584123334455' },
+        { platform: 'IG', url: 'https://instagram.com/andreatorres.propiedades' },
+        { platform: 'WHATSAPP', url: 'https://wa.me/584141234567' },
       ],
     },
-    categories: [
-      { id: 'cat-novedades', name: 'Novedades', slug: 'novedades' },
-      { id: 'cat-bestsellers', name: 'Bestsellers', slug: 'bestsellers' },
-      { id: 'cat-ofertas', name: 'Ofertas', slug: 'ofertas' },
-    ],
-    products: [
-      {
-        id: 'g-1',
-        name: 'Sneakers Urbanas',
-        description: 'Lo que más se vende esta temporada, suela de goma.',
-        basePrice: 25,
-        images: [uns('1542291026-7eec264c27ff', 600, 600)],
+    categories: cats.map((name, i) => ({
+      id: `cat-at-${i + 1}`,
+      name,
+      slug: name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-'),
+    })),
+    products: PROPERTY_PRODUCTS.map((p, i) => {
+      const attributes: DemoAttribute[] = Object.entries(p.specs).map(([name, value]) => ({
+        name,
+        type: 'text',
+        role: 'spec',
+        options: [value as string],
+      }));
+      if (p.tags?.length) {
+        attributes.push({ name: 'Características', type: 'text', role: 'tag', options: p.tags });
+      }
+      return {
+        id: `at-${String(i + 1).padStart(2, '0')}`,
+        name: p.name,
+        description: p.desc,
+        basePrice: p.price,
+        images: p.images.map((f) => `${INMU}/${f}`),
         isVisible: true,
-        category: 'Bestsellers',
-      },
-      {
-        id: 'g-2',
-        name: 'Audífonos Bluetooth',
-        description: 'Recién llegados al catálogo, 30 horas de batería.',
-        basePrice: 32,
-        images: [uns('1505740420928-5e560c06d30e', 600, 600)],
-        isVisible: true,
-        category: 'Novedades',
-      },
-      {
-        id: 'g-3',
-        name: 'Lentes de Sol Retro',
-        description: 'Protección UV400, montura liviana.',
-        basePrice: 48,
-        images: [uns('1572635196237-14b3f281503f', 600, 600)],
-        isVisible: true,
-        category: 'Ofertas',
-      },
-      {
-        id: 'g-4',
-        name: 'Cámara Instantánea',
-        description: 'Edición limitada — solo 50 unidades disponibles.',
-        basePrice: 65,
-        images: [uns('1526170375885-4d8ecf77b99f', 600, 600)],
-        isVisible: true,
-        category: 'Novedades',
-      },
-      {
-        id: 'g-5',
-        name: 'Reloj Minimal',
-        description: 'Clásico del catálogo: siempre disponible, siempre vigente.',
-        basePrice: 22,
-        images: [uns('1523275335684-37898b6baf30', 600, 600)],
-        isVisible: true,
-        category: 'Bestsellers',
-      },
-      {
-        id: 'g-6',
-        name: 'Perfume Noir',
-        description: 'Oferta del mes: 30% de descuento por tiempo limitado.',
-        basePrice: 18,
-        images: [uns('1585386959984-a4155224a1ad', 600, 600)],
-        isVisible: true,
-        category: 'Ofertas',
-      },
-    ],
+        featured: p.featured ?? false,
+        category: p.cat,
+        attributes,
+      };
+    }),
   };
+}
+
+interface ServiceDef {
+  name: string;
+  desc: string;
+  price: number;
+  cat: string;
+  images: string[];
+  featured?: boolean;
+}
+
+// Daniel Mendoza (fotógrafo) — catálogo completo de seed-servicios.ts (11).
+const SERVICE_PRODUCTS: ServiceDef[] = [
+  {
+    name: 'Sesión de Retrato Individual',
+    desc: 'Sesión de 1 hora en locación o estudio. Incluye 15 fotos editadas en alta resolución. Ideal para redes sociales, LinkedIn o marca personal.',
+    price: 30,
+    cat: 'Retratos',
+    images: ['retrato1.jpg', 'retrato2.jpg', 'retrato3.jpg'],
+    featured: true,
+  },
+  {
+    name: 'Retrato Profesional / Corporativo',
+    desc: 'Sesión enfocada en headshots profesionales. 30 minutos, 8 fotos editadas. Fondo neutro o en tu oficina. Entrega en 48 horas.',
+    price: 20,
+    cat: 'Retratos',
+    images: ['retrato4.jpg', 'retrato5.jpg'],
+  },
+  {
+    name: 'Mini Sesión Express',
+    desc: '20 minutos, 5 fotos editadas. Perfecta para actualizar tu foto de perfil. En exteriores o estudio.',
+    price: 15,
+    cat: 'Retratos',
+    images: ['retrato5.jpg', 'retrato1.jpg'],
+  },
+  {
+    name: 'Cobertura de Evento Completa',
+    desc: 'Cobertura fotográfica de hasta 6 horas. Eventos corporativos, fiestas, graduaciones. Entrega de 80-120 fotos editadas. Incluye galería online privada.',
+    price: 80,
+    cat: 'Eventos',
+    images: ['evento1.jpg', 'evento2.jpg', 'evento3.jpg', 'evento4.jpg'],
+    featured: true,
+  },
+  {
+    name: 'Cobertura de Boda',
+    desc: 'Cobertura completa de tu boda: preparativos, ceremonia, recepción. Hasta 8 horas. 200+ fotos editadas. Álbum digital incluido.',
+    price: 150,
+    cat: 'Eventos',
+    images: ['evento2.jpg', 'evento1.jpg'],
+    featured: true,
+  },
+  {
+    name: 'Cobertura Media Jornada',
+    desc: 'Hasta 3 horas de cobertura. Ideal para cumpleaños, bautizos, reuniones. 40-60 fotos editadas.',
+    price: 50,
+    cat: 'Eventos',
+    images: ['evento3.jpg', 'evento4.jpg'],
+  },
+  {
+    name: 'Fotos de Producto (10 unidades)',
+    desc: 'Sesión de fotografía de producto. 10 fotos en fondo blanco o ambientadas. Ideal para e-commerce, redes sociales o catálogo. Entrega en 3 días.',
+    price: 25,
+    cat: 'Producto',
+    images: ['producto1.jpg', 'producto2.jpg', 'producto3.jpg'],
+  },
+  {
+    name: 'Fotos de Producto Pack Completo (30 unidades)',
+    desc: '30 fotos de producto con variaciones. Incluye fondo blanco, lifestyle y detalle. Para tiendas online que necesitan contenido profesional.',
+    price: 60,
+    cat: 'Producto',
+    images: ['producto2.jpg', 'producto3.jpg', 'producto1.jpg'],
+    featured: true,
+  },
+  {
+    name: 'Sesión de Pareja',
+    desc: 'Sesión de 1.5 horas en locación. 20 fotos editadas. Engagement, aniversario o simplemente porque sí. Elegimos juntos la mejor locación.',
+    price: 40,
+    cat: 'Parejas y Familia',
+    images: ['pareja1.jpg', 'pareja2.jpg', 'pareja3.jpg'],
+  },
+  {
+    name: 'Sesión Familiar',
+    desc: 'Sesión de 1 hora para familia (hasta 6 personas). 15 fotos editadas. En parque, playa o tu hogar. Momentos naturales y espontáneos.',
+    price: 35,
+    cat: 'Parejas y Familia',
+    images: ['familia1.jpg', 'familia2.jpg'],
+  },
+  {
+    name: 'Sesión de Embarazo',
+    desc: 'Sesión especial de maternidad. 1 hora, 15 fotos editadas. En estudio o exteriores. Incluye guía de poses y qué vestir.',
+    price: 35,
+    cat: 'Parejas y Familia',
+    images: ['familia2.jpg', 'familia1.jpg'],
+  },
+];
+
+function demoServices(): DemoData {
+  const cats = ['Retratos', 'Eventos', 'Producto', 'Parejas y Familia'];
+  return {
+    store: {
+      name: 'Daniel Mendoza',
+      slug: 'daniel-mendoza-foto',
+      logo: `${SERV}/logo.jpg`,
+      banner: `${SERV}/banner.jpg`,
+      phone: '+584149876543',
+      address: 'Lechería, Anzoátegui',
+      email: 'hola@danielfoto.com',
+      aboutShort:
+        'Fotógrafo profesional. Retratos, eventos, bodas y producto. Tu historia merece buenas fotos.',
+      socials: [
+        { platform: 'IG', url: 'https://instagram.com/danielmendozafoto' },
+        { platform: 'WHATSAPP', url: 'https://wa.me/584149876543' },
+      ],
+    },
+    categories: cats.map((name, i) => ({
+      id: `cat-dm-${i + 1}`,
+      name,
+      slug: name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-'),
+    })),
+    products: SERVICE_PRODUCTS.map((s, i) => ({
+      id: `dm-${String(i + 1).padStart(2, '0')}`,
+      name: s.name,
+      description: s.desc,
+      basePrice: s.price,
+      images: s.images.map((f) => `${SERV}/${f}`),
+      isVisible: true,
+      featured: s.featured ?? false,
+      category: s.cat,
+    })),
+  };
+}
+
+// Persona (portafolio) usa la misma tienda demo del fotógrafo — es el mismo
+// perfil mostrado como marca personal.
+function demoPortfolio(): DemoData {
+  return demoServices();
 }
 
 // ─── Templates ───────────────────────────────────────────────────
@@ -1215,7 +1641,7 @@ const vitrinaTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoGeneral(),
+  demoDataJson: demoFashion(),
   stylePresets: [
     {
       key: 'vitrina-calida',
@@ -1355,7 +1781,7 @@ const luxoraTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoFashion('luxora', 'Luxora'),
+  demoDataJson: demoFashion(),
 };
 
 // NOIR — FASHION PRO editorial: hero + featured + product grid + stats + footer
@@ -1475,7 +1901,7 @@ const noirTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoFashion('noir', 'Noir'),
+  demoDataJson: demoFashion(),
   stylePresets: [
     {
       key: 'noir-calido',
@@ -1618,7 +2044,7 @@ const menuTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoRestaurant('menu', 'Cocina Norte'),
+  demoDataJson: demoRestaurant(),
   stylePresets: [
     {
       key: 'menu-nocturno',
@@ -1940,7 +2366,7 @@ const posterTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoRestaurant('poster', 'Poster Cocina'),
+  demoDataJson: demoRestaurant(),
 };
 
 // ATELIER — FASHION PRO editorial: hero + featured + product_grid + about + gallery + socials + footer
@@ -2089,7 +2515,7 @@ const atelierTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoFashion('atelier', 'Atelier'),
+  demoDataJson: demoFashion(),
 };
 
 // ROSIER — FASHION luxury rose+cream: hero + product_grid (swatches) + featured + socials + footer
@@ -2208,7 +2634,7 @@ const rosierTemplate: TemplateSeed = {
       footerSection(),
     ],
   },
-  demoDataJson: demoFashion('rosier', 'Rosier'),
+  demoDataJson: demoFashion(),
 };
 
 // ESTATE — REAL_ESTATE premium (port del legacy components/templates/estate,
