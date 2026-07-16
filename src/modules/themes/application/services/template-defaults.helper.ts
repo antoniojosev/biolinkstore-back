@@ -21,6 +21,7 @@ export interface DefaultTree {
 interface SectionDefShape {
   type: string;
   key: string;
+  defaults?: Record<string, unknown>;
 }
 
 interface SectionSchemaShape {
@@ -47,7 +48,15 @@ export function defaultTreeFor(template: Template): DefaultTree {
       type: def.type,
       key: def.key,
       visible: true,
-      props: {},
+      // El tema nace "vestido": los defaults del diseñador son las props
+      // iniciales (fondos de hero, testimonios de muestra, etc.). Copia
+      // profunda para que dos árboles nunca compartan referencias (items).
+      props: def.defaults
+        ? (JSON.parse(JSON.stringify(def.defaults)) as Record<
+            string,
+            unknown
+          >)
+        : {},
     });
   }
 

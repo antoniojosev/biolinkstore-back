@@ -151,11 +151,13 @@ Qué NO hace un renderer custom:
 8. Receta default obligatoria; recetas alternativas opcionales, con tokens completos y sin tocar contenido.
 9. Redes sociales: la sección `socials` lee las **redes reales de la tienda** primero; los props del tema son solo fallback.
 10. Demo data **vestido**: fotos reales verificadas (nunca placeholders), nombre/descripción correspondiendo a cada foto, es-VE, precios creíbles. El demo data es parte del diseño (§Demo data).
+11. **Las secciones nacen vestidas** (`SectionDef.defaults`): el diseñador autora los valores iniciales de cada sección — layout del hero + foto de fondo, testimonios de muestra, stats, galería, copys. Aplican al preview Y al borrador del vendedor al activar el tema (decisión 2026-07-16: nace vestido, edita en Diseño). **Excepción**: props que el renderer resuelve con datos reales de la tienda (headline→nombre, subheadline/tagline/body→bio, contacto, redes) NO llevan default — lo guardado del vendedor manda.
 
 ## Checklist de entrega de un tema nuevo
 
 - [ ] `TemplateSeed` completo (key/name/niche/plan/sortOrder/tokens/schema/demo) agregado a `TEMPLATES[]`.
 - [ ] Demo data vestido: todas las imágenes son fotos reales (`uns()`, IDs verificados HTTP 200); cero placeholders; la carátula de la galería (mini-render en marco de teléfono) se ve vendedora.
+- [ ] Secciones vestidas: cada sección con contenido decorativo tiene `defaults` (hero SIEMPRE define `layout` — sin default cae a `split` y sin imagen queda texto huérfano a la izquierda); ninguna default pisa props con fallback a datos de la tienda.
 - [ ] Cada `variants`/`layout.options` declarado existe como rama en el renderer.
 - [ ] Fuentes de la whitelist; contraste AA verificado (texto sobre bg y sobre surface).
 - [ ] `pnpm ts-node prisma/seeds/page-builder.seed.ts` corre limpio (idempotente, upsert por key).

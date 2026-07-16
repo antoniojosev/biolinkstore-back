@@ -217,6 +217,21 @@ interface SectionDef {
   removable: boolean;
   variants?: string[];
   props: Record<string, PropDef>;
+  /**
+   * Valores iniciales de las props — el "vestido" de la sección. Con esto
+   * nace el árbol (previews Y el borrador del vendedor al activar el tema).
+   * Regla: props que el renderer ya resuelve con datos reales de la tienda
+   * (headline→nombre, subheadline/tagline/body→bio, contacto, redes) NO
+   * llevan default para no pisar lo que el vendedor ya configuró.
+   */
+  defaults?: Record<string, unknown>;
+}
+
+function withDefaults(
+  def: SectionDef,
+  defaults: Record<string, unknown>,
+): SectionDef {
+  return { ...def, defaults };
 }
 
 interface SectionSchema {
@@ -1161,6 +1176,7 @@ const vitrinaTemplate: TemplateSeed = {
             options: ['split', 'compact', 'banner'],
             label: 'Layout',
           },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1170,6 +1186,11 @@ const vitrinaTemplate: TemplateSeed = {
             label: 'Tipo CTA',
           },
           ctaUrl: { type: 'string', label: 'URL CTA' },
+        },
+        defaults: {
+          layout: 'banner',
+          image: uns('1505740420928-5e560c06d30e', 1600, 900),
+          kicker: 'Nueva temporada',
         },
       },
       categoriesSection(true),
@@ -1274,6 +1295,7 @@ const luxoraTemplate: TemplateSeed = {
             options: ['split', 'compact', 'banner'],
             label: 'Layout',
           },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1284,6 +1306,11 @@ const luxoraTemplate: TemplateSeed = {
           },
           ctaUrl: { type: 'string', label: 'URL CTA' },
           overlay: { type: 'boolean', label: 'Overlay oscuro' },
+        },
+        defaults: {
+          layout: 'split',
+          image: uns('1515886657613-9f3515b0c78f', 900, 1100),
+          kicker: 'Colección SS26',
         },
       },
       {
@@ -1381,6 +1408,7 @@ const noirTemplate: TemplateSeed = {
             options: ['split', 'compact', 'banner'],
             label: 'Layout',
           },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1391,6 +1419,11 @@ const noirTemplate: TemplateSeed = {
           },
           videoUrl: { type: 'string', label: 'Video URL' },
           overlayOpacity: { type: 'number', min: 0, max: 1, label: 'Opacidad overlay' },
+        },
+        defaults: {
+          layout: 'banner',
+          image: uns('1558769132-cb1aea458c5e', 1600, 900),
+          kicker: 'Édition Noir',
         },
       },
       {
@@ -1431,7 +1464,13 @@ const noirTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      statsSection(),
+      withDefaults(statsSection(), {
+        items: [
+          { value: '+120', label: 'Piezas exclusivas' },
+          { value: '8', label: 'Colecciones' },
+          { value: '4.9★', label: 'Valoración' },
+        ],
+      }),
       socialsSection(),
       footerSection(),
     ],
@@ -1542,6 +1581,7 @@ const menuTemplate: TemplateSeed = {
             options: ['split', 'compact', 'banner'],
             label: 'Layout',
           },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1550,6 +1590,11 @@ const menuTemplate: TemplateSeed = {
             options: ['whatsapp', 'scroll', 'external'],
             label: 'Tipo CTA',
           },
+        },
+        defaults: {
+          layout: 'banner',
+          image: uns('1414235077428-338989a2e8c0', 1600, 900),
+          kicker: 'Cocina de autor',
         },
       },
       {
@@ -1655,6 +1700,7 @@ const serviciosTemplate: TemplateSeed = {
             options: ['split', 'compact', 'banner'],
             label: 'Layout',
           },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1663,6 +1709,11 @@ const serviciosTemplate: TemplateSeed = {
             options: ['whatsapp', 'scroll', 'external'],
             label: 'Tipo CTA',
           },
+        },
+        defaults: {
+          layout: 'split',
+          image: uns('1497366811353-6870744d04b2', 900, 700),
+          kicker: 'Estudio creativo',
         },
       },
       {
@@ -1680,8 +1731,15 @@ const serviciosTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      gallerySection('gallery_main', true),
-      aboutSection(true),
+      withDefaults(gallerySection('gallery_main', true), {
+        items: [
+          { image: uns('1499951360447-b19be8fe80f5', 600, 600) },
+          { image: uns('1460925895917-afdab827c52f', 600, 600) },
+          { image: uns('1526170375885-4d8ecf77b99f', 600, 600) },
+          { image: uns('1497366216548-37526070297c', 600, 600) },
+        ],
+      }),
+      withDefaults(aboutSection(true), { image: uns('1581291518857-4e27b48ff24e', 800, 600) }),
       hoursSection(),
       contactSection(false),
       footerSection(),
@@ -1740,6 +1798,7 @@ const inmueblesTemplate: TemplateSeed = {
             options: ['split', 'compact', 'banner'],
             label: 'Layout',
           },
+          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1748,6 +1807,11 @@ const inmueblesTemplate: TemplateSeed = {
             options: ['whatsapp', 'scroll', 'external'],
             label: 'Tipo CTA',
           },
+        },
+        defaults: {
+          layout: 'banner',
+          image: uns('1564013799919-ab600027ffc6', 1600, 900),
+          kicker: 'Tu próximo hogar',
         },
       },
       {
@@ -1766,9 +1830,9 @@ const inmueblesTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      aboutSection(true),
+      withDefaults(aboutSection(true), { image: uns('1600607687939-ce8a6c25118c', 800, 600) }),
       contactSection(false),
-      mapSection(),
+      withDefaults(mapSection(), { latitude: 10.1907, longitude: -64.6883, zoom: 14 }),
       footerSection(),
     ],
   },
@@ -1837,8 +1901,20 @@ const posterTemplate: TemplateSeed = {
           },
           overlayOpacity: { type: 'number', min: 0, max: 1, label: 'Opacidad overlay' },
         },
+        defaults: {
+          layout: 'banner',
+          image: uns('1555939594-58d7cb561ad1', 1600, 900),
+          kicker: 'Del horno a tu mesa',
+        },
       },
-      gallerySection('gallery_main', true),
+      withDefaults(gallerySection('gallery_main', true), {
+        items: [
+          { image: uns('1546069901-ba9599a7e63c', 600, 600) },
+          { image: uns('1565299624946-b28f40a0ae38', 600, 600) },
+          { image: uns('1567620905732-2d1ec7ab7445', 600, 600) },
+          { image: uns('1544025162-d76694265947', 600, 600) },
+        ],
+      }),
       {
         type: 'product_grid',
         key: 'product_grid_main',
@@ -1854,9 +1930,13 @@ const posterTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      aboutSection(true),
+      withDefaults(aboutSection(true), { image: uns('1517248135467-4c7edcad34c4', 800, 600) }),
       contactSection(false),
-      ctaBannerSection(),
+      withDefaults(ctaBannerSection(), {
+        headline: '¿Se te antojó?',
+        subline: 'Pedidos por WhatsApp — entregamos el mismo día en Lechería y Puerto La Cruz.',
+        ctaLabel: 'Pedir ahora',
+      }),
       footerSection(),
     ],
   },
@@ -1925,6 +2005,11 @@ const atelierTemplate: TemplateSeed = {
             label: 'Tipo CTA',
           },
         },
+        defaults: {
+          layout: 'split',
+          image: uns('1483985988355-763728e1935b', 900, 1100),
+          kicker: 'Hecho a mano',
+        },
       },
       {
         type: 'featured_products',
@@ -1969,6 +2054,12 @@ const atelierTemplate: TemplateSeed = {
             label: 'Alineación',
           },
         },
+        defaults: {
+          kicker: 'Nuestra historia',
+          headline: 'Cada pieza cuenta una historia',
+          body:
+            'Trabajamos con artesanos locales y producciones pequeñas: telas nobles, tintes naturales y cortes pensados para durar. Lo que ves en la tienda se hizo a mano, sin apuro.',
+        },
       },
       {
         type: 'product_grid',
@@ -1985,8 +2076,15 @@ const atelierTemplate: TemplateSeed = {
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
         },
       },
-      aboutSection(true),
-      gallerySection('gallery_main', true),
+      withDefaults(aboutSection(true), { image: uns('1445205170230-053b83016050', 800, 600) }),
+      withDefaults(gallerySection('gallery_main', true), {
+        items: [
+          { image: uns('1521572163474-6864f9cf17ab', 600, 600) },
+          { image: uns('1542272604-787c3835535d', 600, 600) },
+          { image: uns('1551028719-00167b16eac5', 600, 600) },
+          { image: uns('1611591437281-460bfbe1220a', 600, 600) },
+        ],
+      }),
       socialsSection(),
       footerSection(),
     ],
@@ -2055,6 +2153,11 @@ const rosierTemplate: TemplateSeed = {
             label: 'Tipo CTA',
           },
         },
+        defaults: {
+          layout: 'split',
+          image: uns('1496747611176-843222e1e57c', 900, 1100),
+          kicker: 'Nueva colección',
+        },
       },
       {
         type: 'product_grid',
@@ -2094,7 +2197,13 @@ const rosierTemplate: TemplateSeed = {
           },
         },
       },
-      testimonialsSection(),
+      withDefaults(testimonialsSection(), {
+        items: [
+          { quote: 'Las piezas son más lindas en persona — la calidad se nota apenas abres la caja.', author: 'María Fernanda', role: 'Clienta desde 2024', avatar: uns('1494790108377-be9c29b29330', 200, 200) },
+          { quote: 'Pedí el jueves y el sábado ya lo tenía en Puerto La Cruz. Impecable.', author: 'Andreína G.', role: 'Compra online', avatar: uns('1438761681033-6461ffad8d80', 200, 200) },
+          { quote: 'Compré un regalo para mi esposa y quedó encantada con el empaque.', author: 'Luis D.', role: 'Cliente', avatar: uns('1500648767791-00dcc994a43e', 200, 200) },
+        ],
+      }),
       socialsSection(),
       footerSection(),
     ],
@@ -2169,6 +2278,10 @@ const estateTemplate: TemplateSeed = {
             label: 'Tipo CTA',
           },
         },
+        defaults: {
+          layout: 'compact',
+          kicker: 'Asesor inmobiliario',
+        },
       },
       categoriesSection(true),
       {
@@ -2187,10 +2300,15 @@ const estateTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      aboutSection(true),
-      testimonialsSection(),
+      withDefaults(aboutSection(true), { image: uns('1600566753190-17f0baa2a6c3', 800, 600) }),
+      withDefaults(testimonialsSection(), {
+        items: [
+          { quote: 'Vendieron mi apartamento en 3 semanas, con todo el proceso transparente.', author: 'Gabriela M.', role: 'Vendedora', avatar: uns('1494790108377-be9c29b29330', 200, 200) },
+          { quote: 'Nos acompañaron en la compra desde el exterior — papeles, visitas por video, todo.', author: 'Ricardo P.', role: 'Comprador', avatar: uns('1507003211169-0a1dd7228f2d', 200, 200) },
+        ],
+      }),
       contactSection(true),
-      mapSection(),
+      withDefaults(mapSection(), { latitude: 10.1907, longitude: -64.6883, zoom: 14 }),
       socialsSection(),
       footerSection(),
     ],
@@ -2263,8 +2381,18 @@ const personaTemplate: TemplateSeed = {
             label: 'Tipo CTA',
           },
         },
+        defaults: {
+          layout: 'compact',
+          image: uns('1452587925148-ce544e77e70d', 1200, 600),
+        },
       },
-      statsSection(),
+      withDefaults(statsSection(), {
+        items: [
+          { value: '+180', label: 'Sesiones' },
+          { value: '+90', label: 'Clientes felices' },
+          { value: '6', label: 'Años de oficio' },
+        ],
+      }),
       {
         type: 'product_grid',
         key: 'product_grid_main',
@@ -2281,8 +2409,17 @@ const personaTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      gallerySection('gallery_main', true),
-      aboutSection(true),
+      withDefaults(gallerySection('gallery_main', true), {
+        items: [
+          { image: uns('1529626455594-4ff0802cfb7e', 600, 600) },
+          { image: uns('1511795409834-ef04bbd61622', 600, 600) },
+          { image: uns('1519741497674-611481863552', 600, 600) },
+          { image: uns('1531746020798-e6953c6e8e04', 600, 600) },
+          { image: uns('1542038784456-1ea8e935640e', 600, 600) },
+          { image: uns('1539109136881-3be0616acf4b', 600, 600) },
+        ],
+      }),
+      withDefaults(aboutSection(true), { image: uns('1531746020798-e6953c6e8e04', 800, 600) }),
       socialsSection(),
       footerSection(),
     ],
