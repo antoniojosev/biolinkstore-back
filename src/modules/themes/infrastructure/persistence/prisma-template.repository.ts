@@ -33,6 +33,7 @@ function toDomain(row: PrismaTemplate): Template {
     demoDataJson: row.demoDataJson,
     sectionSchema: row.sectionSchema,
     defaultTokens: row.defaultTokens,
+    stylePresets: row.stylePresets,
     version: row.version,
     isActive: row.isActive,
     sortOrder: row.sortOrder,

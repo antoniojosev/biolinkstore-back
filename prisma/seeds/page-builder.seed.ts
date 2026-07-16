@@ -260,6 +260,24 @@ interface DemoData {
   categories: DemoCategory[];
 }
 
+// Receta alternativa curada por el diseñador ("compartimiento del kit de
+// pizza"): un set COMPLETO de tokens que cambia la personalidad del tema sin
+// romper su estética, aplicable con un tap desde la tab Diseño. La receta
+// "Original" no se autora: el frontend la deriva de defaultTokens.
+interface StylePreset {
+  key: string;
+  name: string;
+  description?: string;
+  tokens: Tokens;
+  // Overrides opcionales de sección: solo pisan visible y/o las props que la
+  // receta define — nunca el contenido que el vendedor escribió.
+  sectionOverrides?: Array<{
+    key: string;
+    visible?: boolean;
+    props?: Record<string, unknown>;
+  }>;
+}
+
 interface TemplateSeed {
   key: string;
   name: string;
@@ -269,6 +287,7 @@ interface TemplateSeed {
   defaultTokens: Tokens;
   sectionSchema: SectionSchema;
   demoDataJson: DemoData;
+  stylePresets?: StylePreset[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -1175,6 +1194,34 @@ const vitrinaTemplate: TemplateSeed = {
     ],
   },
   demoDataJson: demoGeneral(),
+  stylePresets: [
+    {
+      key: 'vitrina-calida',
+      name: 'Vitrina Cálida',
+      description: 'Terracota y crema con serifas — de corporativo a boutique.',
+      tokens: {
+        palette: {
+          preset: 'tierra',
+          primary: '#c2410c',
+          secondary: '#78584a',
+          accent: '#d97706',
+          bg: '#fdf8f3',
+          surface: '#f8f0e7',
+          text: '#3d2c22',
+          muted: '#8a7365',
+          border: '#eadfd2',
+        },
+        typography: {
+          headingFont: 'Lora',
+          bodyFont: 'Inter',
+          scale: 'normal',
+        },
+        radius: 'lg',
+        spacing: 'comfortable',
+        buttonStyle: 'solid',
+      },
+    },
+  ],
 };
 
 // LUXORA — FASHION PRO: hero + product grid + featured + socials + footer
@@ -1389,6 +1436,60 @@ const noirTemplate: TemplateSeed = {
     ],
   },
   demoDataJson: demoFashion('noir', 'Noir'),
+  stylePresets: [
+    {
+      key: 'noir-calido',
+      name: 'Noir Cálido',
+      description: 'El mismo negro, pero con bronce y ámbar en vez de oro frío.',
+      tokens: {
+        palette: {
+          preset: 'noir',
+          primary: '#14100c',
+          secondary: '#d9a066',
+          accent: '#d97706',
+          bg: '#14100c',
+          surface: '#211a14',
+          text: '#f7efe3',
+          muted: '#8a7a68',
+          border: '#332a20',
+        },
+        typography: {
+          headingFont: 'Fraunces',
+          bodyFont: 'Inter',
+          scale: 'comfortable',
+        },
+        radius: 'sm',
+        spacing: 'comfortable',
+        buttonStyle: 'outline',
+      },
+    },
+    {
+      key: 'noir-contraste',
+      name: 'Noir Contraste',
+      description: 'Noir invertido: blanco y negro editorial con un rojo quirúrgico.',
+      tokens: {
+        palette: {
+          preset: 'monocromo',
+          primary: '#0a0a0a',
+          secondary: '#404040',
+          accent: '#dc2626',
+          bg: '#ffffff',
+          surface: '#f5f5f5',
+          text: '#0a0a0a',
+          muted: '#737373',
+          border: '#e5e5e5',
+        },
+        typography: {
+          headingFont: 'Space Grotesk',
+          bodyFont: 'Inter',
+          scale: 'comfortable',
+        },
+        radius: 'sm',
+        spacing: 'comfortable',
+        buttonStyle: 'solid',
+      },
+    },
+  ],
 };
 
 // MENU — RESTAURANT FREE: hero + product_grid agrupado + hours + contact + footer
@@ -1472,6 +1573,34 @@ const menuTemplate: TemplateSeed = {
     ],
   },
   demoDataJson: demoRestaurant('menu', 'Cocina Norte'),
+  stylePresets: [
+    {
+      key: 'menu-nocturno',
+      name: 'Menú Nocturno',
+      description: 'Versión de cena: fondo oscuro, ámbar cálido y serifas.',
+      tokens: {
+        palette: {
+          preset: 'noir',
+          primary: '#f59e0b',
+          secondary: '#a3e635',
+          accent: '#fbbf24',
+          bg: '#1c1917',
+          surface: '#292524',
+          text: '#f5f0e8',
+          muted: '#a89d8d',
+          border: '#3f3a34',
+        },
+        typography: {
+          headingFont: 'Lora',
+          bodyFont: 'Inter',
+          scale: 'normal',
+        },
+        radius: 'md',
+        spacing: 'normal',
+        buttonStyle: 'solid',
+      },
+    },
+  ],
 };
 
 // SERVICIOS — SERVICES FREE: hero + product_grid + gallery + about + hours + contact + footer
@@ -2203,6 +2332,11 @@ async function seedTemplates() {
     const demoData = template.demoDataJson as unknown as Prisma.InputJsonValue;
     const sectionSchema = template.sectionSchema as unknown as Prisma.InputJsonValue;
     const defaultTokens = template.defaultTokens as unknown as Prisma.InputJsonValue;
+    // JsonNull explícito cuando el template no define recetas: mantiene la DB
+    // sincronizada con el seed (si una receta se retira, desaparece).
+    const stylePresets = template.stylePresets
+      ? (template.stylePresets as unknown as Prisma.InputJsonValue)
+      : Prisma.JsonNull;
     await prisma.template.upsert({
       where: { key: template.key },
       create: {
@@ -2214,6 +2348,7 @@ async function seedTemplates() {
         demoDataJson: demoData,
         sectionSchema,
         defaultTokens,
+        stylePresets,
         version: 1,
         sortOrder: template.sortOrder,
         isActive: true,
@@ -2226,6 +2361,7 @@ async function seedTemplates() {
         demoDataJson: demoData,
         sectionSchema,
         defaultTokens,
+        stylePresets,
         // version intencionalmente NO se bumpea aquí: BE-120 nunca publicó nada,
         // y bumpear forzaría migración lazy innecesaria.
       },

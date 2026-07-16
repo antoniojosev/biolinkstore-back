@@ -10,6 +10,7 @@ export class Template {
   demoDataJson: unknown;
   sectionSchema: unknown;
   defaultTokens: unknown;
+  stylePresets: unknown | null;
   version: number;
   isActive: boolean;
   sortOrder: number;

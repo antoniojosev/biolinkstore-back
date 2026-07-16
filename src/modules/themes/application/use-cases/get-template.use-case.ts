@@ -25,6 +25,7 @@ export class GetTemplateUseCase {
       previewImage: template.previewImage,
       sectionSchema: template.sectionSchema,
       defaultTokens: template.defaultTokens,
+      stylePresets: template.stylePresets ?? null,
       version: template.version,
     };
   }

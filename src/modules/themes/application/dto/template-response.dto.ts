@@ -56,6 +56,16 @@ export class TemplateDetailDto {
   })
   defaultTokens: unknown;
 
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description:
+      'Recetas alternativas curadas por el diseñador: Array<{ key, name, description?, tokens (set completo), sectionOverrides? }>. La receta "Original" no viaja acá — el frontend la deriva de defaultTokens.',
+    type: 'array',
+    items: { type: 'object', additionalProperties: true },
+  })
+  stylePresets: unknown | null;
+
   @ApiProperty()
   version: number;
 }
