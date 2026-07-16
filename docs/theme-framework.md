@@ -41,7 +41,7 @@ Cada tema es un objeto `TemplateSeed` en el seed:
 Set COMPLETO obligatorio — nunca parcial:
 
 - `palette`: `preset` (nombre de la paleta base más cercana), `primary`, `secondary`, `accent`, `bg`, `surface`, `text`, `muted`, `border` (hex).
-- `typography`: `headingFont`, `bodyFont` (**solo de la whitelist**: Inter, Playfair Display, Fraunces, Source Serif 4, Manrope, Space Grotesk, Poppins, Lora), `scale` (compact/normal/comfortable).
+- `typography`: `headingFont`, `bodyFont` (**solo de la whitelist**: Inter, Playfair Display, Fraunces, Source Serif 4, Manrope, Space Grotesk, Poppins, Lora, Anton), `scale` (compact/normal/comfortable).
 - `radius` (sm/md/lg/xl), `spacing` (compact/normal/comfortable), `buttonStyle` (solid/outline/ghost).
 
 En el frontend estos llegan como variables CSS `--bl-*` (`--bl-primary`, `--bl-background`, `--bl-heading-font`, `--bl-radius`, …) vía `resolveTokens`.
