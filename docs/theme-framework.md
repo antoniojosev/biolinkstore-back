@@ -66,7 +66,14 @@ Hay factories reutilizables en el seed para las secciones commodity: `aboutSecti
 
 ### Demo data (`demoDataJson`)
 
-`{ store, products[], categories[] }` — realista para el nicho (nombres, precios y descripciones creíbles en es-VE). Funciones existentes: `demoFashion(key, name)`, `demoRestaurant(key, name)`, `demoServices()`, `demoRealEstate()`, `demoPortfolio()`, `demoGeneral()`. Imágenes con el helper `img()` (placehold.co). Se usa en: preview de la galería, probador, y como fallback del canvas del editor cuando la tienda no tiene productos.
+`{ store, products[], categories[] }` — **el demo data es parte del diseño del tema, no un fixture técnico**. Un tema se entrega "vestido": cuando se diseña desde cero se piensa hasta cómo se verá todo, y se presenta con datos para que se vea exactamente cómo puede quedar. Es lo que el vendedor ve en la carátula de la galería, el modal de preview, el probador y el canvas del editor (fallback sin productos) — un tema con placeholders se ve muerto y no se acepta.
+
+Reglas:
+- **Fotos reales, nunca placeholders.** Helper `uns(id, w, h)` (Unsplash, mismo origen que usaba prod). Verificar cada ID con HTTP 200 antes de entregar. Pendiente post-deploy: migrar a R2.
+- **Nombre y descripción corresponden a la foto** (si la foto es un bolso, el producto no se llama "Falda"). Precios y textos creíbles en es-VE para el nicho.
+- La tienda demo también viste `logo` y `banner` con fotos reales.
+
+Funciones existentes: `demoFashion(key, name)`, `demoRestaurant(key, name)`, `demoServices()`, `demoRealEstate()`, `demoPortfolio()`, `demoGeneral()`.
 
 ## Catálogo de secciones (16 tipos, renderer base)
 
@@ -143,11 +150,12 @@ Qué NO hace un renderer custom:
 7. Fuentes **solo de la whitelist**; contraste **AA** en toda paleta entregada (defaults y recetas).
 8. Receta default obligatoria; recetas alternativas opcionales, con tokens completos y sin tocar contenido.
 9. Redes sociales: la sección `socials` lee las **redes reales de la tienda** primero; los props del tema son solo fallback.
-10. Demo data realista del nicho, en español (es-VE), con precios creíbles.
+10. Demo data **vestido**: fotos reales verificadas (nunca placeholders), nombre/descripción correspondiendo a cada foto, es-VE, precios creíbles. El demo data es parte del diseño (§Demo data).
 
 ## Checklist de entrega de un tema nuevo
 
 - [ ] `TemplateSeed` completo (key/name/niche/plan/sortOrder/tokens/schema/demo) agregado a `TEMPLATES[]`.
+- [ ] Demo data vestido: todas las imágenes son fotos reales (`uns()`, IDs verificados HTTP 200); cero placeholders; la carátula de la galería (mini-render en marco de teléfono) se ve vendedora.
 - [ ] Cada `variants`/`layout.options` declarado existe como rama en el renderer.
 - [ ] Fuentes de la whitelist; contraste AA verificado (texto sobre bg y sobre surface).
 - [ ] `pnpm ts-node prisma/seeds/page-builder.seed.ts` corre limpio (idempotente, upsert por key).
