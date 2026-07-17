@@ -2373,9 +2373,11 @@ const posterTemplate: TemplateSeed = {
 const atelierTemplate: TemplateSeed = {
   key: 'atelier',
   name: 'Atelier',
-  niche: TemplateNiche.FASHION,
+  // Decisión 2026-07-17: atelier vive en Servicios — su tienda demo canónica
+  // es el fotógrafo y su flujo es "Reservar sesión", no catálogo de moda.
+  niche: TemplateNiche.SERVICES,
   planRequired: Plan.PRO,
-  sortOrder: 12,
+  sortOrder: 31,
   defaultTokens: {
     palette: {
       preset: 'monocromo',
