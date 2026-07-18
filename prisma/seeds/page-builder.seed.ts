@@ -1703,7 +1703,6 @@ const luxoraTemplate: TemplateSeed = {
   sectionSchema: {
     defaultOrder: [
       'hero_main',
-      'featured_main',
       'product_grid_main',
       'socials_bar',
       'footer_main',
@@ -1737,28 +1736,6 @@ const luxoraTemplate: TemplateSeed = {
           layout: 'compact',
           image: uns('1515886657613-9f3515b0c78f', 900, 1100),
           kicker: 'Colección SS26',
-        },
-      },
-      {
-        type: 'featured_products',
-        key: 'featured_main',
-        removable: true,
-        variants: ['grid', 'carousel', 'spotlight'],
-        props: {
-          title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid', 'carousel', 'spotlight'],
-            label: 'Layout',
-          },
-          productIds: {
-            type: 'list',
-            max: 6,
-            label: 'IDs productos destacados',
-            itemSchema: {
-              id: { type: 'string', label: 'Product ID' },
-            },
-          },
         },
       },
       {
@@ -1815,7 +1792,6 @@ const noirTemplate: TemplateSeed = {
   sectionSchema: {
     defaultOrder: [
       'hero_main',
-      'featured_main',
       'product_grid_main',
       'stats_main',
       'socials_bar',
@@ -1850,29 +1826,6 @@ const noirTemplate: TemplateSeed = {
           layout: 'banner',
           image: uns('1558769132-cb1aea458c5e', 1600, 900),
           kicker: 'Édition Noir',
-        },
-      },
-      {
-        type: 'featured_products',
-        key: 'featured_main',
-        removable: true,
-        variants: ['grid', 'carousel', 'spotlight'],
-        props: {
-          title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid', 'carousel', 'spotlight'],
-            label: 'Layout',
-          },
-          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
-          productIds: {
-            type: 'list',
-            max: 4,
-            label: 'IDs destacados',
-            itemSchema: {
-              id: { type: 'string', label: 'Product ID' },
-            },
-          },
         },
       },
       {
@@ -1990,8 +1943,6 @@ const menuTemplate: TemplateSeed = {
     defaultOrder: [
       'hero_main',
       'product_grid_main',
-      'hours_main',
-      'contact_main',
       'footer_main',
     ],
     sections: [
@@ -2039,8 +1990,6 @@ const menuTemplate: TemplateSeed = {
           showImage: { type: 'boolean', label: 'Mostrar imagen' },
         },
       },
-      hoursSection(),
-      contactSection(false),
       footerSection(),
     ],
   },
@@ -2109,8 +2058,6 @@ const serviciosTemplate: TemplateSeed = {
       'product_grid_main',
       'gallery_main',
       'about_main',
-      'hours_main',
-      'contact_main',
       'footer_main',
     ],
     sections: [
@@ -2166,8 +2113,6 @@ const serviciosTemplate: TemplateSeed = {
         ],
       }),
       withDefaults(aboutSection(true), { image: uns('1581291518857-4e27b48ff24e', 800, 600) }),
-      hoursSection(),
-      contactSection(false),
       footerSection(),
     ],
   },
@@ -2208,7 +2153,6 @@ const inmueblesTemplate: TemplateSeed = {
       'product_grid_main',
       'about_main',
       'contact_main',
-      'map_main',
       'footer_main',
     ],
     sections: [
@@ -2258,7 +2202,6 @@ const inmueblesTemplate: TemplateSeed = {
       },
       withDefaults(aboutSection(true), { image: uns('1600607687939-ce8a6c25118c', 800, 600) }),
       contactSection(false),
-      withDefaults(mapSection(), { latitude: 10.1907, longitude: -64.6883, zoom: 14 }),
       footerSection(),
     ],
   },
@@ -2296,11 +2239,7 @@ const posterTemplate: TemplateSeed = {
   sectionSchema: {
     defaultOrder: [
       'hero_main',
-      'gallery_main',
       'product_grid_main',
-      'about_main',
-      'contact_main',
-      'cta_banner_main',
       'footer_main',
     ],
     sections: [
@@ -2333,14 +2272,6 @@ const posterTemplate: TemplateSeed = {
           kicker: 'Del horno a tu mesa',
         },
       },
-      withDefaults(gallerySection('gallery_main', true), {
-        items: [
-          { image: uns('1546069901-ba9599a7e63c', 600, 600) },
-          { image: uns('1565299624946-b28f40a0ae38', 600, 600) },
-          { image: uns('1567620905732-2d1ec7ab7445', 600, 600) },
-          { image: uns('1544025162-d76694265947', 600, 600) },
-        ],
-      }),
       {
         type: 'product_grid',
         key: 'product_grid_main',
@@ -2356,13 +2287,6 @@ const posterTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      withDefaults(aboutSection(true), { image: uns('1517248135467-4c7edcad34c4', 800, 600) }),
-      contactSection(false),
-      withDefaults(ctaBannerSection(), {
-        headline: '¿Se te antojó?',
-        subline: 'Pedidos por WhatsApp — entregamos el mismo día en Lechería y Puerto La Cruz.',
-        ctaLabel: 'Pedir ahora',
-      }),
       footerSection(),
     ],
   },
@@ -2402,10 +2326,8 @@ const atelierTemplate: TemplateSeed = {
   sectionSchema: {
     defaultOrder: [
       'hero_main',
-      'featured_main',
       'editorial_block',
       'product_grid_main',
-      'about_main',
       'gallery_main',
       'socials_bar',
       'footer_main',
@@ -2437,29 +2359,6 @@ const atelierTemplate: TemplateSeed = {
           layout: 'banner',
           image: uns('1483985988355-763728e1935b', 1600, 900),
           kicker: 'Hecho a mano',
-        },
-      },
-      {
-        type: 'featured_products',
-        key: 'featured_main',
-        removable: true,
-        variants: ['grid', 'carousel', 'spotlight'],
-        props: {
-          title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid', 'carousel', 'spotlight'],
-            label: 'Layout',
-          },
-          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
-          productIds: {
-            type: 'list',
-            max: 4,
-            label: 'IDs destacados',
-            itemSchema: {
-              id: { type: 'string', label: 'Product ID' },
-            },
-          },
         },
       },
       {
@@ -2504,7 +2403,6 @@ const atelierTemplate: TemplateSeed = {
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
         },
       },
-      withDefaults(aboutSection(true), { image: uns('1445205170230-053b83016050', 800, 600) }),
       withDefaults(gallerySection('gallery_main', true), {
         items: [
           { image: uns('1521572163474-6864f9cf17ab', 600, 600) },
@@ -2678,10 +2576,6 @@ const estateTemplate: TemplateSeed = {
       'hero_main',
       'categories_strip',
       'product_grid_main',
-      'about_main',
-      'testimonials_main',
-      'contact_main',
-      'map_main',
       'socials_bar',
       'footer_main',
     ],
@@ -2730,15 +2624,6 @@ const estateTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      withDefaults(aboutSection(true), { image: uns('1600566753190-17f0baa2a6c3', 800, 600) }),
-      withDefaults(testimonialsSection(), {
-        items: [
-          { quote: 'Vendieron mi apartamento en 3 semanas, con todo el proceso transparente.', author: 'Gabriela M.', role: 'Vendedora', avatar: uns('1494790108377-be9c29b29330', 200, 200) },
-          { quote: 'Nos acompañaron en la compra desde el exterior — papeles, visitas por video, todo.', author: 'Ricardo P.', role: 'Comprador', avatar: uns('1507003211169-0a1dd7228f2d', 200, 200) },
-        ],
-      }),
-      contactSection(true),
-      withDefaults(mapSection(), { latitude: 10.1907, longitude: -64.6883, zoom: 14 }),
       socialsSection(),
       footerSection(),
     ],
