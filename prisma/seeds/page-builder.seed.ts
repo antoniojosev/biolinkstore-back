@@ -551,14 +551,11 @@ function categoriesSection(removable = true): SectionDef {
     type: 'categories',
     key: 'categories_strip',
     removable,
-    variants: ['pills', 'cards', 'sidebar'],
+    // Sin `title`/`layout`: los temas con sección categorías (vitrina, luxora,
+    // estate) tienen su UI de categorías propia y no leían esos props — eran
+    // controles muertos en el inspector. `showCount` sí lo honran (conteo por
+    // categoría en las pills).
     props: {
-      title: { type: 'text', max: 60, label: 'Título' },
-      layout: {
-        type: 'enum',
-        options: ['pills', 'cards', 'sidebar'],
-        label: 'Layout',
-      },
       showCount: { type: 'boolean', label: 'Mostrar conteo' },
     },
   };
