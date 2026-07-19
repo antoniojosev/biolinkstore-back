@@ -1609,11 +1609,13 @@ const vitrinaTemplate: TemplateSeed = {
             label: 'Tipo CTA',
           },
           ctaUrl: { type: 'string', label: 'URL CTA' },
+          showProductCount: { type: 'boolean', label: 'Mostrar conteo de productos' },
         },
         defaults: {
           layout: 'compact',
           image: uns('1505740420928-5e560c06d30e', 1600, 900),
           kicker: 'Nueva temporada',
+          showProductCount: true,
         },
       },
       categoriesSection(true),
