@@ -1594,11 +1594,6 @@ const vitrinaTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
@@ -1714,11 +1709,6 @@ const luxoraTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
@@ -1804,11 +1794,6 @@ const noirTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
@@ -1952,12 +1937,6 @@ const menuTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
-          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -1970,7 +1949,6 @@ const menuTemplate: TemplateSeed = {
         defaults: {
           layout: 'compact',
           image: uns('1414235077428-338989a2e8c0', 1600, 900),
-          kicker: 'Cocina de autor',
         },
       },
       {
@@ -2067,12 +2045,6 @@ const serviciosTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
-          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -2085,7 +2057,6 @@ const serviciosTemplate: TemplateSeed = {
         defaults: {
           layout: 'split',
           image: uns('1497366811353-6870744d04b2', 900, 700),
-          kicker: 'Estudio creativo',
         },
       },
       {
@@ -2162,11 +2133,6 @@ const inmueblesTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
@@ -2249,11 +2215,6 @@ const posterTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
@@ -2339,11 +2300,6 @@ const atelierTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
@@ -2464,11 +2420,6 @@ const rosierTemplate: TemplateSeed = {
         variants: ['split', 'compact', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['split', 'compact', 'banner'],
-            label: 'Layout',
-          },
           headline: { type: 'text', max: 120, label: 'Título' },
           subheadline: { type: 'text', max: 200, label: 'Descripción' },
           kicker: { type: 'text', max: 40, label: 'Antetítulo' },
@@ -2591,7 +2542,6 @@ const estateTemplate: TemplateSeed = {
             options: ['compact', 'split', 'banner'],
             label: 'Layout',
           },
-          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -2603,7 +2553,6 @@ const estateTemplate: TemplateSeed = {
         },
         defaults: {
           layout: 'compact',
-          kicker: 'Asesor inmobiliario',
         },
       },
       categoriesSection(true),
@@ -2685,7 +2634,6 @@ const personaTemplate: TemplateSeed = {
             options: ['compact', 'split', 'banner'],
             label: 'Layout',
           },
-          kicker: { type: 'text', max: 40, label: 'Antetítulo' },
           headline: { type: 'text', max: 80, label: 'Nombre / título' },
           subheadline: { type: 'text', max: 140, label: 'Bio corta' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
