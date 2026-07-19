@@ -1618,12 +1618,12 @@ const vitrinaTemplate: TemplateSeed = {
         type: 'product_grid',
         key: 'product_grid_main',
         removable: false,
-        variants: ['grid-2', 'grid-3', 'grid-4', 'list'],
+        variants: ['grid-2', 'grid-3', 'grid-4'],
         props: {
           title: { type: 'text', max: 60, label: 'Título sección' },
           layout: {
             type: 'enum',
-            options: ['grid-2', 'grid-3', 'grid-4', 'list'],
+            options: ['grid-2', 'grid-3', 'grid-4'],
             label: 'Layout',
           },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
@@ -1819,11 +1819,6 @@ const noirTemplate: TemplateSeed = {
         variants: ['grid-2', 'grid-3'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'grid-3'],
-            label: 'Layout',
-          },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
@@ -2066,11 +2061,6 @@ const serviciosTemplate: TemplateSeed = {
         variants: ['grid-2', 'list'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'list'],
-            label: 'Layout',
-          },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
@@ -2156,11 +2146,6 @@ const inmueblesTemplate: TemplateSeed = {
         variants: ['grid-2', 'list'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'list'],
-            label: 'Layout',
-          },
           showFilters: { type: 'boolean', label: 'Mostrar filtros' },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
@@ -2350,11 +2335,6 @@ const atelierTemplate: TemplateSeed = {
         variants: ['grid-3', 'grid-4'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid-3', 'grid-4'],
-            label: 'Layout',
-          },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
         },
       },
@@ -2444,11 +2424,6 @@ const rosierTemplate: TemplateSeed = {
         variants: ['grid-2', 'grid-3'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'grid-3'],
-            label: 'Layout',
-          },
           showSwatches: { type: 'boolean', label: 'Mostrar variantes color' },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
@@ -2537,11 +2512,6 @@ const estateTemplate: TemplateSeed = {
         variants: ['compact', 'split', 'banner'],
         props: {
           image: { type: 'image', label: 'Imagen hero' },
-          layout: {
-            type: 'enum',
-            options: ['compact', 'split', 'banner'],
-            label: 'Layout',
-          },
           headline: { type: 'text', max: 80, label: 'Título' },
           subheadline: { type: 'text', max: 140, label: 'Subtítulo' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -2629,11 +2599,6 @@ const personaTemplate: TemplateSeed = {
         variants: ['compact', 'split', 'banner'],
         props: {
           image: { type: 'image', label: 'Foto de perfil / cover' },
-          layout: {
-            type: 'enum',
-            options: ['compact', 'split', 'banner'],
-            label: 'Layout',
-          },
           headline: { type: 'text', max: 80, label: 'Nombre / título' },
           subheadline: { type: 'text', max: 140, label: 'Bio corta' },
           ctaLabel: { type: 'text', max: 24, label: 'Texto botón' },
@@ -2662,11 +2627,6 @@ const personaTemplate: TemplateSeed = {
         variants: ['list', 'grid-2', 'grid-3'],
         props: {
           title: { type: 'text', max: 60, label: 'Título sección' },
-          layout: {
-            type: 'enum',
-            options: ['list', 'grid-2', 'grid-3'],
-            label: 'Layout',
-          },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
