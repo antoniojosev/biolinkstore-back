@@ -369,6 +369,7 @@ function footerSection(): SectionDef {
     removable: false,
     props: {
       tagline: { type: 'text', max: 120, label: 'Tagline' },
+      showSocials: { type: 'boolean', label: 'Mostrar redes sociales' },
       showBranding: { type: 'boolean', label: 'Mostrar "Powered by ByLink"' },
     },
   };
@@ -1583,7 +1584,6 @@ const vitrinaTemplate: TemplateSeed = {
       'hero_main',
       'categories_strip',
       'product_grid_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -1626,7 +1626,6 @@ const vitrinaTemplate: TemplateSeed = {
           showSku: { type: 'boolean', label: 'Mostrar SKU' },
         },
       },
-      socialsSection(),
       footerSection(),
     ],
   },
@@ -1693,7 +1692,6 @@ const luxoraTemplate: TemplateSeed = {
     defaultOrder: [
       'hero_main',
       'product_grid_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -1733,7 +1731,6 @@ const luxoraTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      socialsSection(),
       footerSection(),
     ],
   },
@@ -1773,7 +1770,6 @@ const noirTemplate: TemplateSeed = {
       'hero_main',
       'product_grid_main',
       'stats_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -1819,7 +1815,6 @@ const noirTemplate: TemplateSeed = {
           { value: '4.9★', label: 'Valoración' },
         ],
       }),
-      socialsSection(),
       footerSection(),
     ],
   },
@@ -2264,7 +2259,6 @@ const atelierTemplate: TemplateSeed = {
       'editorial_block',
       'product_grid_main',
       'gallery_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -2336,7 +2330,6 @@ const atelierTemplate: TemplateSeed = {
           { image: uns('1611591437281-460bfbe1220a', 600, 600) },
         ],
       }),
-      socialsSection(),
       footerSection(),
     ],
   },
@@ -2379,7 +2372,6 @@ const rosierTemplate: TemplateSeed = {
       'product_grid_main',
       'featured_main',
       'testimonials_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -2447,7 +2439,6 @@ const rosierTemplate: TemplateSeed = {
           { quote: 'Compré un regalo para mi esposa y quedó encantada con el empaque.', author: 'Luis D.', role: 'Cliente', avatar: uns('1500648767791-00dcc994a43e', 200, 200) },
         ],
       }),
-      socialsSection(),
       footerSection(),
     ],
   },
@@ -2491,7 +2482,6 @@ const estateTemplate: TemplateSeed = {
       'hero_main',
       'categories_strip',
       'product_grid_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -2527,7 +2517,6 @@ const estateTemplate: TemplateSeed = {
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
       },
-      socialsSection(),
       footerSection(),
     ],
   },
@@ -2573,7 +2562,6 @@ const personaTemplate: TemplateSeed = {
       'product_grid_main',
       'gallery_main',
       'about_main',
-      'socials_bar',
       'footer_main',
     ],
     sections: [
@@ -2627,7 +2615,6 @@ const personaTemplate: TemplateSeed = {
         ],
       }),
       withDefaults(aboutSection(true), { image: uns('1531746020798-e6953c6e8e04', 800, 600) }),
-      socialsSection(),
       footerSection(),
     ],
   },
