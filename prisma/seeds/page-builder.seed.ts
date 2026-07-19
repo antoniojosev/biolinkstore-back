@@ -1621,11 +1621,6 @@ const vitrinaTemplate: TemplateSeed = {
         variants: ['grid-2', 'grid-3', 'grid-4'],
         props: {
           title: { type: 'text', max: 60, label: 'Título sección' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'grid-3', 'grid-4'],
-            label: 'Layout',
-          },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
           showSku: { type: 'boolean', label: 'Mostrar SKU' },
@@ -1734,11 +1729,6 @@ const luxoraTemplate: TemplateSeed = {
         variants: ['grid-2', 'grid-3', 'grid-4'],
         props: {
           title: { type: 'text', max: 60, label: 'Título' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'grid-3', 'grid-4'],
-            label: 'Layout',
-          },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
@@ -2533,11 +2523,6 @@ const estateTemplate: TemplateSeed = {
         variants: ['grid-2', 'grid-3', 'list'],
         props: {
           title: { type: 'text', max: 60, label: 'Título sección' },
-          layout: {
-            type: 'enum',
-            options: ['grid-2', 'grid-3', 'list'],
-            label: 'Layout',
-          },
           filterByCategory: { type: 'boolean', label: 'Filtro por categoría' },
           showPrice: { type: 'boolean', label: 'Mostrar precio' },
         },
