@@ -72,12 +72,15 @@ describe('validateSections', () => {
     expect(result.errors[0]).toMatch(/title.*excede max 60/);
   });
 
-  it('rechaza enum con valor fuera de options', () => {
+  it('descarta enum con valor fuera de options sin fallar el guardado (lenient)', () => {
     const result = validateSections(
       [{ type: 'hero', key: 'hero_main', props: { layout: 'top' } }],
       SCHEMA_BASE,
     );
-    expect(result.errors[0]).toMatch(/layout.*"top".*options/);
+    // No falla: el valor inválido se descarta y la sección usa el default del
+    // renderer (así quitar/cambiar options no brickea borradores existentes).
+    expect(result.errors).toEqual([]);
+    expect(result.valid[0].props.layout).toBeUndefined();
   });
 
   it('acepta enum con valor en options', () => {

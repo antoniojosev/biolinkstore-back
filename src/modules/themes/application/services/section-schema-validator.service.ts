@@ -265,24 +265,18 @@ function validateSingleProp(
       return { value: rawVal, errors: [] };
     }
     case 'enum': {
-      if (typeof rawVal !== 'string') {
-        return { value: undefined, errors: [`${path}: debe ser string`] };
+      // Lenient: un valor fuera de options (o de tipo inválido) se DESCARTA en
+      // silencio y la sección usa el default del renderer — en vez de fallar
+      // todo el guardado. Así cambiar/quitar opciones del schema no brickea
+      // borradores que quedaron con un valor viejo (ej. 'list' removido).
+      if (
+        typeof rawVal === 'string' &&
+        Array.isArray(def.options) &&
+        def.options.includes(rawVal)
+      ) {
+        return { value: rawVal, errors: [] };
       }
-      if (!def.options || !Array.isArray(def.options) || def.options.length === 0) {
-        return {
-          value: undefined,
-          errors: [`${path}: schema enum sin options`],
-        };
-      }
-      if (!def.options.includes(rawVal)) {
-        return {
-          value: undefined,
-          errors: [
-            `${path}: "${rawVal}" no está en options [${def.options.join(', ')}]`,
-          ],
-        };
-      }
-      return { value: rawVal, errors: [] };
+      return { value: undefined, errors: [] };
     }
     case 'boolean': {
       if (typeof rawVal !== 'boolean') {
