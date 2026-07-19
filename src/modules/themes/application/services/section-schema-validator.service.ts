@@ -35,7 +35,8 @@ export type PropType =
   | 'number'
   | 'color'
   | 'image'
-  | 'list';
+  | 'list'
+  | 'stringlist';
 
 export interface PropDef {
   type: PropType;
@@ -277,6 +278,12 @@ function validateSingleProp(
         return { value: rawVal, errors: [] };
       }
       return { value: undefined, errors: [] };
+    }
+    case 'stringlist': {
+      // Array de strings (ej. socialsHidden: plataformas ocultas por sección).
+      // Lenient: descarta no-arrays y elementos no-string.
+      if (!Array.isArray(rawVal)) return { value: [], errors: [] };
+      return { value: rawVal.filter((v) => typeof v === 'string'), errors: [] };
     }
     case 'boolean': {
       if (typeof rawVal !== 'boolean') {

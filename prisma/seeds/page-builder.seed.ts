@@ -201,7 +201,8 @@ interface PropDef {
     | 'number'
     | 'color'
     | 'image'
-    | 'list';
+    | 'list'
+    | 'stringlist';
   max?: number;
   min?: number;
   pattern?: string;
@@ -370,6 +371,9 @@ function footerSection(): SectionDef {
     props: {
       tagline: { type: 'text', max: 120, label: 'Tagline' },
       showSocials: { type: 'boolean', label: 'Mostrar redes sociales' },
+      // Plataformas ocultas en el footer (selección por sección; la maneja el
+      // control de redes del inspector, no un PropField genérico).
+      socialsHidden: { type: 'stringlist', label: 'Redes ocultas' },
       showBranding: { type: 'boolean', label: 'Mostrar "Powered by ByLink"' },
     },
   };
@@ -1605,6 +1609,7 @@ const vitrinaTemplate: TemplateSeed = {
           },
           ctaUrl: { type: 'string', label: 'URL CTA' },
           showProductCount: { type: 'boolean', label: 'Mostrar conteo de productos' },
+          socialsHidden: { type: 'stringlist', label: 'Redes ocultas' },
         },
         defaults: {
           layout: 'compact',
@@ -1713,6 +1718,7 @@ const luxoraTemplate: TemplateSeed = {
           },
           ctaUrl: { type: 'string', label: 'URL CTA' },
           overlay: { type: 'boolean', label: 'Overlay oscuro' },
+          socialsHidden: { type: 'stringlist', label: 'Redes ocultas' },
         },
         defaults: {
           layout: 'compact',
